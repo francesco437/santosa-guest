@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santosa — Hotel Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#3DBFB7;--teal-dark:#2A9E97;--teal-deep:#1A6E6A;--teal-light:#B2E8E5;--teal-foam:#EBF9F8;--white:#FFFFFF;--bg:#F4FAFA;--text:#0F2E2D;--text-mid:#3A6664;--text-soft:#7AADAB;--border:#C8EDED;--red:#E53935;--gold:#D4A847;--sidebar-w:200px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--teal-deep),var(--teal-dark));}
+.login-box{background:var(--white);border-radius:24px;padding:48px 40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(26,110,106,.3);text-align:center;}
+.login-logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal-deep);}
+.login-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-soft);margin-bottom:32px;margin-top:4px;}
+.login-input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--teal-foam);outline:none;margin-bottom:12px;text-align:center;letter-spacing:2px;}
+.login-btn{width:100%;padding:14px;background:var(--teal);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
+.login-err{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+.app{display:none;min-height:100vh;}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--teal-deep);display:flex;flex-direction:column;z-index:50;}
+.sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
+.sb-logo-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--white);}
+.sb-logo-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-light);margin-top:2px;}
+.sb-nav{flex:1;padding:12px 0;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;border-left:3px solid transparent;}
+.nav-item.active{color:var(--white);background:rgba(61,191,183,.18);border-left-color:var(--teal);}
+.nav-badge{background:var(--teal);color:var(--white);border-radius:50px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:auto;}
+.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);}
+.logout-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.45);cursor:pointer;}
+.main{margin-left:var(--sidebar-w);min-height:100vh;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-deep);}
+.topbar-title em{font-style:italic;color:var(--teal-dark);}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 1.5s infinite;margin-right:5px;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.content{padding:24px 28px 80px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);}
+.stat-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-soft);}
+.stat-value{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal-deep);margin-top:4px;}
+.stat-sub{font-size:11px;color:var(--text-soft);margin-top:2px;}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-head h2{font-family:'DM Serif Display',serif;font-size:18px;color:var(--teal-deep);}
+.filter-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.ftab{padding:5px 12px;border-radius:50px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:var(--teal-foam);color:var(--text-soft);font-family:'DM Sans',sans-serif;}
+.ftab.active{background:var(--teal);color:var(--white);}
+.orders-list{display:flex;flex-direction:column;gap:10px;}
+.order-card{background:var(--white);border-radius:14px;border:1px solid var(--border);border-left:3px solid var(--gold);overflow:hidden;}
+.oc-head{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--teal-foam);}
+.oc-room{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-deep);min-width:55px;}
+.oc-meta{flex:1;}
+.oc-service{font-size:12px;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:.5px;}
+.oc-time{font-size:11px;color:var(--text-soft);}
+.oc-total{font-size:14px;font-weight:700;color:var(--teal-dark);}
+.status-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;text-transform:uppercase;}
+.s-new{background:#E3F2FD;color:#1565C0;}
+.s-confirmed{background:#FFF8E1;color:#F57F17;}
+.s-completed{background:#E8F5E9;color:#2E7D32;}
+.s-paid{background:#E8F5E9;color:#1B5E20;}
+.oc-details{padding:10px 16px;font-size:12px;color:var(--text-mid);line-height:1.7;background:var(--bg);}
+.oc-actions{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--teal-foam);background:var(--bg);}
+.act-btn{flex:1;padding:8px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
+.btn-confirm{background:#FFF8E1;color:#F57F17;}
+.btn-complete{background:#E8F5E9;color:#2E7D32;}
+.btn-paid{background:var(--teal);color:var(--white);}
+.btn-rm{background:#FFEBEE;color:var(--red);max-width:40px;}
+.empty-state{text-align:center;padding:50px;color:var(--text-soft);}
+.loading{text-align:center;padding:50px;}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-deep);color:var(--white);padding:10px 24px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all .25s;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">Santosa</div>
+    <div class="login-sub">Hotel Dashboard</div>
+    <input class="login-input" type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="loginErr">Incorrect password</div>
+  </div>
+</div>
+<div class="app" id="app">
+  <nav class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-name">Santosa</div><div class="sb-logo-sub">Hotel Services</div></div>
+    <div class="sb-nav">
+      <div class="nav-item active"><span>📋</span> Requests <span class="nav-badge" id="newBadge" style="display:none">0</span></div>
+    </div>
+    <div class="sb-footer"><button class="logout-btn" onclick="doLogout()">⬅ Logout</button></div>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">🏨 <em>Hotel Services</em></div>
+      <span style="font-size:12px;color:var(--text-soft)"><span class="live-dot"></span><span id="clock"></span></span>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="sNew">—</div><div class="stat-sub">Pending</div></div>
+        <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-value" id="sProg">—</div><div class="stat-sub">Being handled</div></div>
+        <div class="stat-card"><div class="stat-label">Completed Today</div><div class="stat-value" id="sComp">—</div><div class="stat-sub">Done</div></div>
+        <div class="stat-card"><div class="stat-label">Revenue Today</div><div class="stat-value" id="sRev">—</div><div class="stat-sub">THB collected</div></div>
+      </div>
+      <div class="sec-head">
+        <h2>Hotel Requests</h2>
+        <div class="filter-tabs">
+          <button class="ftab active" onclick="filt('all',this)">All</button>
+          <button class="ftab" onclick="filt('new',this)">New</button>
+          <button class="ftab" onclick="filt('confirmed',this)">In Progress</button>
+          <button class="ftab" onclick="filt('completed',this)">Done</button>
+          <button class="ftab" onclick="filt('checkout',this)">Check-Out</button>
+          <button class="ftab" onclick="filt('transport',this)">Transport</button>
+          <button class="ftab" onclick="filt('laundry',this)">Laundry</button>
+          <button class="ftab" onclick="filt('housekeeping',this)">Housekeeping</button>
+          <button class="ftab" onclick="filt('shuttle',this)">Shuttle</button>
+          <button class="ftab" onclick="filt('sauna',this)">Sauna</button>
+        </div>
+      </div>
+      <div class="orders-list" id="reqList"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const SB='https://zycptgrxnvbqsbngfuqi.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
+const PASS='hotel2024';
+let all=[],cf='all',pt=null;
+const SUBLABELS={concierge:'🛎️ Concierge',emergency:'🚨 Emergency',checkout:'🕐 Late Check-Out',transport:'🚐 Transfer',laundry:'👕 Laundry',housekeeping:'🧹 Housekeeping',shuttle:'🚌 Shuttle',sauna:'🧖 Sauna'};
+function doLogin(){if(document.getElementById('loginPass').value===PASS||document.getElementById('loginPass').value==='santosa2024'){document.getElementById('loginWrap').style.display='none';document.getElementById('app').style.display='flex';start();}else{document.getElementById('loginErr').style.display='block';document.getElementById('loginPass').value='';}}
+function doLogout(){clearInterval(pt);document.getElementById('app').style.display='none';document.getElementById('loginWrap').style.display='flex';}
+function start(){tick();setInterval(tick,1000);load();pt=setInterval(load,15000);}
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Bangkok',hour12:false});}
+async function sbq(p,o={}){const r=await fetch(`${SB}/rest/v1/${p}`,{headers:{'apikey':SK,'Authorization':`Bearer ${SK}`,'Content-Type':'application/json','Prefer':'return=representation',...(o.headers||{})},... o});const t=await r.text();return t?JSON.parse(t):null;}
+async function load(){try{all=await sbq('requests?select=*&service_type=eq.hotel&order=created_at.desc')||[];render();stats();}catch(e){console.error(e);}}
+function render(){
+  const list=document.getElementById('reqList');
+  let d=all;
+  if(cf==='new') d=all.filter(r=>r.status==='new');
+  else if(cf==='confirmed') d=all.filter(r=>r.status==='confirmed');
+  else if(cf==='completed') d=all.filter(r=>['completed','paid'].includes(r.status));
+  else if(cf!=='all') d=all.filter(r=>r.service_subtype===cf);
+  if(!d.length){list.innerHTML='<div class="empty-state">📋 No requests</div>';return;}
+  list.innerHTML=d.map(r=>{
+    const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};
+    const detStr=Object.entries(det).filter(([k,v])=>v).map(([k,v])=>`<b>${k}:</b> ${v}`).join(' · ');
+    const time=new Date(r.created_at).toLocaleString('en-GB',{timeZone:'Asia/Bangkok',hour12:false,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    const sc={new:'s-new',confirmed:'s-confirmed',completed:'s-completed',paid:'s-paid'}[r.status]||'s-new';
+    const sl={new:'🔵 New',confirmed:'🟡 In Progress',completed:'✅ Done',paid:'💰 Paid'}[r.status]||'🔵 New';
+    let actions='';
+    if(r.status==='new') actions=`<button class="act-btn btn-confirm" onclick="upd('${r.id}','confirmed')">🟡 In Progress</button><button class="act-btn btn-rm" onclick="del('${r.id}')">🗑</button>`;
+    else if(r.status==='confirmed') actions=`<button class="act-btn btn-complete" onclick="upd('${r.id}','completed')">✅ Complete</button><button class="act-btn btn-rm" onclick="del('${r.id}')">🗑</button>`;
+    else if(r.status==='completed') actions=`<button class="act-btn btn-paid" onclick="upd('${r.id}','paid')">💰 Mark Paid</button><button class="act-btn btn-rm" onclick="del('${r.id}')">🗑</button>`;
+    else actions=`<button class="act-btn btn-rm" onclick="del('${r.id}')">🗑 Remove</button>`;
+    return `<div class="order-card"><div class="oc-head"><div class="oc-room">🛏 ${r.room_number}</div><div class="oc-meta"><div class="oc-service">${SUBLABELS[r.service_subtype]||r.service_subtype||'Hotel'}</div><div class="oc-time">${time}</div></div>${r.total>0?`<div class="oc-total">${r.total.toLocaleString()} THB</div>`:''}<span class="status-badge ${sc}">${sl}</span></div>${detStr?`<div class="oc-details">${detStr}</div>`:''}<div class="oc-actions">${actions}</div></div>`;
+  }).join('');
+  const nc=all.filter(r=>r.status==='new').length;
+  const b=document.getElementById('newBadge');
+  if(nc>0){b.textContent=nc;b.style.display='inline-block';}else b.style.display='none';
+}
+function stats(){
+  const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+  const td=all.filter(r=>r.created_at.startsWith(today));
+  document.getElementById('sNew').textContent=all.filter(r=>r.status==='new').length;
+  document.getElementById('sProg').textContent=all.filter(r=>r.status==='confirmed').length;
+  document.getElementById('sComp').textContent=td.filter(r=>['completed','paid'].includes(r.status)).length;
+  document.getElementById('sRev').textContent=td.filter(r=>r.status==='paid').reduce((s,r)=>s+(r.total||0),0).toLocaleString();
+}
+async function upd(id,status){try{await sbq(`requests?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});const r=all.find(r=>r.id===id);if(r)r.status=status;render();stats();toast('✅ Updated');}catch(e){toast('⚠️ Error');}}
+async function del(id){if(!confirm('Delete?'))return;try{await sbq(`requests?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(r=>r.id!==id);render();stats();toast('🗑 Deleted');}catch(e){toast('⚠️ Error');}}
+function filt(f,el){cf=f;document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
