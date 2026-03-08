@@ -625,18 +625,18 @@
     } catch(e) { console.error(e); }
 
     const msg = `💆 *Santosa Spa Booking*\n📍 Room ${roomNumber}\n\n${treatmentList}\n\n📅 ${date} at ${time}\n💰 Total: ${total.toLocaleString()} THB${notes?'\n📝 '+notes:''}`;
-    window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
     showToast('✅ Booking request sent!');
   }
 
   function inquireProgram(name) {
     const msg = `🌿 *Santosa Wellness Program Enquiry*\n📍 Room ${roomNumber}\n\nI'm interested in: ${name}\n\nPlease send me more information.`;
-    window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
   }
 
   function bookClass() {
     const msg = `🧘 *Santosa Class Booking*\n📍 Room ${roomNumber}\n\nI'd like to book a class. Please let me know availability.`;
-    window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
   }
 
   function showToast(msg) {
