@@ -487,7 +487,7 @@
       msg += `\n💰 *Total: ${total} THB*`;
       if (notes) msg += `\n\n📝 *Notes:* ${notes}`;
       msg += `\n\n_Charged to room at check-out_`;
-      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+      window.location.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
     } else {
       const sub = `Room Service — Room ${room} — ${now}`;
       let body  = `SANTOSA HOTEL — ROOM SERVICE\nRoom: ${room}\nTime: ${now}\n\nORDER:\n`;
