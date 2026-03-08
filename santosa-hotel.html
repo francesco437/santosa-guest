@@ -420,7 +420,7 @@
     try{
       await sb('requests',{method:'POST',body:JSON.stringify({room_number:room,service_type:'hotel',service_subtype:service,details,total,status:'new'})});
     }catch(e){console.error(e);}
-    window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');
+    window.location.href = `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
     toast('✅ Request sent!');
   }
 
@@ -430,7 +430,7 @@
       emergency:`🚨 *EMERGENCY — Room ${room}*\n\nI need urgent assistance:`
     };
     const num=type==='emergency'?WA_EMERGENCY:WA;
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent(msgs[type])}`,'_blank');
+    window.location.href = `https://wa.me/${num}?text=${encodeURIComponent(msgs[type])}`;
   }
 
   function toast(msg){
