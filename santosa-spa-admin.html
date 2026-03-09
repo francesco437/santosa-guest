@@ -609,9 +609,12 @@ async function del(id){if(!confirm('Delete?'))return;try{await sbq(`requests?id=
 async function updWalkin(id,paid){
   try{
     await sbq(`spa_appointments?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({paid:paid})});
-    await loadManualAppts();
-    await load();
+    await loadManualAppts(); // reload from Supabase
     render();stats();
+    renderCalBody();
+    // if revenue tab is visible, refresh it too
+    const revPage=document.getElementById('pageRevenue');
+    if(revPage&&revPage.style.display!=='none') loadRevenue('today',document.getElementById('rTab-today'));
     toast('Marked as Paid');
   }catch(e){console.error(e);toast('Error');}
 }
@@ -620,10 +623,14 @@ async function delWalkin(id){
   if(!confirm('Delete this walk-in appointment?'))return;
   try{
     await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
-    manualAppts=manualAppts.filter(a=>a.id!==id);
-    render();stats();renderCalBody();
+    await loadManualAppts(); // reload from Supabase
+    render();stats();
+    renderCalBody();
+    // if revenue tab is visible, refresh it too
+    const revPage=document.getElementById('pageRevenue');
+    if(revPage&&revPage.style.display!=='none') loadRevenue('today',document.getElementById('rTab-today'));
     toast('Deleted');
-  }catch(e){toast('Error');}}
+  }catch(e){console.error(e);toast('Error');}}
 
 function filt(f,el){cf=f;document.querySelectorAll('#pageBookings .ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
 
