@@ -283,7 +283,7 @@ function renderMenu(){
             </div>
           </div>
           <div class="menu-item-actions">
-            <button class="avail-toggle ${avail?'on':'off'}" id="avail-${item.id}" onclick="toggleAvail('${item.id}',${avail})">${avail?'✅ Available':'🚫 Hidden'}</button>
+            <button class="avail-toggle ${avail?'on':'off'}" id="avail-${item.id}" onclick="toggleAvail('${item.id}')">${avail?'✅ Available':'🚫 Hidden'}</button>
             <button class="save-btn" id="save-${item.id}" onclick="saveItem('${item.id}')" disabled>Save</button>
           </div>
         </div>`;
@@ -313,16 +313,18 @@ async function saveItem(id){
   } catch(e){ btn.textContent='Save'; btn.disabled=false; toast('⚠️ Error'); }
 }
 
-async function toggleAvail(id, currentAvail){
-  const newAvail = !currentAvail;
+async function toggleAvail(id){
+  const item = menuItems.find(i=>i.id==id);
+  if(!item) return;
+  const newAvail = !(item.active !== false);
   try {
     await sbq(`menu_items?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({active: newAvail})});
-    const item = menuItems.find(i=>i.id==id);
-    if(item) item.active = newAvail;
+    item.active = newAvail;
     const btn = document.getElementById('avail-'+id);
     const row = document.getElementById('row-'+id);
     btn.className = 'avail-toggle '+(newAvail?'on':'off');
     btn.textContent = newAvail?'✅ Available':'🚫 Hidden';
+    btn.onclick = () => toggleAvail(id);
     row.className = 'menu-item-row '+(newAvail?'':'unavailable');
     toast(newAvail?'✅ Item available':'🚫 Item hidden');
   } catch(e){ toast('⚠️ Error'); }
