@@ -325,16 +325,27 @@ function placeOrder() {
   var itemsJson = ci.map(function(x) { return {id: x.item.id, name: x.item.name, price: x.item.price, qty: x.qty}; });
   var notes = document.getElementById('notesEl').value;
 
+  var total = getTotal();
   sbq('orders', {
     method: 'POST',
     body: JSON.stringify({
       room_number: room,
       items: itemsJson,
-      total: getTotal(),
+      total: total,
       notes: notes || null,
       status: 'new'
     })
   }).then(function() {
+    // WhatsApp notification
+    var lines = ci.map(function(x) { return x.qty + 'x ' + x.item.name + ' (' + (x.item.price * x.qty) + ' THB)'; });
+    var msg = '🛎 *New Food Order*%0A'
+      + '🛏 Room: *' + room + '*%0A'
+      + '─────────────%0A'
+      + lines.join('%0A') + '%0A'
+      + '─────────────%0A'
+      + '💰 Total: *' + total + ' THB*'
+      + (notes ? '%0A📝 ' + encodeURIComponent(notes) : '');
+    window.open('https://wa.me/393465309386?text=' + msg, '_blank');
     cart = {};
     updateBar();
     renderMenu();
