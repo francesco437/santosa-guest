@@ -720,7 +720,7 @@ function renderDayView(){
               <div>
                 <div class="day-appt-name">${ev.name||ev.client_name}</div>
                 <div class="day-appt-detail">${ev.treatment} · ${ev.duration||60} min · Room ${ev.room||1}</div>
-                ${ev.price>0?`<div class="day-appt-detail" style="font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.price.toLocaleString()} THB · ${ev.paid?'✓ Paid':'Unpaid'}</div>`:''}
+                ${ev.type==='manual'&&ev.price>0?`<div class="day-appt-detail" style="font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'⚠ Unpaid'} · ${ev.price.toLocaleString()} THB</div>`:''}
                 ${ev.notes?`<div class="day-appt-detail" style="color:var(--teal-dark)">${ev.notes}</div>`:''}
               </div>
               ${isManual?`<button class="day-appt-delete" onclick="deleteAppt('${ev.id}',event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
@@ -780,7 +780,7 @@ function renderWeekView(){
         const isManual=ev.type==='manual';
         html+=`<div class="week-slot${isT?' today-col':''}" style="position:relative">
           <div class="week-event ${isManual?'ev-manual':'ev-system'}" style="height:${h}px;top:2px">
-            ${ev.name||ev.client_name}<br><span style="opacity:.7">${ev.treatment}</span>
+            ${ev.name||ev.client_name}<br><span style="opacity:.7">${ev.treatment}</span>${ev.type==='manual'&&ev.price>0?`<br><span style="font-size:9px;font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'Unpaid'} · ${ev.price.toLocaleString()} THB</span>`:''}
           </div>
         </div>`;
         return;
@@ -807,7 +807,7 @@ function renderMonthView(){
     const dk=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const evs=getEventsForDate(dk);
     const isT=dk===today;
-    const evHtml=evs.slice(0,3).map(ev=>`<div class="cal-event ${ev.type==='manual'?'ev-manual':'ev-system'}">${ev.time} ${ev.name||ev.client_name}</div>`).join('');
+    const evHtml=evs.slice(0,3).map(ev=>`<div class="cal-event ${ev.type==='manual'?'ev-manual':'ev-system'}">${ev.time} ${ev.name||ev.client_name}${ev.type==='manual'&&ev.price>0?' · '+(ev.paid?'✓':'⚠'):''}</div>`).join('');
     const more=evs.length>3?`<div class="cal-more">+${evs.length-3} more</div>`:'';
     html+=`<div class="cal-day${isT?' today':''}" onclick="calDayClick('${dk}')"><div class="cal-day-num">${d}</div>${evHtml}${more}</div>`;
   }
