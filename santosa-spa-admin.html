@@ -622,13 +622,13 @@ async function updWalkin(id,paid){
 async function delWalkin(id){
   if(!confirm('Delete this walk-in appointment?'))return;
   try{
+    const appt=manualAppts.find(a=>a.id===id);
     await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
-    await loadManualAppts(); // reload from Supabase
+    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':''}}).catch(()=>{});
+    await loadManualAppts();
+    await load();
     render();stats();
     renderCalBody();
-    // if revenue tab is visible, refresh it too
-    const revPage=document.getElementById('pageRevenue');
-    if(revPage&&revPage.style.display!=='none') loadRevenue('today',document.getElementById('rTab-today'));
     toast('Deleted');
   }catch(e){console.error(e);toast('Error');}}
 
@@ -849,30 +849,23 @@ async function saveAppt(){
   const btn=document.getElementById('modalSaveBtn');
   btn.textContent='Saving...';btn.disabled=true;
   try{
-    // 1. Save to spa_appointments (calendar + spa revenue)
-    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual'})});
-    
-    // 2. Save to requests (Master Dashboard + global stats)
-    await sbq('requests',{method:'POST',body:JSON.stringify({
-      room_number: 'EXT',
-      service_type: 'spa',
-      service_subtype: 'treatment',
-      status: paid ? 'paid' : 'confirmed',
-      total: price||0,
-      details: JSON.stringify({
-        client_name: client,
-        treatment: treatment,
-        date: date,
-        time: time,
-        duration: duration,
-        room: room,
-        source: 'manual_walkin'
-      }),
-      notes: notes||null
+    // 1. Save to requests first to get its id
+    const reqRes=await sbq('requests',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({
+      room_number:'EXT',
+      service_type:'spa',
+      service_subtype:'treatment',
+      status:paid?'paid':'confirmed',
+      total:price||0,
+      details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
+      notes:notes||null
     })});
+    const requestId=reqRes&&reqRes[0]?reqRes[0].id:null;
+
+    // 2. Save to spa_appointments with request_id reference
+    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual',request_id:requestId})});
 
     await loadManualAppts();
-    await load(); // refresh bookings list
+    await load();
     closeModal();
     renderCalBody();
     toast('Appointment saved!');
@@ -883,11 +876,15 @@ async function deleteAppt(id,ev){
   ev.stopPropagation();
   if(!confirm('Delete this appointment?'))return;
   try{
+    const appt=manualAppts.find(a=>a.id===id);
     await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
-    manualAppts=manualAppts.filter(a=>a.id!==id);
+    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':''}}).catch(()=>{});
+    await loadManualAppts();
+    await load();
     renderCalBody();
+    render();stats();
     toast('Deleted');
-  }catch(e){toast('Error');}
+  }catch(e){console.error(e);toast('Error');}
 }
 
 // REVENUE
