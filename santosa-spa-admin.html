@@ -929,7 +929,7 @@ async function loadRevenue(period,el){
   // Manual walk-in paid appointments
   const walkinPaid=(manualAppts||[]).filter(a=>{
     const p=a.paid===true||a.paid==='true';
-    return p && dateFilter(a.date);
+    return p && dateFilter((a.created_at||a.date).slice(0,10));
   });
 
   const systemTotal=systemPaid.reduce((s,r)=>s+(r.total||0),0);
