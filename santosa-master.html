@@ -709,7 +709,7 @@ function showPage(page,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  el.classList.add('active');
+  if(el && el.classList && el.classList.contains('nav-item')) el.classList.add('active');
   const titles={orders:'Live <span>Orders</span>',calendar:'<span>Calendar</span>',revenue:'<span>Revenue</span>',stats:'<span>Statistics</span>'};
   document.getElementById('topbarTitle').innerHTML=titles[page];
   if(page==='calendar')renderCalendar();
@@ -1005,12 +1005,16 @@ function closeSidebar(){
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
 function showPageMobile(page, el){
+  // sync desktop sidebar active state
   document.querySelectorAll('.nav-item').forEach(n=>{
     const oc = n.getAttribute('onclick')||'';
-    n.classList.toggle('active', oc.includes("'"+page+"'"));
+    if(oc.includes("'"+page+"'")) n.classList.add('active');
+    else n.classList.remove('active');
   });
-  showPage(page);
+  // call showPage with a dummy nav-item that won't break (pass null, showPage handles it)
+  showPage(page, null);
   closeSidebar();
+  // sync mobile nav active
   document.querySelectorAll('.mob-nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
 }
