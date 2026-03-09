@@ -239,7 +239,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 @media(max-width:768px){
   .modal{max-width:calc(100% - 32px);}
-  .week-grid{grid-template-columns:44px repeat(7,1fr);}
+  .week-grid{grid-template-columns:44px repeat(3,1fr);}
   .week-time-lbl{font-size:9px;padding:0 3px;}
 }
 
@@ -250,19 +250,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .main{margin-left:0;}
   .topbar{padding:0 16px;height:56px;}
   .topbar-menu-btn{display:flex;}
-  .content{padding:16px 16px 60px;}
+  .content{padding:16px 12px 60px;}
   .stats-row{grid-template-columns:1fr 1fr;gap:10px;}
   .stat-value{font-size:24px;}
   .sec-head{flex-direction:column;align-items:flex-start;}
   .filter-tabs{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:2px;}
-  .cal-grid{grid-template-columns:repeat(7,1fr);gap:2px;}
-  .cal-day{min-height:50px;padding:5px 3px;}
-  .cal-day-num{font-size:11px;}
-  .cal-event{display:none;}
+  /* Calendar toolbar */
+  .cal-toolbar{flex-wrap:nowrap;gap:8px;align-items:center;}
+  .cal-toolbar>div:first-child{display:flex;gap:6px;flex-shrink:0;}
+  .cal-title{font-size:14px;font-weight:700;flex:1;text-align:center;}
+  .cal-nav-btn{padding:7px 10px;font-size:12px;}
+  .cal-view-btn{padding:5px 10px;font-size:11px;}
+  /* Month view — show dot instead of full event */
+  .cal-month-grid{gap:3px;}
+  .cal-day{min-height:52px;padding:6px 4px;}
+  .cal-day-num{font-size:12px;}
+  .cal-event{font-size:9px;padding:1px 4px;}
+  /* Day view */
+  .day-slot-row{grid-template-columns:54px 1fr;}
+  .day-time{font-size:10px;padding:8px 6px;}
+  /* Revenue */
   .rev-grid{grid-template-columns:1fr;}
   .rev-total-val{font-size:36px;}
   .rev-total-box{padding:20px;}
+  /* Booking cards */
   .oc-head{flex-wrap:wrap;gap:8px;}
+  .oc-room-badge{font-size:14px;padding:6px 10px;}
 }
 </style>
 </head>
@@ -386,13 +399,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- CALENDAR PAGE -->
     <div class="content" id="pageCalendar" style="display:none">
-      <div class="cal-toolbar">
-        <div style="display:flex;gap:8px;">
-          <button class="cal-nav-btn" onclick="changeCalDate(-1)">← Prev</button>
-          <button class="cal-nav-btn" onclick="changeCalDate(1)">Next →</button>
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
+          <button class="cal-nav-btn" onclick="changeCalDate(-1)">←</button>
+          <div class="cal-title" id="calTitle" style="flex:1;text-align:center;"></div>
+          <button class="cal-nav-btn" onclick="changeCalDate(1)">→</button>
         </div>
-        <div class="cal-title" id="calTitle"></div>
-        <div style="display:flex;gap:6px;">
+        <div style="display:flex;gap:6px;justify-content:center;">
           <button class="cal-view-btn active" id="vDay" onclick="setView('day',this)">Day</button>
           <button class="cal-view-btn" id="vWeek" onclick="setView('week',this)">Week</button>
           <button class="cal-view-btn" id="vMonth" onclick="setView('month',this)">Month</button>
@@ -744,14 +757,21 @@ function renderDayView(){
 
 // WEEK VIEW
 function renderWeekView(){
+  const isMobile=window.innerWidth<=768;
   const dow=calDate.getDay();
   const weekStart=new Date(calDate.getFullYear(),calDate.getMonth(),calDate.getDate()-dow);
   const today=todayStr();
-  const weekDays=Array.from({length:7},(_,i)=>{const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);return d;});
-  document.getElementById('calTitle').textContent=`${weekDays[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${weekDays[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+  const allWeekDays=Array.from({length:7},(_,i)=>{const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);return d;});
+  // On mobile show 3 days starting from calDate
+  let weekDays=allWeekDays;
+  if(isMobile){
+    const startIdx=Math.max(0,allWeekDays.findIndex(d=>dateStr(d)===dateStr(calDate)));
+    weekDays=allWeekDays.slice(startIdx,startIdx+3);
+    if(weekDays.length<3) weekDays=allWeekDays.slice(allWeekDays.length-3);
+  }
+  document.getElementById('calTitle').textContent=`${weekDays[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${weekDays[weekDays.length-1].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
   
-  let html=`<div class="week-grid">`;
-  // header row
+  let html=`<div class="week-grid" style="${isMobile?`grid-template-columns:44px repeat(${weekDays.length},1fr)`:''}">`;
   html+=`<div class="week-time-col"><div class="week-header" style="height:50px"></div>`;
   SLOTS.forEach(s=>html+=`<div class="week-time-lbl">${s}</div>`);
   html+=`</div>`;
