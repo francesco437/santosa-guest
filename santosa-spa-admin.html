@@ -888,10 +888,11 @@ async function deleteAppt(id,ev){
 }
 
 // REVENUE
-function loadRevenue(period,el){
+async function loadRevenue(period,el){
   document.querySelectorAll('#pageRevenue .ftab').forEach(t=>t.classList.remove('active'));
   if(el)el.classList.add('active');
   document.getElementById('revenueContent').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  await loadManualAppts(); // always fresh from Supabase
   const today=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
   let periodLabel='';
   let dateFilter=(date)=>true;
