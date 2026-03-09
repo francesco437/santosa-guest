@@ -131,7 +131,7 @@ body{font-family:'DM Sans',sans-serif;background:linear-gradient(170deg,#3aacbe 
     <div class="totrow"><span>Total</span><span id="sheetTotal">0 THB</span></div>
     <div class="totsub">Charged to your room at check-out</div>
     <button class="orderbtn" id="orderBtn" onclick="placeOrder()">Place Order · Room <span id="roomNum">—</span></button>
-    <div class="successmsg" id="successEl">✓ Order sent! We'll deliver to your room shortly.</div>
+    <div class="successmsg" id="successEl"><div>✓ Order sent! We'll deliver to your room shortly.</div><a id="waLink" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 20px;background:#25D366;color:white;border-radius:50px;font-size:13px;font-weight:700;text-decoration:none;">📲 Notify via WhatsApp</a></div>
   </div>
 </div>
 
@@ -337,14 +337,9 @@ function placeOrder() {
     })
   }).then(function() {
     // WhatsApp notification
-    var lines = ci.map(function(x) { return x.qty + 'x ' + x.item.name + ' (' + (x.item.price * x.qty) + ' THB)'; });
-    var msgText = '🛎 *New Food Order*\n' + '🛏 Room: *' + room + '*\n' + '-----------\n' + lines.join('\n') + '\n' + '-----------\n' + 'Total: *' + total + ' THB*' + (notes ? '\nNote: ' + notes : '');
-    var waLink = document.createElement('a');
-    waLink.href = 'https://wa.me/393465309386?text=' + encodeURIComponent(msgText);
-    waLink.target = '_blank';
-    document.body.appendChild(waLink);
-    waLink.click();
-    document.body.removeChild(waLink);
+    var waLines = ci.map(function(x) { return x.qty + 'x ' + x.item.name + ' (' + (x.item.price * x.qty) + ' THB)'; });
+    var msgText = '🛎 *New Food Order*\n' + '🛏 Room: *' + room + '*\n' + '-----------\n' + waLines.join('\n') + '\n' + '-----------\n' + 'Total: *' + total + ' THB*' + (notes ? '\nNote: ' + notes : '');
+    document.getElementById('waLink').href = 'https://wa.me/393465309386?text=' + encodeURIComponent(msgText);
     cart = {};
     updateBar();
     renderMenu();
