@@ -450,6 +450,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             </select>
           </div>
         </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-field">
+            <label class="form-label">Price (THB)</label>
+            <input class="form-input" id="apptPrice" type="number" placeholder="0">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Payment</label>
+            <select class="form-input" id="apptPaid">
+              <option value="false">Not Paid</option>
+              <option value="true">Paid</option>
+            </select>
+          </div>
+        </div>
         <div class="form-field">
           <label class="form-label">Notes</label>
           <input class="form-input" id="apptNotes" placeholder="Optional notes">
@@ -640,6 +653,7 @@ function renderDayView(){
               <div>
                 <div class="day-appt-name">${ev.name||ev.client_name}</div>
                 <div class="day-appt-detail">${ev.treatment} · ${ev.duration||60} min · Room ${ev.room||1}</div>
+                ${ev.price>0?`<div class="day-appt-detail" style="font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.price.toLocaleString()} THB · ${ev.paid?'✓ Paid':'Unpaid'}</div>`:''}
                 ${ev.notes?`<div class="day-appt-detail" style="color:var(--teal-dark)">${ev.notes}</div>`:''}
               </div>
               ${isManual?`<button class="day-appt-delete" onclick="deleteAppt('${ev.id}',event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
@@ -747,6 +761,8 @@ function openModal(date, time){
   document.getElementById('apptTreatment').value='';
   document.getElementById('apptDate').value=date;
   document.getElementById('apptNotes').value='';
+  document.getElementById('apptPrice').value='';
+  document.getElementById('apptPaid').value='false';
   document.getElementById('apptDuration').value='60';
   document.getElementById('apptRoom').value='1';
   // populate time select
@@ -769,11 +785,13 @@ async function saveAppt(){
   const duration=parseInt(document.getElementById('apptDuration').value);
   const room=parseInt(document.getElementById('apptRoom').value);
   const notes=document.getElementById('apptNotes').value.trim();
+  const price=parseInt(document.getElementById('apptPrice').value)||0;
+  const paid=document.getElementById('apptPaid').value==='true';
   if(!client||!treatment||!date||!time){toast('Fill in all required fields');return;}
   const btn=document.getElementById('modalSaveBtn');
   btn.textContent='Saving...';btn.disabled=true;
   try{
-    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,source:'manual'})});
+    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual'})});
     await loadManualAppts();
     closeModal();
     renderCalBody();
