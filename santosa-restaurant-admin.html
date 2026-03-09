@@ -3,136 +3,273 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Santosa — Restaurant Dashboard</title>
+<title>Santosa — Restaurant</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
-:root{--teal:#3DBFB7;--teal-dark:#2A9E97;--teal-deep:#1A6E6A;--teal-light:#B2E8E5;--teal-foam:#EBF9F8;--white:#FFFFFF;--bg:#F4FAFA;--text:#0F2E2D;--text-mid:#3A6664;--text-soft:#7AADAB;--border:#C8EDED;--red:#E53935;--sidebar-w:200px;}
+:root {
+  --teal:#3DBFB7; --teal-dark:#2A9E97; --teal-deep:#1A6E6A; --teal-light:#B2E8E5; --teal-foam:#EBF9F8;
+  --sidebar:#1C1C1E; --sidebar-hover:rgba(255,255,255,0.06); --sidebar-active:rgba(61,191,183,0.15);
+  --white:#FFFFFF; --bg:#F5F5F7; --surface:#FFFFFF;
+  --text:#1D1D1F; --text-mid:#3A3A3C; --text-soft:#8E8E93;
+  --border:rgba(0,0,0,0.08); --border-strong:rgba(0,0,0,0.12);
+  --radius:16px; --radius-sm:10px;
+  --shadow:0 2px 20px rgba(0,0,0,0.07);
+  --sidebar-w:240px;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--teal-deep),var(--teal-dark));}
-.login-box{background:var(--white);border-radius:24px;padding:48px 40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(26,110,106,.3);text-align:center;}
-.login-logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal-deep);}
-.login-sub{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-soft);margin-bottom:32px;margin-top:4px;}
-.login-input{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--teal-foam);outline:none;margin-bottom:12px;text-align:center;letter-spacing:2px;}
-.login-btn{width:100%;padding:14px;background:var(--teal);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
-.login-err{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f2027,#1A6E6A,#3DBFB7);}
+.login-box{background:rgba(255,255,255,0.97);backdrop-filter:blur(40px);border-radius:28px;padding:52px 44px;width:100%;max-width:400px;box-shadow:0 32px 80px rgba(0,0,0,0.2);text-align:center;}
+.login-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--teal-deep),var(--teal));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.login-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:4px;}
+.login-sub{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text-soft);margin-bottom:32px;}
+.login-input{width:100%;padding:14px 18px;border:1.5px solid var(--border-strong);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);background:var(--bg);outline:none;margin-bottom:12px;text-align:center;letter-spacing:3px;transition:border .2s;}
+.login-input:focus{border-color:var(--teal);}
+.login-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--teal-deep),var(--teal));color:var(--white);border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.login-btn:hover{opacity:.9;}
+.login-err{color:#E53935;font-size:13px;margin-top:10px;display:none;}
+
+/* APP */
 .app{display:none;min-height:100vh;}
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--teal-deep);display:flex;flex-direction:column;z-index:50;}
-.sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1);}
-.sb-logo-name{font-family:'DM Serif Display',serif;font-size:20px;color:var(--white);}
-.sb-logo-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-light);margin-top:2px;}
-.sb-nav{flex:1;padding:12px 0;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;transition:all .15s;border-left:3px solid transparent;}
-.nav-item.active{color:var(--white);background:rgba(61,191,183,.18);border-left-color:var(--teal);}
-.nav-badge{background:var(--teal);color:var(--white);border-radius:50px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:auto;}
-.sb-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1);}
-.logout-btn{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.45);cursor:pointer;}
-.main{margin-left:var(--sidebar-w);min-height:100vh;}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
-.topbar-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-deep);}
-.topbar-title em{font-style:italic;color:var(--teal-dark);}
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 1.5s infinite;margin-right:5px;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.3);}}
-.content{padding:24px 28px 80px;}
+
+/* SIDEBAR */
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--sidebar);display:flex;flex-direction:column;z-index:50;transition:transform .3s cubic-bezier(.4,0,.2,1);}
+.sb-header{padding:28px 20px 20px;border-bottom:1px solid rgba(255,255,255,.06);}
+.sb-logo{display:flex;align-items:center;gap:12px;}
+.sb-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal-deep),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-logo-text .name{font-family:'DM Serif Display',serif;font-size:18px;color:var(--white);line-height:1.1;}
+.sb-logo-text .sub{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px;}
+.sb-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:2px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;}
+.nav-item:hover{background:var(--sidebar-hover);color:rgba(255,255,255,.8);}
+.nav-item.active{background:var(--sidebar-active);color:var(--white);}
+.nav-icon{width:18px;height:18px;flex-shrink:0;opacity:.7;}
+.nav-item.active .nav-icon{opacity:1;color:var(--teal);}
+.nav-badge{background:var(--teal);color:var(--white);border-radius:50px;padding:2px 8px;font-size:10px;font-weight:700;margin-left:auto;}
+.sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,.06);}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:rgba(255,255,255,.35);cursor:pointer;background:none;border:none;width:100%;transition:all .15s;}
+.logout-btn:hover{color:rgba(255,255,255,.6);background:var(--sidebar-hover);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-menu-btn{display:none;width:36px;height:36px;border:none;background:var(--bg);border-radius:8px;align-items:center;justify-content:center;cursor:pointer;color:var(--text-mid);}
+.topbar-title{font-size:17px;font-weight:700;color:var(--text);}
+.topbar-title span{color:var(--teal-dark);}
+.live-pill{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);padding:6px 14px;border-radius:50px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(1.5);}}
+.clock{font-size:13px;font-weight:600;color:var(--text-mid);font-variant-numeric:tabular-nums;}
+.content{padding:24px 28px 60px;flex:1;}
+
+/* STAT CARDS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.stat-card{background:var(--white);border-radius:14px;padding:18px;border:1px solid var(--border);}
-.stat-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-soft);}
-.stat-value{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal-deep);margin-top:4px;}
-.stat-sub{font-size:11px;color:var(--text-soft);margin-top:2px;}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.sec-head h2{font-family:'DM Serif Display',serif;font-size:18px;color:var(--teal-deep);}
-.filter-tabs{display:flex;gap:5px;}
-.ftab{padding:5px 12px;border-radius:50px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:var(--teal-foam);color:var(--text-soft);transition:all .15s;font-family:'DM Sans',sans-serif;}
-.ftab.active{background:var(--teal);color:var(--white);}
+.stat-card{background:var(--white);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:var(--shadow);}
+.stat-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.stat-label{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text-soft);}
+.stat-value{font-family:'DM Serif Display',serif;font-size:30px;color:var(--text);line-height:1;margin-top:4px;}
+.stat-sub{font-size:11px;color:var(--text-soft);margin-top:3px;}
+
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sec-head h2{font-size:16px;font-weight:700;color:var(--text);}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.ftab{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--text-soft);transition:all .15s;font-family:'DM Sans',sans-serif;}
+.ftab:hover{border-color:var(--teal);color:var(--teal-dark);}
+.ftab.active{background:var(--teal);color:var(--white);border-color:var(--teal);}
+
+/* ORDER CARDS */
 .orders-list{display:flex;flex-direction:column;gap:10px;}
-.order-card{background:var(--white);border-radius:14px;border:1px solid var(--border);border-left:3px solid var(--teal);overflow:hidden;}
-.oc-head{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--teal-foam);}
-.oc-room{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-deep);min-width:55px;}
+.order-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;transition:transform .15s;}
+.order-card:hover{transform:translateY(-1px);}
+.oc-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.oc-room-badge{background:linear-gradient(135deg,var(--teal-deep),var(--teal-dark));color:var(--white);border-radius:10px;padding:8px 14px;font-family:'DM Serif Display',serif;font-size:17px;white-space:nowrap;}
 .oc-meta{flex:1;}
-.oc-time{font-size:11px;color:var(--text-soft);}
-.oc-total{font-size:14px;font-weight:700;color:var(--teal-dark);}
-.status-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;text-transform:uppercase;}
-.s-new{background:#E3F2FD;color:#1565C0;}
-.s-preparing{background:#FFF8E1;color:#F57F17;}
-.s-delivered{background:#E8F5E9;color:#2E7D32;}
-.s-paid{background:#E8F5E9;color:#1B5E20;}
-.oc-items{padding:10px 16px;font-size:12px;color:var(--text-mid);line-height:1.8;background:var(--bg);}
-.oc-notes{padding:4px 16px 10px;font-size:12px;color:#E65100;background:var(--bg);}
-.oc-actions{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--teal-foam);background:var(--bg);}
-.act-btn{flex:1;padding:8px;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px;}
-.btn-prep{background:#FFF8E1;color:#F57F17;}
-.btn-del2{background:#E8F5E9;color:#2E7D32;}
-.btn-paid{background:var(--teal);color:var(--white);}
-.btn-rm{background:#FFEBEE;color:var(--red);max-width:40px;}
-.empty-state{text-align:center;padding:50px;color:var(--text-soft);}
-.loading{text-align:center;padding:50px;}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+.oc-time{font-size:11px;color:var(--text-soft);margin-bottom:2px;display:flex;align-items:center;gap:5px;}
+.oc-total{font-size:15px;font-weight:700;color:var(--teal-dark);}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:50px;font-size:11px;font-weight:600;white-space:nowrap;}
+.s-new{background:#EFF6FF;color:#1D4ED8;}
+.s-preparing{background:#FFFBEB;color:#B45309;}
+.s-delivered{background:#F0FDF4;color:#166534;}
+.s-paid{background:#F0FDF4;color:#14532D;}
+.oc-items{padding:12px 18px;font-size:13px;color:var(--text-mid);background:var(--bg);}
+.oc-item-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+.oc-item-name{display:flex;align-items:center;gap:8px;}
+.oc-item-price{font-weight:600;color:var(--text);font-size:12px;}
+.oc-notes{padding:6px 18px 10px;font-size:12px;color:#C2410C;background:var(--bg);display:flex;align-items:center;gap:6px;}
+.oc-actions{display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--border);}
+.act-btn{flex:1;padding:9px 12px;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.btn-prep{background:#FFFBEB;color:#B45309;}
+.btn-prep:hover{background:#FEF3C7;}
+.btn-del2{background:#F0FDF4;color:#166534;}
+.btn-del2:hover{background:#DCFCE7;}
+.btn-paid{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:var(--white);}
+.btn-paid:hover{opacity:.9;}
+.btn-rm{background:#FEF2F2;color:#B91C1C;max-width:42px;flex:none;}
+.btn-rm:hover{background:#FEE2E2;}
+
+/* MENU MANAGEMENT */
+.menu-category{margin-bottom:28px;}
+.menu-cat-title{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-soft);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.menu-cat-count{font-size:11px;background:var(--bg);color:var(--text-soft);padding:2px 8px;border-radius:50px;font-weight:600;text-transform:none;letter-spacing:0;}
+.menu-item-row{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.menu-item-row.unavailable{opacity:.45;background:var(--bg);}
+.menu-item-emoji{font-size:24px;min-width:36px;text-align:center;}
+.menu-item-info{flex:1;display:flex;flex-direction:column;gap:5px;}
+.menu-item-name-input{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--text);border:1.5px solid transparent;border-radius:8px;padding:5px 8px;background:transparent;width:100%;outline:none;transition:all .15s;}
+.menu-item-name-input:focus{border-color:var(--teal);background:var(--teal-foam);}
+.menu-item-price-wrap{display:flex;align-items:center;gap:6px;}
+.menu-item-price-input{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:var(--teal-dark);border:1.5px solid transparent;border-radius:8px;padding:4px 8px;background:transparent;width:90px;outline:none;transition:all .15s;}
+.menu-item-price-input:focus{border-color:var(--teal);background:var(--teal-foam);}
+.price-currency{font-size:11px;color:var(--text-soft);font-weight:600;}
+.menu-item-actions{display:flex;gap:8px;align-items:center;}
+.save-btn{background:var(--teal);color:var(--white);border:none;border-radius:8px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.save-btn:hover{background:var(--teal-dark);}
+.save-btn:disabled{opacity:.35;cursor:default;}
+.avail-toggle{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-soft);font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.avail-toggle.on{border-color:#16A34A;color:#16A34A;background:#F0FDF4;}
+.avail-toggle.off{border-color:#DC2626;color:#DC2626;background:#FEF2F2;}
+
+/* ADD ITEM FORM */
+.add-item-form{background:var(--white);border:2px dashed var(--border-strong);border-radius:var(--radius);padding:24px;margin-top:8px;}
+.add-item-form-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.add-form-grid{display:grid;grid-template-columns:70px 1fr 120px 150px;gap:12px;align-items:end;}
+.add-form-field{display:flex;flex-direction:column;gap:5px;}
+.add-form-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-soft);}
+.add-form-input,.add-form-select{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);border:1.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:9px 12px;background:var(--bg);outline:none;width:100%;transition:border .15s;}
+.add-form-input:focus,.add-form-select:focus{border-color:var(--teal);background:var(--teal-foam);}
+.add-submit-btn{background:linear-gradient(135deg,var(--teal-deep),var(--teal));color:var(--white);border:none;border-radius:var(--radius-sm);padding:11px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s;}
+.add-submit-btn:hover{opacity:.9;}
+
+/* MISC */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-soft);}
+.empty-state p{font-size:14px;margin-top:10px;}
+.loading{text-align:center;padding:60px;}
+.spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-deep);color:var(--white);padding:10px 24px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all .25s;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--sidebar);color:var(--white);padding:10px 24px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all .25s;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-/* Menu management */
-.menu-category { margin-bottom: 28px; }
-.menu-cat-title { font-family:'DM Serif Display',serif; font-size:16px; color:var(--teal-deep); margin-bottom:10px; padding-bottom:8px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
-.menu-item-row { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; transition: opacity .2s; }
-.menu-item-row.unavailable { opacity: 0.45; }
-.menu-item-emoji { font-size:22px; min-width:32px; text-align:center; }
-.menu-item-info { flex:1; display:flex; flex-direction:column; gap:4px; }
-.menu-item-name-input { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--text); border:1px solid transparent; border-radius:6px; padding:4px 8px; background:transparent; width:100%; outline:none; }
-.menu-item-name-input:focus { border-color:var(--teal); background:var(--teal-foam); }
-.menu-item-price-wrap { display:flex; align-items:center; gap:4px; }
-.menu-item-price-input { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--teal-dark); border:1px solid transparent; border-radius:6px; padding:3px 6px; background:transparent; width:80px; outline:none; }
-.menu-item-price-input:focus { border-color:var(--teal); background:var(--teal-foam); }
-.price-currency { font-size:12px; color:var(--text-soft); }
-.menu-item-actions { display:flex; gap:6px; align-items:center; }
-.save-btn { background:var(--teal); color:var(--white); border:none; border-radius:8px; padding:6px 14px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; }
-.save-btn:disabled { opacity:0.4; cursor:default; }
-.avail-toggle { background:none; border:2px solid var(--border); border-radius:8px; padding:5px 10px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-soft); font-family:'DM Sans',sans-serif; white-space:nowrap; }
-.avail-toggle.on { border-color:#4CAF50; color:#4CAF50; }
-.avail-toggle.off { border-color:#E53935; color:#E53935; }
-/* Add new item form */
-.add-item-form { background:var(--white); border:2px dashed var(--teal-light); border-radius:14px; padding:20px; margin-top:8px; }
-.add-item-form h3 { font-family:'DM Serif Display',serif; font-size:15px; color:var(--teal-deep); margin-bottom:14px; }
-.add-form-grid { display:grid; grid-template-columns:60px 1fr 110px 140px; gap:10px; align-items:end; }
-.add-form-field { display:flex; flex-direction:column; gap:4px; }
-.add-form-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-soft); }
-.add-form-input { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--teal-foam); outline:none; width:100%; }
-.add-form-input:focus { border-color:var(--teal); }
-.add-form-select { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text); border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--teal-foam); outline:none; width:100%; cursor:pointer; }
-.add-form-select:focus { border-color:var(--teal); }
-.add-submit-btn { background:var(--teal); color:var(--white); border:none; border-radius:8px; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; width:100%; margin-top:12px; }
-@media(max-width:600px){ .add-form-grid { grid-template-columns:60px 1fr; } }
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49;backdrop-filter:blur(2px);}
+.sidebar-overlay.open{display:block;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .topbar{padding:0 16px;height:56px;}
+  .topbar-menu-btn{display:flex;}
+  .content{padding:16px 16px 60px;}
+  .stats-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-value{font-size:24px;}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:10px;}
+  .filter-tabs{overflow-x:auto;flex-wrap:nowrap;width:100%;padding-bottom:2px;}
+  .oc-head{flex-wrap:wrap;gap:8px;}
+  .add-form-grid{grid-template-columns:60px 1fr;}
+}
 </style>
 </head>
 <body>
+
+<!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-box">
-    <div class="login-logo">Santosa</div>
+    <div class="login-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 2h18l-2 7H5L3 2z"/><path d="M5 9l1 11h12l1-11"/><circle cx="9" cy="17" r="1" fill="white"/><circle cx="15" cy="17" r="1" fill="white"/></svg>
+    </div>
+    <div class="login-title">Santosa</div>
     <div class="login-sub">Restaurant Dashboard</div>
-    <input class="login-input" type="password" id="loginPass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="login-input" type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">Sign In</button>
     <div class="login-err" id="loginErr">Incorrect password</div>
   </div>
 </div>
+
+<!-- APP -->
 <div class="app" id="app">
-  <nav class="sidebar">
-    <div class="sb-logo"><div class="sb-logo-name">Santosa</div><div class="sb-logo-sub">Restaurant</div></div>
-    <div class="sb-nav">
-      <div class="nav-item active" id="nav-orders" onclick="showTab('orders',this)"><span>📋</span> Orders <span class="nav-badge" id="newBadge" style="display:none">0</span></div>
-      <div class="nav-item" id="nav-menu" onclick="showTab('menu',this)"><span>🍽️</span> Menu</div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 2h18l-2 7H5L3 2z"/><path d="M5 9l1 11h12l1-11"/></svg>
+        </div>
+        <div class="sb-logo-text">
+          <div class="name">Santosa</div>
+          <div class="sub">Restaurant</div>
+        </div>
+      </div>
     </div>
-    <div class="sb-footer"><button class="logout-btn" onclick="doLogout()">⬅ Logout</button></div>
+    <div class="sb-nav">
+      <div class="nav-item active" id="nav-orders" onclick="showTab('orders',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+        Orders
+        <span class="nav-badge" id="newBadge" style="display:none">0</span>
+      </div>
+      <div class="nav-item" id="nav-menu" onclick="showTab('menu',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Menu
+      </div>
+    </div>
+    <div class="sb-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
   </nav>
+
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title">🍽️ <em>Food Orders</em></div>
-      <span style="font-size:12px;color:var(--text-soft)"><span class="live-dot"></span><span id="clock"></span></span>
+      <div class="topbar-left">
+        <button class="topbar-menu-btn" onclick="openSidebar()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title" id="topbarTitle">Food <span>Orders</span></div>
+      </div>
+      <div class="live-pill">
+        <div class="live-dot"></div>
+        <span class="clock" id="clock"></span>
+      </div>
     </div>
-    <div class="content">
+
+    <!-- ORDERS PAGE -->
+    <div class="content" id="pageOrders">
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="sNew">—</div><div class="stat-sub">To prepare</div></div>
-        <div class="stat-card"><div class="stat-label">Preparing</div><div class="stat-value" id="sPrep">—</div><div class="stat-sub">In kitchen</div></div>
-        <div class="stat-card"><div class="stat-label">Delivered Today</div><div class="stat-value" id="sDel">—</div><div class="stat-sub">Done</div></div>
-        <div class="stat-card"><div class="stat-label">Revenue Today</div><div class="stat-value" id="sRev">—</div><div class="stat-sub">THB paid</div></div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#EFF6FF;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="stat-label">New</div>
+          <div class="stat-value" id="sNew">—</div>
+          <div class="stat-sub">To prepare</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#FFFBEB;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="stat-label">Preparing</div>
+          <div class="stat-value" id="sPrep">—</div>
+          <div class="stat-sub">In kitchen</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#F0FDF4;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="stat-label">Delivered Today</div>
+          <div class="stat-value" id="sDel">—</div>
+          <div class="stat-sub">Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:var(--teal-foam);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="stat-label">Revenue Today</div>
+          <div class="stat-value" id="sRev">—</div>
+          <div class="stat-sub">THB paid</div>
+        </div>
       </div>
       <div class="sec-head">
         <h2>Food Orders</h2>
@@ -147,17 +284,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="orders-list" id="ordersList"><div class="loading"><div class="spinner"></div></div></div>
     </div>
 
-    <!-- MENU MANAGEMENT PAGE -->
+    <!-- MENU PAGE -->
     <div class="content" id="pageMenu" style="display:none">
       <div class="sec-head">
-        <h2>🍽️ Menu Management</h2>
-        <button class="ftab active" onclick="loadMenu()" style="cursor:pointer">↻ Refresh</button>
+        <h2>Menu Management</h2>
+        <button class="ftab active" onclick="loadMenu()" style="display:flex;align-items:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
       </div>
       <div id="menuContent"><div class="loading"><div class="spinner"></div></div></div>
-
-      <!-- Add new item form -->
       <div class="add-item-form" style="margin-top:28px">
-        <h3>➕ Add New Item</h3>
+        <div class="add-item-form-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal-dark)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Add New Item
+        </div>
         <div class="add-form-grid">
           <div class="add-form-field">
             <label class="add-form-label">Emoji</label>
@@ -174,47 +315,65 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <div class="add-form-field">
             <label class="add-form-label">Category</label>
             <select class="add-form-select" id="newCategory">
-              <option value="breakfast">🌅 Breakfast</option>
-              <option value="healthy">🥗 Healthy</option>
-              <option value="drinks">🍹 Drinks</option>
-              <option value="day_menu">☀️ Day Menu</option>
+              <option value="breakfast">Breakfast</option>
+              <option value="healthy">Healthy</option>
+              <option value="drinks">Drinks</option>
+              <option value="day_menu">Day Menu</option>
             </select>
           </div>
         </div>
-        <button class="add-submit-btn" onclick="addNewItem()">➕ Add to Menu</button>
+        <button class="add-submit-btn" onclick="addNewItem()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add to Menu
+        </button>
       </div>
     </div>
-
   </div>
 </div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 <div class="toast" id="toast"></div>
+
 <script>
 const SB='https://zycptgrxnvbqsbngfuqi.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
 const PASS='rest2024';
-let all=[],cf='all',pt=null;
-function doLogin(){if(document.getElementById('loginPass').value===PASS||document.getElementById('loginPass').value==='santosa2024'){document.getElementById('loginWrap').style.display='none';document.getElementById('app').style.display='flex';start();}else{document.getElementById('loginErr').style.display='block';document.getElementById('loginPass').value='';}}
+let all=[],cf='all',pt=null,menuItems=[];
+
+function doLogin(){
+  const v=document.getElementById('loginPass').value;
+  if(v===PASS||v==='santosa2024'){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('app').style.display='flex';
+    start();
+  }else{document.getElementById('loginErr').style.display='block';document.getElementById('loginPass').value='';}
+}
 function doLogout(){clearInterval(pt);document.getElementById('app').style.display='none';document.getElementById('loginWrap').style.display='flex';}
 function start(){tick();setInterval(tick,1000);load();pt=setInterval(load,15000);}
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Bangkok',hour12:false});}
 async function sbq(p,o={}){const r=await fetch(`${SB}/rest/v1/${p}`,{headers:{'apikey':SK,'Authorization':`Bearer ${SK}`,'Content-Type':'application/json','Prefer':'return=representation',...(o.headers||{})},... o});const t=await r.text();return t?JSON.parse(t):null;}
+
+// ORDERS
 async function load(){try{all=await sbq('orders?select=*&order=created_at.desc')||[];render();stats();}catch(e){console.error(e);}}
 function render(){
   const list=document.getElementById('ordersList');
-  let d=cf==='all'?all:all.filter(o=>o.status===cf);
-  if(!d.length){list.innerHTML='<div class="empty-state">📋 No orders</div>';return;}
+  const d=cf==='all'?all:all.filter(o=>o.status===cf);
+  if(!d.length){list.innerHTML=`<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><p>No orders</p></div>`;return;}
+  const trash=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
+  const clock=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
   list.innerHTML=d.map(o=>{
     const items=Array.isArray(o.items)?o.items:JSON.parse(o.items||'[]');
     const time=new Date(o.created_at).toLocaleString('en-GB',{timeZone:'Asia/Bangkok',hour12:false,day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
     const sc={new:'s-new',preparing:'s-preparing',delivered:'s-delivered',paid:'s-paid'}[o.status]||'s-new';
-    const sl={new:'🔵 New',preparing:'🟡 Preparing',delivered:'🟢 Delivered',paid:'✅ Paid'}[o.status]||'🔵 New';
-    const itemsHtml=items.map(i=>`${i.emoji||'🍽️'} ${i.name} ×${i.qty} — ${i.price*i.qty} THB`).join('<br>');
+    const dot={new:'#1D4ED8',preparing:'#B45309',delivered:'#166534',paid:'#14532D'}[o.status]||'#1D4ED8';
+    const sl={new:'New',preparing:'Preparing',delivered:'Delivered',paid:'Paid'}[o.status]||'New';
+    const itemsHtml=items.map(i=>`<div class="oc-item-row"><div class="oc-item-name"><span>${i.emoji||'🍽️'}</span><span>${i.name} ×${i.qty}</span></div><div class="oc-item-price">${i.price*i.qty} THB</div></div>`).join('');
     let actions='';
-    if(o.status==='new') actions=`<button class="act-btn btn-prep" onclick="upd('${o.id}','preparing')">🟡 Preparing</button><button class="act-btn btn-rm" onclick="del('${o.id}')">🗑</button>`;
-    else if(o.status==='preparing') actions=`<button class="act-btn btn-del2" onclick="upd('${o.id}','delivered')">🟢 Delivered</button><button class="act-btn btn-rm" onclick="del('${o.id}')">🗑</button>`;
-    else if(o.status==='delivered') actions=`<button class="act-btn btn-paid" onclick="upd('${o.id}','paid')">✅ Mark Paid</button><button class="act-btn btn-rm" onclick="del('${o.id}')">🗑</button>`;
-    else actions=`<button class="act-btn btn-rm" onclick="del('${o.id}')">🗑 Remove</button>`;
-    return `<div class="order-card"><div class="oc-head"><div class="oc-room">🛏 ${o.room_number}</div><div class="oc-meta"><div class="oc-time">${time}</div></div><div class="oc-total">${o.total} THB</div><span class="status-badge ${sc}">${sl}</span></div><div class="oc-items">${itemsHtml}</div>${o.notes?`<div class="oc-notes">📝 ${o.notes}</div>`:''}<div class="oc-actions">${actions}</div></div>`;
+    if(o.status==='new') actions=`<button class="act-btn btn-prep" onclick="upd('${o.id}','preparing')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Preparing</button><button class="act-btn btn-rm" onclick="del('${o.id}')">${trash}</button>`;
+    else if(o.status==='preparing') actions=`<button class="act-btn btn-del2" onclick="upd('${o.id}','delivered')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Delivered</button><button class="act-btn btn-rm" onclick="del('${o.id}')">${trash}</button>`;
+    else if(o.status==='delivered') actions=`<button class="act-btn btn-paid" onclick="upd('${o.id}','paid')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Mark Paid</button><button class="act-btn btn-rm" onclick="del('${o.id}')">${trash}</button>`;
+    else actions=`<button class="act-btn btn-rm" style="max-width:100%;flex:1" onclick="del('${o.id}')">${trash} Remove</button>`;
+    return `<div class="order-card"><div class="oc-head"><div class="oc-room-badge">Room ${o.room_number}</div><div class="oc-meta"><div class="oc-time">${clock}${time}</div><div class="oc-total">${o.total} THB</div></div><span class="status-badge ${sc}"><svg width="6" height="6" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="${dot}"/></svg>${sl}</span></div><div class="oc-items">${itemsHtml}</div>${o.notes?`<div class="oc-notes"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>${o.notes}</div>`:''}<div class="oc-actions">${actions}</div></div>`;
   }).join('');
   const nc=all.filter(o=>o.status==='new').length;
   const b=document.getElementById('newBadge');
@@ -228,130 +387,92 @@ function stats(){
   document.getElementById('sDel').textContent=td.filter(o=>['delivered','paid'].includes(o.status)).length;
   document.getElementById('sRev').textContent=td.filter(o=>o.status==='paid').reduce((s,o)=>s+o.total,0).toLocaleString();
 }
-async function upd(id,status){try{await sbq(`orders?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});const o=all.find(o=>o.id===id);if(o)o.status=status;render();stats();toast('✅ Updated');}catch(e){toast('⚠️ Error');}}
-async function del(id){if(!confirm('Delete?'))return;try{await sbq(`orders?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(o=>o.id!==id);render();stats();toast('🗑 Deleted');}catch(e){toast('⚠️ Error');}}
+async function upd(id,status){try{await sbq(`orders?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});const o=all.find(o=>o.id===id);if(o)o.status=status;render();stats();toast('Updated');}catch(e){toast('Error');}}
+async function del(id){if(!confirm('Delete this order?'))return;try{await sbq(`orders?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(o=>o.id!==id);render();stats();toast('Deleted');}catch(e){toast('Error');}}
 function filter(f,el){cf=f;document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-// ── Tab switching ──
-function showTab(tab, el){
+// TAB SWITCHING
+function showTab(tab,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  const ordersPage = document.querySelector('#app .content:not(#pageMenu)');
-  const menuPage = document.getElementById('pageMenu');
-  if(tab === 'orders'){
-    ordersPage.style.display = '';
-    menuPage.style.display = 'none';
-  } else {
-    ordersPage.style.display = 'none';
-    menuPage.style.display = '';
-    loadMenu();
-  }
+  document.getElementById('pageOrders').style.display=tab==='orders'?'':'none';
+  document.getElementById('pageMenu').style.display=tab==='menu'?'':'none';
+  document.getElementById('topbarTitle').innerHTML={orders:'Food <span>Orders</span>',menu:'Menu <span>Management</span>'}[tab];
+  if(tab==='menu')loadMenu();
+  closeSidebar();
 }
 
-// ── Menu Management ──
-let menuItems = [];
+// MENU MANAGEMENT
 async function loadMenu(){
-  document.getElementById('menuContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
-  try {
-    menuItems = await sbq('menu_items?select=*&order=category,name') || [];
-    renderMenu();
-  } catch(e){ document.getElementById('menuContent').innerHTML = '<div class="empty-state">⚠️ Error loading menu</div>'; }
+  document.getElementById('menuContent').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{menuItems=await sbq('menu_items?select=*&order=category,name')||[];renderMenu();}
+  catch(e){document.getElementById('menuContent').innerHTML='<div class="empty-state"><p>Error loading menu</p></div>';}
 }
-
 function renderMenu(){
-  const cats = {};
-  menuItems.forEach(item => {
-    if(!cats[item.category]) cats[item.category] = [];
-    cats[item.category].push(item);
+  const cats={};
+  menuItems.forEach(item=>{if(!cats[item.category])cats[item.category]=[];cats[item.category].push(item);});
+  const catLabels={breakfast:'Breakfast',healthy:'Healthy',drinks:'Drinks',day_menu:'Day Menu'};
+  let html='';
+  Object.entries(cats).forEach(([cat,items])=>{
+    html+=`<div class="menu-category"><div class="menu-cat-title">${catLabels[cat]||cat}<span class="menu-cat-count">${items.length} items</span></div>${items.map(item=>{
+      const avail=item.active!==false;
+      return `<div class="menu-item-row${avail?'':' unavailable'}" id="row-${item.id}"><div class="menu-item-emoji">${item.emoji||'🍽️'}</div><div class="menu-item-info"><input class="menu-item-name-input" id="name-${item.id}" value="${item.name}" oninput="markDirty('${item.id}')"><div class="menu-item-price-wrap"><input class="menu-item-price-input" id="price-${item.id}" type="number" value="${item.price}" oninput="markDirty('${item.id}')"><span class="price-currency">THB</span></div></div><div class="menu-item-actions"><button class="avail-toggle ${avail?'on':'off'}" id="avail-${item.id}" onclick="toggleAvail('${item.id}')">${avail?'Available':'Hidden'}</button><button class="save-btn" id="save-${item.id}" onclick="saveItem('${item.id}')" disabled>Save</button></div></div>`;
+    }).join('')}</div>`;
   });
-  const catEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', drinks:'🍹', snacks:'🍿', desserts:'🍰' };
-  let html = '';
-  Object.entries(cats).forEach(([cat, items]) => {
-    const emoji = catEmojis[cat] || '🍽️';
-    html += `<div class="menu-category">
-      <div class="menu-cat-title">${emoji} ${cat.charAt(0).toUpperCase()+cat.slice(1)} <span style="font-size:12px;color:var(--text-soft);font-family:'DM Sans',sans-serif;font-weight:400">(${items.length} items)</span></div>
-      ${items.map(item => {
-        const avail = item.active !== false;
-        return `<div class="menu-item-row ${avail?'':'unavailable'}" id="row-${item.id}">
-          <div class="menu-item-emoji">${item.emoji || '🍽️'}</div>
-          <div class="menu-item-info">
-            <input class="menu-item-name-input" id="name-${item.id}" value="${item.name}" oninput="markDirty('${item.id}')">
-            <div class="menu-item-price-wrap">
-              <input class="menu-item-price-input" id="price-${item.id}" type="number" value="${item.price}" oninput="markDirty('${item.id}')">
-              <span class="price-currency">THB</span>
-            </div>
-          </div>
-          <div class="menu-item-actions">
-            <button class="avail-toggle ${avail?'on':'off'}" id="avail-${item.id}" onclick="toggleAvail('${item.id}')">${avail?'✅ Available':'🚫 Hidden'}</button>
-            <button class="save-btn" id="save-${item.id}" onclick="saveItem('${item.id}')" disabled>Save</button>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  });
-  document.getElementById('menuContent').innerHTML = html || '<div class="empty-state">No menu items found</div>';
+  document.getElementById('menuContent').innerHTML=html||'<div class="empty-state"><p>No items found</p></div>';
 }
-
-function markDirty(id){
-  document.getElementById('save-'+id).disabled = false;
-}
-
+function markDirty(id){document.getElementById('save-'+id).disabled=false;}
 async function saveItem(id){
-  const name = document.getElementById('name-'+id).value.trim();
-  const price = parseFloat(document.getElementById('price-'+id).value);
-  if(!name || isNaN(price)){ toast('⚠️ Invalid values'); return; }
-  const btn = document.getElementById('save-'+id);
-  btn.textContent = '...'; btn.disabled = true;
-  try {
-    await sbq(`menu_items?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({name, price})});
-    const item = menuItems.find(i=>i.id==id);
-    if(item){ item.name=name; item.price=price; }
-    btn.textContent = '✓ Saved';
-    toast('✅ Saved!');
-    setTimeout(()=>{ btn.textContent='Save'; btn.disabled=true; }, 2000);
-  } catch(e){ btn.textContent='Save'; btn.disabled=false; toast('⚠️ Error'); }
+  const name=document.getElementById('name-'+id).value.trim();
+  const price=parseFloat(document.getElementById('price-'+id).value);
+  if(!name||isNaN(price)){toast('Invalid values');return;}
+  const btn=document.getElementById('save-'+id);btn.textContent='...';btn.disabled=true;
+  try{
+    await sbq(`menu_items?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({name,price})});
+    const item=menuItems.find(i=>i.id==id);if(item){item.name=name;item.price=price;}
+    btn.textContent='✓';toast('Saved!');setTimeout(()=>{btn.textContent='Save';btn.disabled=true;},2000);
+  }catch(e){btn.textContent='Save';btn.disabled=false;toast('Error');}
 }
-
 async function toggleAvail(id){
-  const item = menuItems.find(i=>i.id==id);
-  if(!item) return;
-  const newAvail = !(item.active !== false);
-  try {
-    await sbq(`menu_items?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({active: newAvail})});
-    item.active = newAvail;
-    const btn = document.getElementById('avail-'+id);
-    const row = document.getElementById('row-'+id);
-    btn.className = 'avail-toggle '+(newAvail?'on':'off');
-    btn.textContent = newAvail?'✅ Available':'🚫 Hidden';
-    btn.onclick = () => toggleAvail(id);
-    row.className = 'menu-item-row '+(newAvail?'':'unavailable');
-    toast(newAvail?'✅ Item available':'🚫 Item hidden');
-  } catch(e){ toast('⚠️ Error'); }
+  const item=menuItems.find(i=>i.id==id);if(!item)return;
+  const newAvail=!(item.active!==false);
+  try{
+    await sbq(`menu_items?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({active:newAvail})});
+    item.active=newAvail;
+    const btn=document.getElementById('avail-'+id);
+    const row=document.getElementById('row-'+id);
+    btn.className='avail-toggle '+(newAvail?'on':'off');
+    btn.textContent=newAvail?'Available':'Hidden';
+    btn.onclick=()=>toggleAvail(id);
+    row.className='menu-item-row'+(newAvail?'':' unavailable');
+    toast(newAvail?'Item available':'Item hidden');
+  }catch(e){toast('Error');}
+}
+async function addNewItem(){
+  const emoji=document.getElementById('newEmoji').value.trim()||'🍽️';
+  const name=document.getElementById('newName').value.trim();
+  const price=parseFloat(document.getElementById('newPrice').value);
+  const category=document.getElementById('newCategory').value;
+  if(!name){toast('Enter a name');return;}
+  if(isNaN(price)||price<=0){toast('Enter a valid price');return;}
+  const btn=document.querySelector('.add-submit-btn');btn.style.opacity='.5';btn.disabled=true;
+  try{
+    await sbq('menu_items',{method:'POST',body:JSON.stringify({name,price,emoji,category,active:true,sort_order:99})});
+    toast('Item added!');
+    document.getElementById('newEmoji').value='';document.getElementById('newName').value='';document.getElementById('newPrice').value='';
+    await loadMenu();
+  }catch(e){toast('Error adding item');}
+  btn.style.opacity='1';btn.disabled=false;
 }
 
-async function addNewItem(){
-  const emoji = document.getElementById('newEmoji').value.trim() || '🍽️';
-  const name  = document.getElementById('newName').value.trim();
-  const price = parseFloat(document.getElementById('newPrice').value);
-  const category = document.getElementById('newCategory').value;
-  if(!name){ toast('⚠️ Enter a name'); return; }
-  if(isNaN(price) || price <= 0){ toast('⚠️ Enter a valid price'); return; }
-  const btn = document.querySelector('.add-submit-btn');
-  btn.textContent = '...'; btn.disabled = true;
-  try {
-    const newItem = { name, price, emoji, category, active: true, sort_order: 99 };
-    const res = await sbq('menu_items', { method:'POST', body: JSON.stringify(newItem) });
-    toast('✅ Item added!');
-    // Clear form
-    document.getElementById('newEmoji').value = '';
-    document.getElementById('newName').value = '';
-    document.getElementById('newPrice').value = '';
-    // Reload menu
-    await loadMenu();
-  } catch(e){ toast('⚠️ Error adding item'); }
-  btn.textContent = '➕ Add to Menu'; btn.disabled = false;
-}
+// MOBILE SIDEBAR
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+
+// TOAST
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+tick();setInterval(tick,1000);
 </script>
 </body>
 </html>
