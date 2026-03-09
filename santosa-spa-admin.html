@@ -510,7 +510,16 @@ function doLogin(){
 function doLogout(){clearInterval(pt);document.getElementById('app').style.display='none';document.getElementById('loginWrap').style.display='flex';}
 function start(){tick();setInterval(tick,1000);load();loadManualAppts();pt=setInterval(load,15000);}
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{timeZone:'Asia/Bangkok',hour12:false});}
-async function sbq(p,o={}){const r=await fetch(`${SB}/rest/v1/${p}`,{headers:{'apikey':SK,'Authorization':`Bearer ${SK}`,'Content-Type':'application/json','Prefer':'return=representation',...(o.headers||{})},... o});const t=await r.text();return t?JSON.parse(t):null;}
+async function sbq(p,o={}){
+  const {headers:extraHeaders,...rest}=o;
+  const h={'apikey':SK,'Authorization':`Bearer ${SK}`,'Content-Type':'application/json'};
+  if(extraHeaders) Object.assign(h,extraHeaders);
+  if(!('Prefer' in h)) h['Prefer']='return=representation';
+  const r=await fetch(`${SB}/rest/v1/${p}`,{headers:h,...rest});
+  const t=await r.text();
+  if(!r.ok) throw new Error(`${r.status}: ${t}`);
+  return t?JSON.parse(t):null;
+}
 
 async function load(){try{all=await sbq('requests?select=*&service_type=eq.spa&order=created_at.desc')||[];render();stats();}catch(e){console.error(e);}}
 
@@ -604,7 +613,7 @@ function stats(){
   document.getElementById('sRev').textContent=td.filter(r=>r.status==='paid').reduce((s,r)=>s+(r.total||0),0).toLocaleString();
 }
 async function upd(id,status){try{await sbq(`requests?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});const r=all.find(r=>r.id===id);if(r)r.status=status;render();stats();toast('Updated');}catch(e){toast('Error');}}
-async function del(id){if(!confirm('Delete?'))return;try{await sbq(`requests?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(r=>r.id!==id);render();stats();toast('Deleted');}catch(e){toast('Error');}}
+async function del(id){if(!confirm('Delete?'))return;try{await sbq(`requests?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'count=none'}});all=all.filter(r=>r.id!==id);render();stats();toast('Deleted');}catch(e){toast('Error');}}
 
 async function updWalkin(id,paid){
   try{
@@ -623,8 +632,8 @@ async function delWalkin(id){
   if(!confirm('Delete this walk-in appointment?'))return;
   try{
     const appt=manualAppts.find(a=>a.id===id);
-    await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
-    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':''}}).catch(()=>{});
+    await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'count=none'}});
+    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':'count=none'}}).catch(()=>{});
     await loadManualAppts();
     await load();
     render();stats();
@@ -877,8 +886,8 @@ async function deleteAppt(id,ev){
   if(!confirm('Delete this appointment?'))return;
   try{
     const appt=manualAppts.find(a=>a.id===id);
-    await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
-    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':''}}).catch(()=>{});
+    await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'count=none'}});
+    if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':'count=none'}}).catch(()=>{});
     await loadManualAppts();
     await load();
     renderCalBody();
