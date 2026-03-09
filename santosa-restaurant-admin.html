@@ -368,7 +368,7 @@ function render(){
     const sc={new:'s-new',preparing:'s-preparing',delivered:'s-delivered',paid:'s-paid'}[o.status]||'s-new';
     const dot={new:'#1D4ED8',preparing:'#B45309',delivered:'#166534',paid:'#14532D'}[o.status]||'#1D4ED8';
     const sl={new:'New',preparing:'Preparing',delivered:'Delivered',paid:'Paid'}[o.status]||'New';
-    const itemsHtml=items.map(i=>`<div class="oc-item-row"><div class="oc-item-name"><span>${i.emoji||'🍽️'}</span><span>${i.name} ×${i.qty}</span></div><div class="oc-item-price">${i.price*i.qty} THB</div></div>`).join('');
+    const itemsHtml=items.map(i=>`<div class="oc-item-row"><div class="oc-item-name"><span>${i.name} ×${i.qty}</span></div><div class="oc-item-price">${i.price*i.qty} THB</div></div>`).join('');
     let actions='';
     if(o.status==='new') actions=`<button class="act-btn btn-prep" onclick="upd('${o.id}','preparing')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Preparing</button><button class="act-btn btn-rm" onclick="del('${o.id}')">${trash}</button>`;
     else if(o.status==='preparing') actions=`<button class="act-btn btn-del2" onclick="upd('${o.id}','delivered')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Delivered</button><button class="act-btn btn-rm" onclick="del('${o.id}')">${trash}</button>`;
