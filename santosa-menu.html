@@ -338,26 +338,10 @@ function placeOrder() {
   }).then(function() {
     // WhatsApp notification
     var lines = ci.map(function(x) { return x.qty + 'x ' + x.item.name + ' (' + (x.item.price * x.qty) + ' THB)'; });
-    var msg = encodeURIComponent(
-      '🛎 *New Food Order*
-'
-      + '🛏 Room: *' + room + '*
-'
-      + '─────────────
-'
-      + lines.join('
-') + '
-'
-      + '─────────────
-'
-      + '💰 Total: *' + total + ' THB*'
-      + (notes ? '
-📝 ' + notes : '')
-    );
+    var msgText = '🛎 *New Food Order*\n' + '🛏 Room: *' + room + '*\n' + '-----------\n' + lines.join('\n') + '\n' + '-----------\n' + 'Total: *' + total + ' THB*' + (notes ? '\nNote: ' + notes : '');
     var waLink = document.createElement('a');
-    waLink.href = 'https://wa.me/393465309386?text=' + msg;
+    waLink.href = 'https://wa.me/393465309386?text=' + encodeURIComponent(msgText);
     waLink.target = '_blank';
-    waLink.rel = 'noopener';
     document.body.appendChild(waLink);
     waLink.click();
     document.body.removeChild(waLink);
