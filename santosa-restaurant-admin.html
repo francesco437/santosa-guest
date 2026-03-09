@@ -70,6 +70,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-deep);color:var(--white);padding:10px 24px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all .25s;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Menu management */
+.menu-category { margin-bottom: 28px; }
+.menu-cat-title { font-family:'DM Serif Display',serif; font-size:16px; color:var(--teal-deep); margin-bottom:10px; padding-bottom:8px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
+.menu-item-row { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; transition: opacity .2s; }
+.menu-item-row.unavailable { opacity: 0.45; }
+.menu-item-emoji { font-size:22px; min-width:32px; text-align:center; }
+.menu-item-info { flex:1; display:flex; flex-direction:column; gap:4px; }
+.menu-item-name-input { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:var(--text); border:1px solid transparent; border-radius:6px; padding:4px 8px; background:transparent; width:100%; outline:none; }
+.menu-item-name-input:focus { border-color:var(--teal); background:var(--teal-foam); }
+.menu-item-price-wrap { display:flex; align-items:center; gap:4px; }
+.menu-item-price-input { font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; color:var(--teal-dark); border:1px solid transparent; border-radius:6px; padding:3px 6px; background:transparent; width:80px; outline:none; }
+.menu-item-price-input:focus { border-color:var(--teal); background:var(--teal-foam); }
+.price-currency { font-size:12px; color:var(--text-soft); }
+.menu-item-actions { display:flex; gap:6px; align-items:center; }
+.save-btn { background:var(--teal); color:var(--white); border:none; border-radius:8px; padding:6px 14px; font-family:'DM Sans',sans-serif; font-size:12px; font-weight:600; cursor:pointer; }
+.save-btn:disabled { opacity:0.4; cursor:default; }
+.avail-toggle { background:none; border:2px solid var(--border); border-radius:8px; padding:5px 10px; font-size:12px; font-weight:600; cursor:pointer; color:var(--text-soft); font-family:'DM Sans',sans-serif; white-space:nowrap; }
+.avail-toggle.on { border-color:#4CAF50; color:#4CAF50; }
+.avail-toggle.off { border-color:#E53935; color:#E53935; }
+/* Add new item form */
+.add-item-form { background:var(--white); border:2px dashed var(--teal-light); border-radius:14px; padding:20px; margin-top:8px; }
+.add-item-form h3 { font-family:'DM Serif Display',serif; font-size:15px; color:var(--teal-deep); margin-bottom:14px; }
+.add-form-grid { display:grid; grid-template-columns:60px 1fr 110px 140px; gap:10px; align-items:end; }
+.add-form-field { display:flex; flex-direction:column; gap:4px; }
+.add-form-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-soft); }
+.add-form-input { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text); border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--teal-foam); outline:none; width:100%; }
+.add-form-input:focus { border-color:var(--teal); }
+.add-form-select { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text); border:1.5px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--teal-foam); outline:none; width:100%; cursor:pointer; }
+.add-form-select:focus { border-color:var(--teal); }
+.add-submit-btn { background:var(--teal); color:var(--white); border:none; border-radius:8px; padding:9px 20px; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; width:100%; margin-top:12px; }
+@media(max-width:600px){ .add-form-grid { grid-template-columns:60px 1fr; } }
 </style>
 </head>
 <body>
@@ -86,7 +117,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <nav class="sidebar">
     <div class="sb-logo"><div class="sb-logo-name">Santosa</div><div class="sb-logo-sub">Restaurant</div></div>
     <div class="sb-nav">
-      <div class="nav-item active"><span>📋</span> Orders <span class="nav-badge" id="newBadge" style="display:none">0</span></div>
+      <div class="nav-item active" id="nav-orders" onclick="showTab('orders',this)"><span>📋</span> Orders <span class="nav-badge" id="newBadge" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-menu" onclick="showTab('menu',this)"><span>🍽️</span> Menu</div>
     </div>
     <div class="sb-footer"><button class="logout-btn" onclick="doLogout()">⬅ Logout</button></div>
   </nav>
@@ -114,6 +146,45 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
       <div class="orders-list" id="ordersList"><div class="loading"><div class="spinner"></div></div></div>
     </div>
+
+    <!-- MENU MANAGEMENT PAGE -->
+    <div class="content" id="pageMenu" style="display:none">
+      <div class="sec-head">
+        <h2>🍽️ Menu Management</h2>
+        <button class="ftab active" onclick="loadMenu()" style="cursor:pointer">↻ Refresh</button>
+      </div>
+      <div id="menuContent"><div class="loading"><div class="spinner"></div></div></div>
+
+      <!-- Add new item form -->
+      <div class="add-item-form" style="margin-top:28px">
+        <h3>➕ Add New Item</h3>
+        <div class="add-form-grid">
+          <div class="add-form-field">
+            <label class="add-form-label">Emoji</label>
+            <input class="add-form-input" id="newEmoji" placeholder="🍽️" maxlength="4">
+          </div>
+          <div class="add-form-field">
+            <label class="add-form-label">Name</label>
+            <input class="add-form-input" id="newName" placeholder="e.g. Pad Thai">
+          </div>
+          <div class="add-form-field">
+            <label class="add-form-label">Price (THB)</label>
+            <input class="add-form-input" id="newPrice" type="number" placeholder="200">
+          </div>
+          <div class="add-form-field">
+            <label class="add-form-label">Category</label>
+            <select class="add-form-select" id="newCategory">
+              <option value="breakfast">🌅 Breakfast</option>
+              <option value="healthy">🥗 Healthy</option>
+              <option value="drinks">🍹 Drinks</option>
+              <option value="day_menu">☀️ Day Menu</option>
+            </select>
+          </div>
+        </div>
+        <button class="add-submit-btn" onclick="addNewItem()">➕ Add to Menu</button>
+      </div>
+    </div>
+
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -161,6 +232,124 @@ async function upd(id,status){try{await sbq(`orders?id=eq.${id}`,{method:'PATCH'
 async function del(id){if(!confirm('Delete?'))return;try{await sbq(`orders?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(o=>o.id!==id);render();stats();toast('🗑 Deleted');}catch(e){toast('⚠️ Error');}}
 function filter(f,el){cf=f;document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── Tab switching ──
+function showTab(tab, el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  const ordersPage = document.querySelector('#app .content:not(#pageMenu)');
+  const menuPage = document.getElementById('pageMenu');
+  if(tab === 'orders'){
+    ordersPage.style.display = '';
+    menuPage.style.display = 'none';
+  } else {
+    ordersPage.style.display = 'none';
+    menuPage.style.display = '';
+    loadMenu();
+  }
+}
+
+// ── Menu Management ──
+let menuItems = [];
+async function loadMenu(){
+  document.getElementById('menuContent').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    menuItems = await sbq('menu_items?select=*&order=category,name') || [];
+    renderMenu();
+  } catch(e){ document.getElementById('menuContent').innerHTML = '<div class="empty-state">⚠️ Error loading menu</div>'; }
+}
+
+function renderMenu(){
+  const cats = {};
+  menuItems.forEach(item => {
+    if(!cats[item.category]) cats[item.category] = [];
+    cats[item.category].push(item);
+  });
+  const catEmojis = { breakfast:'🌅', lunch:'☀️', dinner:'🌙', drinks:'🍹', snacks:'🍿', desserts:'🍰' };
+  let html = '';
+  Object.entries(cats).forEach(([cat, items]) => {
+    const emoji = catEmojis[cat] || '🍽️';
+    html += `<div class="menu-category">
+      <div class="menu-cat-title">${emoji} ${cat.charAt(0).toUpperCase()+cat.slice(1)} <span style="font-size:12px;color:var(--text-soft);font-family:'DM Sans',sans-serif;font-weight:400">(${items.length} items)</span></div>
+      ${items.map(item => {
+        const avail = item.active !== false;
+        return `<div class="menu-item-row ${avail?'':'unavailable'}" id="row-${item.id}">
+          <div class="menu-item-emoji">${item.emoji || '🍽️'}</div>
+          <div class="menu-item-info">
+            <input class="menu-item-name-input" id="name-${item.id}" value="${item.name}" oninput="markDirty('${item.id}')">
+            <div class="menu-item-price-wrap">
+              <input class="menu-item-price-input" id="price-${item.id}" type="number" value="${item.price}" oninput="markDirty('${item.id}')">
+              <span class="price-currency">THB</span>
+            </div>
+          </div>
+          <div class="menu-item-actions">
+            <button class="avail-toggle ${avail?'on':'off'}" id="avail-${item.id}" onclick="toggleAvail('${item.id}',${avail})">${avail?'✅ Available':'🚫 Hidden'}</button>
+            <button class="save-btn" id="save-${item.id}" onclick="saveItem('${item.id}')" disabled>Save</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+  document.getElementById('menuContent').innerHTML = html || '<div class="empty-state">No menu items found</div>';
+}
+
+function markDirty(id){
+  document.getElementById('save-'+id).disabled = false;
+}
+
+async function saveItem(id){
+  const name = document.getElementById('name-'+id).value.trim();
+  const price = parseFloat(document.getElementById('price-'+id).value);
+  if(!name || isNaN(price)){ toast('⚠️ Invalid values'); return; }
+  const btn = document.getElementById('save-'+id);
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    await sbq(`menu_items?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({name, price})});
+    const item = menuItems.find(i=>i.id==id);
+    if(item){ item.name=name; item.price=price; }
+    btn.textContent = '✓ Saved';
+    toast('✅ Saved!');
+    setTimeout(()=>{ btn.textContent='Save'; btn.disabled=true; }, 2000);
+  } catch(e){ btn.textContent='Save'; btn.disabled=false; toast('⚠️ Error'); }
+}
+
+async function toggleAvail(id, currentAvail){
+  const newAvail = !currentAvail;
+  try {
+    await sbq(`menu_items?id=eq.${id}`, {method:'PATCH', body:JSON.stringify({active: newAvail})});
+    const item = menuItems.find(i=>i.id==id);
+    if(item) item.active = newAvail;
+    const btn = document.getElementById('avail-'+id);
+    const row = document.getElementById('row-'+id);
+    btn.className = 'avail-toggle '+(newAvail?'on':'off');
+    btn.textContent = newAvail?'✅ Available':'🚫 Hidden';
+    row.className = 'menu-item-row '+(newAvail?'':'unavailable');
+    toast(newAvail?'✅ Item available':'🚫 Item hidden');
+  } catch(e){ toast('⚠️ Error'); }
+}
+
+async function addNewItem(){
+  const emoji = document.getElementById('newEmoji').value.trim() || '🍽️';
+  const name  = document.getElementById('newName').value.trim();
+  const price = parseFloat(document.getElementById('newPrice').value);
+  const category = document.getElementById('newCategory').value;
+  if(!name){ toast('⚠️ Enter a name'); return; }
+  if(isNaN(price) || price <= 0){ toast('⚠️ Enter a valid price'); return; }
+  const btn = document.querySelector('.add-submit-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  try {
+    const newItem = { name, price, emoji, category, active: true, sort_order: 99 };
+    const res = await sbq('menu_items', { method:'POST', body: JSON.stringify(newItem) });
+    toast('✅ Item added!');
+    // Clear form
+    document.getElementById('newEmoji').value = '';
+    document.getElementById('newName').value = '';
+    document.getElementById('newPrice').value = '';
+    // Reload menu
+    await loadMenu();
+  } catch(e){ toast('⚠️ Error adding item'); }
+  btn.textContent = '➕ Add to Menu'; btn.disabled = false;
+}
 </script>
 </body>
 </html>
