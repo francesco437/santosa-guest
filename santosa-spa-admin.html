@@ -560,10 +560,16 @@ function render(){
     const pillClass={treatment:'sp-treatment',program:'sp-program',class:'sp-class'}[sub]||'sp-default';
     const pillLabel={treatment:'Treatment',program:'Program',class:'Class'}[sub]||sub;
     let actions='';
-    if(r.status==='new') actions=`<button class="act-btn btn-confirm" onclick="upd('${r.id}','confirmed')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Confirm</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
-    else if(r.status==='confirmed') actions=`<button class="act-btn btn-complete" onclick="upd('${r.id}','completed')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Complete</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
-    else if(r.status==='completed') actions=`<button class="act-btn btn-paid" onclick="upd('${r.id}','paid')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Mark Paid</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
-    else actions=`<button class="act-btn btn-rm" style="max-width:100%;flex:1" onclick="del('${r.id}')">${trash} Remove</button>`;
+    if(r._isWalkin){
+      // Walk-in: Confirmed → Paid (skip completed step, simpler flow)
+      if(r.status!=='paid') actions=`<button class="act-btn btn-paid" onclick="updWalkin('${r._walkin_id}',true)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Mark Paid</button><button class="act-btn btn-rm" onclick="delWalkin('${r._walkin_id}')">${trash}</button>`;
+      else actions=`<button class="act-btn btn-rm" style="max-width:100%;flex:1" onclick="delWalkin('${r._walkin_id}')">${trash} Remove</button>`;
+    } else {
+      if(r.status==='new') actions=`<button class="act-btn btn-confirm" onclick="upd('${r.id}','confirmed')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Confirm</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
+      else if(r.status==='confirmed') actions=`<button class="act-btn btn-complete" onclick="upd('${r.id}','completed')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Complete</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
+      else if(r.status==='completed') actions=`<button class="act-btn btn-paid" onclick="upd('${r.id}','paid')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Mark Paid</button><button class="act-btn btn-rm" onclick="del('${r.id}')">${trash}</button>`;
+      else actions=`<button class="act-btn btn-rm" style="max-width:100%;flex:1" onclick="del('${r.id}')">${trash} Remove</button>`;
+    }
     return `<div class="order-card">
       <div class="oc-head">
         <div class="oc-room-badge" style="${r._isWalkin?'background:linear-gradient(135deg,#5B21B6,#7C3AED)':''}">
@@ -599,6 +605,26 @@ function stats(){
 }
 async function upd(id,status){try{await sbq(`requests?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({status})});const r=all.find(r=>r.id===id);if(r)r.status=status;render();stats();toast('Updated');}catch(e){toast('Error');}}
 async function del(id){if(!confirm('Delete?'))return;try{await sbq(`requests?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});all=all.filter(r=>r.id!==id);render();stats();toast('Deleted');}catch(e){toast('Error');}}
+
+async function updWalkin(id,paid){
+  try{
+    await sbq(`spa_appointments?id=eq.${id}`,{method:'PATCH',body:JSON.stringify({paid:paid})});
+    await loadManualAppts();
+    await load();
+    render();stats();
+    toast('Marked as Paid');
+  }catch(e){console.error(e);toast('Error');}
+}
+
+async function delWalkin(id){
+  if(!confirm('Delete this walk-in appointment?'))return;
+  try{
+    await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':''}});
+    manualAppts=manualAppts.filter(a=>a.id!==id);
+    render();stats();renderCalBody();
+    toast('Deleted');
+  }catch(e){toast('Error');}}
+
 function filt(f,el){cf=f;document.querySelectorAll('#pageBookings .ftab').forEach(t=>t.classList.remove('active'));el.classList.add('active');render();}
 
 // ── CALENDAR ENGINE ──
@@ -863,45 +889,80 @@ function loadRevenue(period,el){
   if(el)el.classList.add('active');
   document.getElementById('revenueContent').innerHTML='<div class="loading"><div class="spinner"></div></div>';
   const today=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Bangkok'}));
-  let filtered=all.filter(r=>r.status==='paid');
   let periodLabel='';
+  let dateFilter=(date)=>true;
   if(period==='today'){
     const ts=today.toLocaleDateString('en-CA');
-    filtered=filtered.filter(r=>r.created_at.startsWith(ts));
+    dateFilter=(date)=>date===ts||date.startsWith(ts);
     periodLabel='Today';
   }else if(period==='week'){
     const sw=new Date(today);sw.setDate(today.getDate()-today.getDay());
-    filtered=filtered.filter(r=>new Date(r.created_at)>=sw);
+    dateFilter=(date)=>new Date(date)>=sw;
     periodLabel='This Week';
   }else if(period==='month'){
     const sm=new Date(today.getFullYear(),today.getMonth(),1);
-    filtered=filtered.filter(r=>new Date(r.created_at)>=sm);
+    dateFilter=(date)=>new Date(date)>=sm;
     periodLabel='This Month';
   }
-  const total=filtered.reduce((s,r)=>s+(r.total||0),0);
+
+  // System in-room paid bookings (exclude manual walk-ins)
+  const systemPaid=(all||[]).filter(r=>{
+    if(r.status!=='paid') return false;
+    try{const det=typeof r.details==='string'?JSON.parse(r.details):r.details||{};if(det.source==='manual_walkin')return false;}catch(e){}
+    return dateFilter(r.created_at.slice(0,10));
+  });
+
+  // Manual walk-in paid appointments
+  const walkinPaid=(manualAppts||[]).filter(a=>{
+    const p=a.paid===true||a.paid==='true';
+    return p && dateFilter(a.date);
+  });
+
+  const systemTotal=systemPaid.reduce((s,r)=>s+(r.total||0),0);
+  const walkinTotal=walkinPaid.reduce((s,a)=>s+(a.price||0),0);
+  const grandTotal=systemTotal+walkinTotal;
+  const totalTx=systemPaid.length+walkinPaid.length;
+
+  // By type — system
   const byType={};
-  filtered.forEach(r=>{const k=r.service_subtype||'other';byType[k]=(byType[k]||0)+(r.total||0);});
+  systemPaid.forEach(r=>{const k=r.service_subtype||'other';byType[k]=(byType[k]||0)+(r.total||0);});
+  if(walkinTotal>0) byType['walkin']=(byType['walkin']||0)+walkinTotal;
   const maxT=Math.max(...Object.values(byType),1);
-  const typeLabels={treatment:'Treatment',program:'Program',class:'Class',other:'Other'};
+  const typeLabels={treatment:'Treatment',program:'Program',class:'Class',walkin:'Walk-in',other:'Other'};
   const typeRows=Object.entries(byType).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
     <div class="rev-row"><div class="rev-row-label">${typeLabels[k]||k}</div><div class="rev-row-val">${v.toLocaleString()} THB</div></div>
     <div class="rev-bar-wrap"><div class="rev-bar" style="width:${Math.round(v/maxT*100)}%"></div></div>
   `).join('')||'<p style="font-size:13px;color:var(--text-soft);padding:8px 0">No data</p>';
+
+  // Top rooms (system only)
   const byRoom={};
-  filtered.forEach(r=>{byRoom[r.room_number]=(byRoom[r.room_number]||0)+(r.total||0);});
+  systemPaid.forEach(r=>{byRoom[r.room_number]=(byRoom[r.room_number]||0)+(r.total||0);});
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
   const roomRows=Object.entries(byRoom).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([room,val],i)=>`
     <div class="top-item"><div class="top-rank">${medals[i]}</div><div class="top-name">Room ${room}</div><div class="top-val">${val.toLocaleString()} THB</div></div>
-  `).join('')||'<p style="font-size:13px;color:var(--text-soft);padding:8px 0">No data</p>';
+  `).join('')||'<p style="font-size:13px;color:var(--text-soft);padding:8px 0">No in-room bookings</p>';
+
+  // Walk-in list
+  const walkinRows=walkinPaid.length?walkinPaid.map(a=>`
+    <div class="rev-row">
+      <div class="rev-row-label" style="display:flex;flex-direction:column;gap:1px">
+        <span style="font-weight:600">${a.client_name}</span>
+        <span style="font-size:11px;color:var(--text-soft)">${a.treatment} · ${a.date} ${a.time}</span>
+      </div>
+      <div class="rev-row-val">${(a.price||0).toLocaleString()} THB</div>
+    </div>
+  `).join(''):'<p style="font-size:13px;color:var(--text-soft);padding:8px 0">No walk-in clients</p>';
+
   document.getElementById('revenueContent').innerHTML=`
     <div class="rev-total-box">
       <div class="rev-total-label">Spa Revenue · ${periodLabel}</div>
-      <div class="rev-total-val">${total.toLocaleString()} <span>THB</span></div>
-      <div class="rev-total-sub">${filtered.length} paid transaction${filtered.length!==1?'s':''}</div>
+      <div class="rev-total-val">${grandTotal.toLocaleString()} <span>THB</span></div>
+      <div class="rev-total-sub">${totalTx} paid transaction${totalTx!==1?'s':''} · ${systemPaid.length} in-room · ${walkinPaid.length} walk-in</div>
     </div>
     <div class="rev-grid">
       <div class="rev-card"><div class="rev-card-title">By Service Type</div>${typeRows}</div>
-      <div class="rev-card"><div class="rev-card-title">Top Rooms by Spend</div><div class="top-list">${roomRows}</div></div>
+      <div class="rev-card"><div class="rev-card-title">In-Room · Top Rooms</div><div class="top-list">${roomRows}</div></div>
+      <div class="rev-card" style="grid-column:1/-1"><div class="rev-card-title">Walk-in Clients</div>${walkinRows}</div>
     </div>`;
 }
 
