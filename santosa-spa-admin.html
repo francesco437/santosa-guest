@@ -517,11 +517,31 @@ async function load(){try{all=await sbq('requests?select=*&service_type=eq.spa&o
 // BOOKINGS
 function render(){
   const list=document.getElementById('reqList');
-  let d=all;
-  if(cf==='new') d=all.filter(r=>r.status==='new');
-  else if(cf==='confirmed') d=all.filter(r=>r.status==='confirmed');
-  else if(cf==='completed') d=all.filter(r=>['completed','paid'].includes(r.status));
-  else if(cf==='treatment'||cf==='program'||cf==='class') d=all.filter(r=>r.service_subtype===cf);
+  // merge system bookings + manual walk-ins (exclude those already in requests via source=manual_walkin)
+  const walkins=(manualAppts||[]).map(a=>({
+    id:'walkin-'+a.id,
+    _walkin_id:a.id,
+    room_number:'EXT',
+    service_type:'spa',
+    service_subtype:'treatment',
+    status:a.paid?'paid':'confirmed',
+    total:a.price||0,
+    created_at:a.created_at||a.date+'T'+a.time+':00',
+    details:{client_name:a.client_name,treatment:a.treatment,date:a.date,time:a.time,duration:a.duration,room:a.room,source:'manual_walkin'},
+    notes:a.notes,
+    _isWalkin:true,
+    _clientName:a.client_name
+  }));
+  // only show system bookings that are NOT from manual walk-in
+  const systemBookings=(all||[]).filter(r=>{
+    try{const det=typeof r.details==='string'?JSON.parse(r.details):r.details||{};return det.source!=='manual_walkin';}catch(e){return true;}
+  });
+  let merged=[...systemBookings,...walkins].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  let d=merged;
+  if(cf==='new') d=merged.filter(r=>r.status==='new');
+  else if(cf==='confirmed') d=merged.filter(r=>r.status==='confirmed');
+  else if(cf==='completed') d=merged.filter(r=>['completed','paid'].includes(r.status));
+  else if(cf==='treatment'||cf==='program'||cf==='class') d=merged.filter(r=>r.service_subtype===cf);
   if(!d.length){list.innerHTML=`<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><p>No bookings</p></div>`;return;}
   const trash=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
   const clockIcon=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
@@ -546,9 +566,14 @@ function render(){
     else actions=`<button class="act-btn btn-rm" style="max-width:100%;flex:1" onclick="del('${r.id}')">${trash} Remove</button>`;
     return `<div class="order-card">
       <div class="oc-head">
-        <div class="oc-room-badge">Room ${r.room_number}</div>
+        <div class="oc-room-badge" style="${r._isWalkin?'background:linear-gradient(135deg,#5B21B6,#7C3AED)':''}">
+          ${r._isWalkin?'Walk-in':`Room ${r.room_number}`}
+        </div>
         <div class="oc-meta">
-          <div class="oc-service"><span class="service-pill ${pillClass}">${pillLabel}</span></div>
+          <div class="oc-service">
+            <span class="service-pill ${pillClass}">${pillLabel}</span>
+            ${r._isWalkin?`<span style="font-size:11px;font-weight:600;color:#5B21B6;margin-left:6px">${r._clientName}</span>`:''}
+          </div>
           <div class="oc-time">${clockIcon}${time}</div>
           ${apptTime?`<div class="oc-appt">${calIcon}${apptTime}</div>`:''}
         </div>
@@ -791,12 +816,34 @@ async function saveAppt(){
   const btn=document.getElementById('modalSaveBtn');
   btn.textContent='Saving...';btn.disabled=true;
   try{
+    // 1. Save to spa_appointments (calendar + spa revenue)
     await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual'})});
+    
+    // 2. Save to requests (Master Dashboard + global stats)
+    await sbq('requests',{method:'POST',body:JSON.stringify({
+      room_number: 'EXT',
+      service_type: 'spa',
+      service_subtype: 'treatment',
+      status: paid ? 'paid' : 'confirmed',
+      total: price||0,
+      details: JSON.stringify({
+        client_name: client,
+        treatment: treatment,
+        date: date,
+        time: time,
+        duration: duration,
+        room: room,
+        source: 'manual_walkin'
+      }),
+      notes: notes||null
+    })});
+
     await loadManualAppts();
+    await load(); // refresh bookings list
     closeModal();
     renderCalBody();
     toast('Appointment saved!');
-  }catch(e){toast('Error saving');}
+  }catch(e){console.error(e);toast('Error saving');}
   btn.textContent='Save Appointment';btn.disabled=false;
 }
 async function deleteAppt(id,ev){
