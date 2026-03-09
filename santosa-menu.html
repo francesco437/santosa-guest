@@ -339,7 +339,9 @@ function placeOrder() {
     // WhatsApp notification
     var waLines = ci.map(function(x) { return x.qty + 'x ' + x.item.name + ' (' + (x.item.price * x.qty) + ' THB)'; });
     var msgText = '🛎 *New Food Order*\n' + '🛏 Room: *' + room + '*\n' + '-----------\n' + waLines.join('\n') + '\n' + '-----------\n' + 'Total: *' + total + ' THB*' + (notes ? '\nNote: ' + notes : '');
-    document.getElementById('waLink').href = 'https://wa.me/393465309386?text=' + encodeURIComponent(msgText);
+    var waUrl = 'https://wa.me/393465309386?text=' + encodeURIComponent(msgText);
+    document.getElementById('waLink').href = waUrl;
+    setTimeout(function() { window.location.href = waUrl; }, 400);
     cart = {};
     updateBar();
     renderMenu();
