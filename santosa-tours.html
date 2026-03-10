@@ -257,8 +257,9 @@ function renderTours(){
         <div class="booking-form">
           <div class="form-group">
             <label class="form-label">Select Date</label>
-            <input type="date" class="form-input" id="date-${t.id}" min="${minDate}" value="${minDate}">
+            <input type="date" class="form-input" id="date-${t.id}" min="${minDate}" value="${minDate}" onchange="checkAvailability('${t.id}')">
           </div>
+          <div id="avail-${t.id}" style="margin-bottom:10px;min-height:18px;text-align:center"></div>
           <div class="pax-row">
             <div class="pax-label">Number of Guests</div>
             <div class="pax-ctrl">
@@ -271,7 +272,11 @@ function renderTours(){
             <div class="total-label">Total</div>
             <div class="total-amount" id="total-${t.id}">${(t.price_per_person||0).toLocaleString()} THB</div>
           </div>
-          <button class="book-btn" onclick="startBooking('${t.id}')">Book Now</button>
+          <div class="form-group" style="margin-bottom:14px">
+            <label class="form-label" style="font-size:12px;color:rgba(255,255,255,0.6)">Special Requests <span style="opacity:0.5">(optional)</span></label>
+            <textarea class="form-input" id="notes-${t.id}" rows="2" placeholder="Allergies, dietary needs, pickup location…" style="resize:none;font-size:13px;padding:10px 12px;line-height:1.4"></textarea>
+          </div>
+          <button class="book-btn" id="book-${t.id}" onclick="startBooking('${t.id}')">Book Now</button>
         </div>
       </div>
     </div>`;
@@ -287,23 +292,89 @@ function setHero(tourId,url,el){
   el.classList.add('active');
 }
 
+let availState={}; // tourId -> available spots for selected date
+
+async function checkAvailability(tourId){
+  const t=tours.find(x=>x.id===tourId);
+  if(!t||!t.max_pax) return; // no max set, skip
+  const date=document.getElementById('date-'+tourId).value;
+  if(!date) return;
+  try{
+    const res=await fetch(`${SB}/rest/v1/tour_bookings?tour_id=eq.${tourId}&date=eq.${date}&status=neq.cancelled&select=pax`,{headers:{'apikey':SK,'Authorization':'Bearer '+SK}});
+    const rows=await res.json();
+    const booked=(rows||[]).reduce((s,r)=>s+(r.pax||0),0);
+    const avail=Math.max(0,t.max_pax-booked);
+    availState[tourId]=avail;
+    // Update pax if current selection exceeds available
+    if(paxState[tourId]>avail && avail>0) paxState[tourId]=avail;
+    if(avail===0) paxState[tourId]=0;
+    updateAvailUI(tourId,t,avail);
+  }catch(e){console.error(e);}
+}
+
+function updateAvailUI(tourId,t,avail){
+  const paxEl=document.getElementById('pax-'+tourId);
+  const totalEl=document.getElementById('total-'+tourId);
+  const bookBtn=document.getElementById('book-'+tourId);
+  const availEl=document.getElementById('avail-'+tourId);
+  if(availEl){
+    if(avail===0){
+      availEl.innerHTML=`<span style="color:#ff6b6b;font-weight:700;font-size:13px">⚠️ Fully booked on this date</span>`;
+    } else if(avail<=3){
+      availEl.innerHTML=`<span style="color:#ffd166;font-weight:700;font-size:13px">⚡ Only ${avail} spot${avail>1?'s':''} left!</span>`;
+    } else {
+      availEl.innerHTML=`<span style="color:rgba(255,255,255,0.5);font-size:12px">${avail} of ${t.max_pax} spots available</span>`;
+    }
+  }
+  if(paxEl) paxEl.textContent=avail===0?0:paxState[tourId];
+  if(totalEl) totalEl.textContent=avail===0?'Unavailable':((t.price_per_person||0)*(paxState[tourId]||1)).toLocaleString()+' THB';
+  if(bookBtn){
+    if(avail===0){bookBtn.disabled=true;bookBtn.style.opacity='0.4';bookBtn.textContent='Fully Booked';}
+    else{bookBtn.disabled=false;bookBtn.style.opacity='1';bookBtn.textContent='Book Now';}
+  }
+}
+
 function changePax(tourId,delta,maxPax){
+  const t=tours.find(x=>x.id===tourId);
+  const avail=availState[tourId]!==undefined?availState[tourId]:maxPax;
+  const effectiveMax=Math.min(maxPax,avail);
   const cur=paxState[tourId]||1;
-  const next=Math.max(1,Math.min(maxPax,cur+delta));
+  const next=Math.max(1,Math.min(effectiveMax,cur+delta));
   paxState[tourId]=next;
   document.getElementById('pax-'+tourId).textContent=next;
-  const t=tours.find(x=>x.id===tourId);
   if(t)document.getElementById('total-'+tourId).textContent=((t.price_per_person||0)*next).toLocaleString()+' THB';
 }
 
-function startBooking(tourId){
+async function startBooking(tourId){
   const t=tours.find(x=>x.id===tourId);
   const date=document.getElementById('date-'+tourId).value;
   const pax=paxState[tourId]||1;
+  const notes=document.getElementById('notes-'+tourId)?.value?.trim()||'';
   if(!date){showToast('Please select a date');return;}
   if(!roomNum){showToast('Room number not found');return;}
-  currentBooking={tour:t,date,pax,total:(t.price_per_person||0)*pax};
-  showPaymentModal();
+
+  // Check availability
+  try{
+    const existing=await sb(`tour_bookings?tour_id=eq.${tourId}&date=eq.${date}&status=neq.cancelled&select=pax`);
+    const bookedPax=(existing||[]).reduce((s,b)=>s+(b.pax||0),0);
+    const maxPax=t.max_pax||999;
+    const available=maxPax-bookedPax;
+    if(available<=0){
+      showToast('😔 Fully booked for this date');return;
+    }
+    if(pax>available){
+      showToast(`Only ${available} spot${available>1?'s':''} left — adjusting guests`);
+      paxState[tourId]=available;
+      document.getElementById('pax-'+tourId).textContent=available;
+      document.getElementById('total-'+tourId).textContent=((t.price_per_person||0)*available).toLocaleString()+' THB';
+    }
+    const finalPax=Math.min(pax,available);
+    currentBooking={tour:t,date,pax:finalPax,total:(t.price_per_person||0)*finalPax,availableSpots:available,notes};
+    showPaymentModal();
+  }catch(e){
+    currentBooking={tour:t,date,pax,total:(t.price_per_person||0)*pax,notes};
+    showPaymentModal();
+  }
 }
 
 function showPaymentModal(){
@@ -320,6 +391,10 @@ function showPaymentModal(){
     <div class="form-group">
       <label class="form-label">Your Name</label>
       <input type="text" class="form-input" id="guestName" placeholder="Full name" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Special Requests <span style="font-weight:400;opacity:0.5">(optional)</span></label>
+      <textarea class="form-input" id="guestNotes" placeholder="Allergies, dietary needs, accessibility requirements…" rows="2" style="resize:none;font-family:'Source Sans 3',sans-serif;font-size:15px"></textarea>
     </div>
     <label class="form-label">Payment Method</label>
     <div class="pay-method-row">
@@ -375,6 +450,7 @@ function formatExp(el){
 async function processPayment(method){
   const name=document.getElementById('guestName')?.value?.trim();
   if(!name){showToast('Please enter your name');return;}
+  const guestNotes=document.getElementById('guestNotes')?.value?.trim()||null;
 
   if(method==='card'){
     const card=document.getElementById('cardNum')?.value?.replace(/\s/g,'');
@@ -383,8 +459,9 @@ async function processPayment(method){
     btn.disabled=true;btn.textContent='Processing…';
     await new Promise(r=>setTimeout(r,1800));
     try{
-      await sb('tour_bookings',{
+      const res2=await sb('tour_bookings',{
         method:'POST',
+        headers:{'Prefer':'return=representation'},
         body:JSON.stringify({
           tour_id:currentBooking.tour.id,
           room_number:roomNum,
@@ -393,10 +470,13 @@ async function processPayment(method){
           pax:currentBooking.pax,
           total:currentBooking.total,
           status:'confirmed',
-          payment_method:'card'
+          payment_method:'card',
+          notes:guestNotes,
+          notes:currentBooking.notes||''
         })
       });
-      const msg=`💳 *New Tour Booking — Card*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ✅ Confirmed`;
+      currentBooking.bookingId=(res2&&res2[0])?res2[0].id:null;
+      const msg=`💳 *New Tour Booking — Card*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ✅ Confirmed${currentBooking.notes?'\nNotes: '+currentBooking.notes:''}`;
       const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
       showSuccessScreen(name,waLink,'card');
     }catch(e){
@@ -411,8 +491,9 @@ async function processPayment(method){
     btn.disabled=true;btn.textContent='Confirming…';
     await new Promise(r=>setTimeout(r,800));
     try{
-      await sb('tour_bookings',{
+      const res3=await sb('tour_bookings',{
         method:'POST',
+        headers:{'Prefer':'return=representation'},
         body:JSON.stringify({
           tour_id:currentBooking.tour.id,
           room_number:roomNum,
@@ -421,10 +502,13 @@ async function processPayment(method){
           pax:currentBooking.pax,
           total:currentBooking.total,
           status:'pending',
-          payment_method:'cash'
+          payment_method:'cash',
+          notes:guestNotes,
+          notes:currentBooking.notes||''
         })
       });
-      const msg=`🏨 *New Tour Booking — Pay at Hotel*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ⏳ Pending payment`;
+      currentBooking.bookingId=(res3&&res3[0])?res3[0].id:null;
+      const msg=`🏨 *New Tour Booking — Pay at Hotel*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ⏳ Pending payment${currentBooking.notes?'\nNotes: '+currentBooking.notes:''}`;
       const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
       showSuccessScreen(name,waLink,'cash');
     }catch(e){
@@ -454,15 +538,38 @@ function showSuccessScreen(name,waLink,method){
         <div class="row"><span>Room</span><span>${roomNum}</span></div>
         <div class="row"><span>${isCard?'Total Paid':'Total Due'}</span><span style="${isCard?'':'color:#f6ad55'}">${b.total.toLocaleString()} THB${isCard?'':' (at hotel)'}</span></div>
         <div class="row"><span>Payment</span><span>${isCard?'💳 Card':'🏨 At Hotel'}</span></div>
+        ${b.bookingId&&document.getElementById('guestNotes')?.value?.trim()?`<div class="row"><span>Notes</span><span style="text-align:right;max-width:60%">${document.getElementById('guestNotes').value.trim()}</span></div>`:''}
+        ${b.notes?`<div class="row"><span>Notes</span><span style="font-style:italic;color:rgba(255,255,255,0.7)">${b.notes}</span></div>`:''}
       </div>
       <a href="${waLink}" target="_blank" style="display:block;width:100%;padding:14px;background:#25D366;color:white;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:700;text-align:center;text-decoration:none;margin-bottom:10px">💬 Contact Us on WhatsApp</a>
       <button class="done-btn" onclick="closeModal()">Done</button>
+      ${b.bookingId?`<button onclick="cancelBooking('${b.bookingId}')" style="width:100%;margin-top:10px;padding:12px;background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Cancel this booking</button>`:''}
     </div>`;
 }
 
 function closeModal(){
   document.getElementById('payModal').classList.remove('open');
   currentBooking=null;
+}
+
+async function cancelBooking(bookingId){
+  if(!confirm('Are you sure you want to cancel this booking?')) return;
+  try{
+    await sb(`tour_bookings?id=eq.${bookingId}`,{method:'PATCH',body:JSON.stringify({status:'cancelled'})});
+    const b=currentBooking;
+    const msg=`❌ *Tour Booking Cancelled*\nRoom ${roomNum}\n*${b.tour.name}*\nDate: ${formatDate(b.date)}\nGuests: ${b.pax}`;
+    const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+    document.getElementById('modalContent').innerHTML=`
+      <div class="success-screen">
+        <div class="success-icon">❌</div>
+        <div class="success-title">Booking Cancelled</div>
+        <div class="success-msg">Your booking has been cancelled. We hope to see you on a future adventure!</div>
+        <a href="${waLink}" target="_blank" style="display:block;width:100%;padding:14px;background:#25D366;color:white;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:700;text-align:center;text-decoration:none;margin-bottom:10px">💬 Notify Hotel on WhatsApp</a>
+        <button class="done-btn" onclick="closeModal()">Close</button>
+      </div>`;
+  }catch(e){
+    showToast('Error cancelling — please contact the hotel');
+  }
 }
 
 function formatDate(d){
