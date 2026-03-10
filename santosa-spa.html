@@ -4,646 +4,646 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Santosa — Spa & Wellness</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --teal:#3DBFB7;--teal-dark:#2A9E97;--teal-deep:#1A6E6A;
-    --teal-light:#B2E8E5;--teal-foam:#EBF9F8;--white:#FFFFFF;
-    --text:#0F2E2D;--text-mid:#3A6664;--text-soft:#7AADAB;
-    --border:#C8EDED;--purple:#6C63FF;--purple-light:#EEF0FF;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{font-family:'DM Sans',sans-serif;background:var(--teal-foam);color:var(--text);min-height:100vh;}
+ :root{
+ --teal:#3DBFB7;--teal-dark:#2A9E97;--teal-deep:#1A6E6A;
+ --teal-light:#B2E8E5;--teal-foam:#EBF9F8;--white:#FFFFFF;
+ --text:#0F2E2D;--text-mid:#3A6664;--text-soft:#7AADAB;
+ --border:#C8EDED;--purple:#6C63FF;--purple-light:#EEF0FF;
+ }
+ *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+ body{font-family:'Source Sans 3',sans-serif;background:#3B6E87;color:white;min-height:100vh;}
 
-  .header{background:var(--teal-deep);padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  .header-brand{font-family:'DM Serif Display',serif;font-size:20px;color:var(--white);}
-  .header-room{font-size:12px;color:var(--teal-light);letter-spacing:1px;text-transform:uppercase;}
+ .header{background:var(--teal-deep);padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+ .header-brand{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:22px;color:white;}
+ .header-room{font-size:13px;color:white;letter-spacing:2px;text-transform:uppercase;font-weight:700;}
 
-  .hero{background:linear-gradient(160deg,#1A2E4A 0%,#2A4A6A 50%,var(--teal-deep) 100%);padding:32px 20px 48px;text-align:center;}
-  .hero h1{font-family:'DM Serif Display',serif;font-size:32px;color:var(--white);margin-bottom:6px;}
-  .hero h1 em{font-style:italic;color:var(--teal-light);}
-  .hero-sub{font-size:13px;color:var(--teal-light);font-weight:300;}
+ .hero{background:rgba(0,0,0,0.2);padding:32px 20px 48px;text-align:center;}
+ .hero h1{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:38px;color:white;margin-bottom:6px;}
+ .hero h1 em{font-style:normal;color:white;}
+ .hero-sub{font-size:13px;color:var(--teal-light);font-weight:300;}
 
-  .tabs-wrap{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:90;overflow-x:auto;}
-  .tabs{display:flex;padding:0 12px;white-space:nowrap;}
-  .tab{padding:13px 14px;font-size:12px;font-weight:500;color:var(--text-soft);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;flex-shrink:0;}
-  .tab.active{color:var(--teal-deep);border-bottom-color:var(--teal);}
+ .tabs-wrap{background:rgba(0,0,0,0.2);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.15);position:sticky;top:0;z-index:90;overflow-x:auto;}
+ .tabs{display:flex;padding:0 12px;white-space:nowrap;}
+ .tab{padding:15px 18px;font-size:15px;font-weight:700;color:rgba(255,255,255,0.65);cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;flex-shrink:0;}
+ .tab.active{color:white;border-bottom-color:white;}
 
-  .content{padding:20px 16px 100px;max-width:600px;margin:0 auto;}
-  .section{display:none;}
-  .section.active{display:block;}
+ .content{padding:20px 16px 100px;}
+ .section{display:none;}
+ .section.active{display:block;}
 
-  /* TREATMENT CARDS */
-  .cat-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--teal-deep);margin:20px 0 12px;display:flex;align-items:center;gap:10px;}
-  .cat-title::after{content:'';flex:1;height:1px;background:var(--border);}
+ /* TREATMENT CARDS */
+ .cat-title{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:20px;color:white;margin:20px 0 12px;display:flex;align-items:center;gap:10px;}
+ .cat-title::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  .treatment-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.15s;}
-  .treatment-card:hover{border-color:var(--teal-light);box-shadow:0 3px 12px rgba(61,191,183,0.1);}
-  .treatment-card.selected{border-color:var(--teal);background:rgba(61,191,183,0.05);}
-  .treatment-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:12px;}
-  .treatment-card.selected .treatment-check{background:var(--teal);border-color:var(--teal);color:var(--white);}
-  .treatment-info{flex:1;}
-  .treatment-name{font-size:14px;font-weight:600;color:var(--text);}
-  .treatment-dur{font-size:12px;color:var(--text-soft);margin-top:2px;}
-  .treatment-price{font-size:14px;font-weight:700;color:var(--teal-dark);min-width:80px;text-align:right;}
+ .treatment-card{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border-radius:14px;border:1.5px solid rgba(255,255,255,0.2);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.15s;}
+ .treatment-card:hover{border-color:var(--teal-light);box-shadow:0 3px 12px rgba(61,191,183,0.1);}
+ .treatment-card.selected{border-color:var(--teal);background:rgba(61,191,183,0.05);}
+ .treatment-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s;font-size:12px;}
+ .treatment-card.selected .treatment-check{background:var(--teal);border-color:var(--teal);color:var(--white);}
+ .treatment-info{flex:1;}
+ .treatment-name{font-size:15px;font-weight:700;color:white;}
+ .treatment-dur{font-size:13px;color:rgba(255,255,255,0.7);margin-top:2px;}
+ .treatment-price{font-size:15px;font-weight:700;color:white;min-width:80px;text-align:right;}
 
-  /* BOOKING FORM */
-  .booking-panel{background:var(--white);border-radius:16px;border:1px solid var(--border);padding:20px;margin-top:20px;}
-  .booking-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--teal-deep);margin-bottom:16px;}
-  .selected-list{background:var(--teal-foam);border-radius:10px;padding:12px 14px;margin-bottom:16px;min-height:50px;}
-  .selected-item{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--text-mid);}
-  .selected-total{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--teal-deep);border-top:1px solid var(--border);margin-top:8px;padding-top:8px;}
-  .empty-sel{font-size:13px;color:var(--text-soft);text-align:center;padding:8px 0;}
+ /* BOOKING FORM */
+ .booking-panel{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border-radius:16px;border:1px solid rgba(255,255,255,0.2);padding:20px;margin-top:20px;}
+ .booking-title{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:16px;}
+ .selected-list{background:rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;margin-bottom:16px;min-height:50px;}
+ .selected-item{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:rgba(255,255,255,0.85);}
+ .selected-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;color:white;border-top:1px solid rgba(255,255,255,0.2);margin-top:8px;padding-top:8px;}
+ .empty-sel{font-size:13px;color:var(--text-soft);text-align:center;padding:8px 0;}
 
-  .form-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-soft);margin-bottom:6px;display:block;margin-top:14px;}
-  .form-input,.form-select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--teal-foam);outline:none;transition:border-color 0.15s;}
-  .form-input:focus,.form-select:focus{border-color:var(--teal);}
-  .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .notes-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--teal-foam);outline:none;resize:none;min-height:70px;transition:border-color 0.15s;}
-  .notes-input:focus{border-color:var(--teal);}
+ .form-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:6px;display:block;margin-top:14px;}
+ .form-input,.form-select{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:white;background:rgba(255,255,255,0.12);outline:none;transition:border-color 0.15s;}
+ .form-input:focus,.form-select:focus{border-color:var(--teal);}
+ .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+ .notes-input{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:white;background:rgba(255,255,255,0.12);outline:none;resize:none;min-height:80px;transition:border-color 0.15s;}
+ .notes-input:focus{border-color:var(--teal);}
 
-  .book-btn{width:100%;padding:14px;background:var(--teal);color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;}
-  .book-btn:hover{background:var(--teal-dark);}
+ .book-btn{width:100%;padding:17px;background:white;color:#2a7a85;border:none;border-radius:16px;font-family:'Source Sans 3',sans-serif;font-size:17px;font-weight:800;cursor:pointer;transition:all 0.2s;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+ .book-btn:hover{background:var(--teal-dark);}
 
-  /* PROGRAMS */
-  .program-card{background:var(--white);border-radius:16px;border:1px solid var(--border);margin-bottom:14px;overflow:hidden;}
-  .program-head{padding:18px 18px 14px;display:flex;gap:14px;align-items:flex-start;}
-  .program-icon{font-size:28px;width:48px;height:48px;background:var(--teal-foam);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .program-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px;}
-  .program-desc{font-size:12px;color:var(--text-soft);font-weight:300;line-height:1.5;}
-  .program-price{font-size:13px;font-weight:700;color:var(--teal-dark);margin-top:6px;}
+ /* PROGRAMS */
+ .program-card{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border-radius:16px;border:1px solid rgba(255,255,255,0.2);margin-bottom:14px;overflow:hidden;}
+ .program-head{padding:18px 18px 14px;display:flex;gap:14px;align-items:flex-start;}
+ .program-icon{font-size:28px;width:48px;height:48px;background:var(--teal-foam);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+ .program-name{font-size:16px;font-weight:700;color:white;margin-bottom:3px;}
+ .program-desc{font-size:13px;color:rgba(255,255,255,0.75);font-weight:400;line-height:1.5;}
+ .program-price{font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:6px;}
 
-  .price-table{margin:0 18px 16px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
-  .price-row{display:flex;justify-content:space-between;padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);}
-  .price-row:last-child{border-bottom:none;}
-  .price-row:nth-child(even){background:var(--teal-foam);}
-  .price-dur{color:var(--text-mid);}
-  .price-val{font-weight:700;color:var(--teal-dark);}
+ .price-table{margin:0 18px 16px;border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+ .price-row{display:flex;justify-content:space-between;padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);}
+ .price-row:last-child{border-bottom:none;}
+ .price-row:nth-child(even){background:var(--teal-foam);}
+ .price-dur{color:var(--text-mid);}
+ .price-val{font-weight:700;color:var(--teal-dark);}
 
-  .program-action{padding:0 18px 18px;}
-  .wa-btn{width:100%;padding:13px;background:#25D366;color:var(--white);border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
-  .wa-btn:hover{background:#1da84e;}
+ .program-action{padding:0 18px 18px;}
+ .wa-btn{width:100%;padding:13px;background:#25D366;color:var(--white);border:none;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+ .wa-btn:hover{background:#1da84e;}
 
-  /* CLASSES */
-  .class-schedule{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
-  .class-schedule-head{background:var(--teal-deep);padding:16px 18px;}
-  .class-schedule-title{font-family:'DM Serif Display',serif;font-size:18px;color:var(--white);}
-  .class-schedule-sub{font-size:12px;color:var(--teal-light);margin-top:2px;}
-  .day-row{border-bottom:1px solid var(--border);}
-  .day-row:last-child{border-bottom:none;}
-  .day-head{padding:12px 18px;background:var(--teal-foam);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-dark);}
-  .class-item{display:flex;align-items:center;padding:10px 18px;border-top:1px solid var(--border);gap:12px;}
-  .class-time{font-size:12px;font-weight:600;color:var(--teal-dark);min-width:80px;}
-  .class-name{flex:1;font-size:13px;color:var(--text);}
-  .class-price-row{display:flex;gap:10px;padding:14px 18px;background:var(--teal-foam);border-top:1px solid var(--border);}
-  .class-price-item{flex:1;background:var(--white);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);}
-  .class-price-label{font-size:11px;color:var(--text-soft);font-weight:500;}
-  .class-price-val{font-size:16px;font-weight:700;color:var(--teal-dark);margin-top:2px;}
+ /* CLASSES */
+ .class-schedule{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+ .class-schedule-head{background:var(--teal-deep);padding:16px 18px;}
+ .class-schedule-title{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:18px;color:var(--white);}
+ .class-schedule-sub{font-size:12px;color:var(--teal-light);margin-top:2px;}
+ .day-row{border-bottom:1px solid var(--border);}
+ .day-row:last-child{border-bottom:none;}
+ .day-head{padding:12px 18px;background:var(--teal-foam);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal-dark);}
+ .class-item{display:flex;align-items:center;padding:10px 18px;border-top:1px solid var(--border);gap:12px;}
+ .class-time{font-size:12px;font-weight:600;color:var(--teal-dark);min-width:80px;}
+ .class-name{flex:1;font-size:13px;color:var(--text);}
+ .class-price-row{display:flex;gap:10px;padding:14px 18px;background:var(--teal-foam);border-top:1px solid var(--border);}
+ .class-price-item{flex:1;background:var(--white);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border);}
+ .class-price-label{font-size:11px;color:var(--text-soft);font-weight:500;}
+ .class-price-val{font-size:16px;font-weight:700;color:var(--teal-dark);margin-top:2px;}
 
-  .class-book{padding:14px 18px;}
+ .class-book{padding:14px 18px;}
 
-  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-deep);color:var(--white);padding:11px 26px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all 0.25s;white-space:nowrap;box-shadow:0 6px 20px rgba(26,110,106,0.3);}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+ .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-deep);color:var(--white);padding:11px 26px;border-radius:50px;font-size:13px;font-weight:500;z-index:500;opacity:0;pointer-events:none;transition:all 0.25s;white-space:nowrap;box-shadow:0 6px 20px rgba(26,110,106,0.3);}
+ .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div>
-    <div class="header-brand">Santosa</div>
-    <div class="header-room" id="roomLabel">Loading…</div>
-  </div>
+ <div>
+ <div class="header-brand">Santosa</div>
+ <div class="header-room" id="roomLabel">Loading…</div>
+ </div>
 </div>
 
 <div class="hero">
-  <h1>Spa & <em>Wellness</em></h1>
-  <div class="hero-sub">Restore your mind, body and spirit</div>
+ <h1>Spa & Wellness</h1>
+ <div class="hero-sub">Restore your mind, body and spirit</div>
 </div>
 
 <div class="tabs-wrap">
-  <div class="tabs">
-    <div class="tab active" onclick="showSection('spa',this)">💆 Spa</div>
-    <div class="tab" onclick="showSection('programs',this)">🌿 Programs</div>
-    <div class="tab" onclick="showSection('classes',this)">🧘 Classes</div>
-    <div class="tab" onclick="showSection('oneday',this)">☀️ One Day</div>
-  </div>
+ <div class="tabs">
+ <div class="tab active" onclick="showSection('spa',this)"> Spa</div>
+ <div class="tab" onclick="showSection('programs',this)"> Programs</div>
+ <div class="tab" onclick="showSection('classes',this)"> Classes</div>
+ <div class="tab" onclick="showSection('oneday',this)">️ One Day</div>
+ </div>
 </div>
 
 <div class="content">
 
-  <!-- ══ SPA ══ -->
-  <div class="section active" id="section-spa">
+ <!-- ══ SPA ══ -->
+ <div class="section active" id="section-spa">
 
-    <div class="cat-title">✨ Signature Treatments</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Thai Herbal Compress','60 min','1500')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Thai Herbal Compress</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">1,500 THB</div>
-    </div>
+ <div class="cat-title"> Signature Treatments</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Thai Herbal Compress','60 min','1500')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Thai Herbal Compress</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">1,500 THB</div>
+ </div>
 
-    <div class="cat-title">⚡ Special Treatments</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Ion Cleanse Foot Bath','40 min','400')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Ion Cleanse Foot Bath</div><div class="treatment-dur">40 min</div></div>
-      <div class="treatment-price">400 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Epsom Salt Foot Spa & Scrub','45 min','500')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Epsom Salt Foot Spa & Scrub</div><div class="treatment-dur">45 min</div></div>
-      <div class="treatment-price">500 THB</div>
-    </div>
+ <div class="cat-title"> Special Treatments</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Ion Cleanse Foot Bath','40 min','400')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Ion Cleanse Foot Bath</div><div class="treatment-dur">40 min</div></div>
+ <div class="treatment-price">400 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Epsom Salt Foot Spa & Scrub','45 min','500')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Epsom Salt Foot Spa & Scrub</div><div class="treatment-dur">45 min</div></div>
+ <div class="treatment-price">500 THB</div>
+ </div>
 
-    <div class="cat-title">💅 Hands & Feet</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Manicure','45 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Manicure</div><div class="treatment-dur">45 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Pedicure','45 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Pedicure</div><div class="treatment-dur">45 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Foot Scrub','45 min','1000')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Foot Scrub</div><div class="treatment-dur">45 min</div></div>
-      <div class="treatment-price">1,000 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Foot Scrub + Pedicure','90 min','1000')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Foot Scrub + Pedicure</div><div class="treatment-dur">90 min</div></div>
-      <div class="treatment-price">1,000 THB</div>
-    </div>
+ <div class="cat-title"> Hands & Feet</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Manicure','45 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Manicure</div><div class="treatment-dur">45 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Pedicure','45 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Pedicure</div><div class="treatment-dur">45 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Foot Scrub','45 min','1000')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Foot Scrub</div><div class="treatment-dur">45 min</div></div>
+ <div class="treatment-price">1,000 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Foot Scrub + Pedicure','90 min','1000')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Foot Scrub + Pedicure</div><div class="treatment-dur">90 min</div></div>
+ <div class="treatment-price">1,000 THB</div>
+ </div>
 
-    <div class="cat-title">🌿 Body Care</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Anti-Cellulite (Slimming)','60 min','2500')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Anti-Cellulite (Slimming)</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">2,500 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Aroma Therapy Body Scrub','60 min','1500')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Aroma Therapy Body Scrub</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">1,500 THB</div>
-    </div>
+ <div class="cat-title"> Body Care</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Anti-Cellulite (Slimming)','60 min','2500')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Anti-Cellulite (Slimming)</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">2,500 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Aroma Therapy Body Scrub','60 min','1500')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Aroma Therapy Body Scrub</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">1,500 THB</div>
+ </div>
 
-    <div class="cat-title">🤲 Traditional Massage</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Royal Thai Traditional','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Royal Thai Traditional</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Thai Warm Oil','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Thai Warm Oil</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Foot Massage','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Foot Massage</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Back, Neck & Shoulder','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Back, Neck & Shoulder</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
+ <div class="cat-title"> Traditional Massage</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Royal Thai Traditional','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Royal Thai Traditional</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Thai Warm Oil','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Thai Warm Oil</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Foot Massage','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Foot Massage</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Back, Neck & Shoulder','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Back, Neck & Shoulder</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
 
-    <div class="cat-title">⭐ Signature Massage</div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Santosa Signature Massage','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Santosa Signature</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Swedish Massage','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Swedish</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Sports Massage','60 min','1000')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Sports Massage</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">1,000 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Aloe Vera Rejuvenating','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Aloe Vera Rejuvenating</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Siam Aroma Essential Oil','60 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Siam Aroma Essential Oil</div><div class="treatment-dur">60 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Facial Massage','45 min','1000')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Facial Massage</div><div class="treatment-dur">45 min</div></div>
-      <div class="treatment-price">1,000 THB</div>
-    </div>
-    <div class="treatment-card" onclick="toggleTreatment(this,'Indian Head Massage','30 min','800')">
-      <div class="treatment-check">✓</div>
-      <div class="treatment-info"><div class="treatment-name">Indian Head</div><div class="treatment-dur">30 min</div></div>
-      <div class="treatment-price">800 THB</div>
-    </div>
+ <div class="cat-title">⭐ Signature Massage</div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Santosa Signature Massage','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Santosa Signature</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Swedish Massage','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Swedish</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Sports Massage','60 min','1000')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Sports Massage</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">1,000 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Aloe Vera Rejuvenating','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Aloe Vera Rejuvenating</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Siam Aroma Essential Oil','60 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Siam Aroma Essential Oil</div><div class="treatment-dur">60 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Facial Massage','45 min','1000')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Facial Massage</div><div class="treatment-dur">45 min</div></div>
+ <div class="treatment-price">1,000 THB</div>
+ </div>
+ <div class="treatment-card" onclick="toggleTreatment(this,'Indian Head Massage','30 min','800')">
+ <div class="treatment-check"></div>
+ <div class="treatment-info"><div class="treatment-name">Indian Head</div><div class="treatment-dur">30 min</div></div>
+ <div class="treatment-price">800 THB</div>
+ </div>
 
-    <!-- BOOKING PANEL -->
-    <div class="booking-panel" id="bookingPanel">
-      <div class="booking-title">Book Your Treatment</div>
-      <div class="selected-list" id="selectedList">
-        <div class="empty-sel" id="emptySelMsg">Select treatments above to book</div>
-      </div>
-      <label class="form-label">Preferred Date</label>
-      <input class="form-input" type="date" id="spa-date">
-      <label class="form-label">Preferred Time</label>
-      <input class="form-input" type="time" id="spa-time" min="09:00" max="20:00">
-      <label class="form-label">Notes</label>
-      <textarea class="notes-input" id="spa-notes" placeholder="Any preferences, health conditions or special requests…"></textarea>
-      <button class="book-btn" onclick="bookSpa()">💬 Book via WhatsApp</button>
-    </div>
-  </div>
+ <!-- BOOKING PANEL -->
+ <div class="booking-panel" id="bookingPanel">
+ <div class="booking-title">Book Your Treatment</div>
+ <div class="selected-list" id="selectedList">
+ <div class="empty-sel" id="emptySelMsg">Select treatments above to book</div>
+ </div>
+ <label class="form-label">Preferred Date</label>
+ <input class="form-input" type="date" id="spa-date">
+ <label class="form-label">Preferred Time</label>
+ <input class="form-input" type="time" id="spa-time" min="09:00" max="20:00">
+ <label class="form-label">Notes</label>
+ <textarea class="notes-input" id="spa-notes" placeholder="Any preferences, health conditions or special requests…"></textarea>
+ <button class="book-btn" onclick="bookSpa()"> Book via WhatsApp</button>
+ </div>
+ </div>
 
-  <!-- ══ PROGRAMS ══ -->
-  <div class="section" id="section-programs">
+ <!-- ══ PROGRAMS ══ -->
+ <div class="section" id="section-programs">
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🍃</div>
-        <div>
-          <div class="program-name">Full Fast Program</div>
-          <div class="program-desc">Complete fasting detox program with full support from our wellness team.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">16,800 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">28,000 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">39,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">56,000 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">78,400 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">117,600 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,600 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Full Fast Program')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Full Fast Program</div>
+ <div class="program-desc">Complete fasting detox program with full support from our wellness team.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">16,800 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">28,000 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">39,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">56,000 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">78,400 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">117,600 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,600 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Full Fast Program')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🥤</div>
-        <div>
-          <div class="program-name">Juice Fast Program</div>
-          <div class="program-desc">Nourishing juice-based fasting with daily fresh cold-pressed juices.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">18,500 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">30,700 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">42,900 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">61,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">85,600 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">128,300 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">6,100 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Juice Fast Program')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Juice Fast Program</div>
+ <div class="program-desc">Nourishing juice-based fasting with daily fresh cold-pressed juices.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">18,500 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">30,700 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">42,900 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">61,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">85,600 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">128,300 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">6,100 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Juice Fast Program')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🥗</div>
-        <div>
-          <div class="program-name">Raw Fast Retreat</div>
-          <div class="program-desc">Raw food based detox retreat for deep cellular cleansing.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">17,500 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">29,100 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">40,700 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">58,100 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">81,300 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">121,900 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,800 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Raw Fast Retreat')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Raw Fast Retreat</div>
+ <div class="program-desc">Raw food based detox retreat for deep cellular cleansing.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">17,500 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">29,100 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">40,700 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">58,100 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">81,300 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">121,900 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,800 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Raw Fast Retreat')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🌱</div>
-        <div>
-          <div class="program-name">Healthy Vegan Retreat</div>
-          <div class="program-desc">Plant-based nourishment with wellness activities.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Healthy Vegan Retreat')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Healthy Vegan Retreat</div>
+ <div class="program-desc">Plant-based nourishment with wellness activities.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Healthy Vegan Retreat')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🌿</div>
-        <div>
-          <div class="program-name">Raw Healing Retreat</div>
-          <div class="program-desc">Deep healing through raw foods and holistic therapies.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Raw Healing Retreat')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Raw Healing Retreat</div>
+ <div class="program-desc">Deep healing through raw foods and holistic therapies.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Raw Healing Retreat')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🧘</div>
-        <div>
-          <div class="program-name">Yoga Retreat</div>
-          <div class="program-desc">Daily yoga practice combined with healthy living.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Yoga Retreat')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Yoga Retreat</div>
+ <div class="program-desc">Daily yoga practice combined with healthy living.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">15,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">25,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">35,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">50,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">70,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">105,200 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,000 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Yoga Retreat')"> Enquire</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🏃</div>
-        <div>
-          <div class="program-name">Active Fit Program</div>
-          <div class="program-desc">Fitness-focused program with training sessions and healthy nutrition.</div>
-        </div>
-      </div>
-      <div class="price-table">
-        <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">17,500 THB</span></div>
-        <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">29,100 THB</span></div>
-        <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">40,700 THB</span></div>
-        <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">58,100 THB</span></div>
-        <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">81,300 THB</span></div>
-        <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">121,900 THB</span></div>
-        <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,800 THB</span></div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Active Fit Program')">💬 Enquire</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Active Fit Program</div>
+ <div class="program-desc">Fitness-focused program with training sessions and healthy nutrition.</div>
+ </div>
+ </div>
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">3 Days</span><span class="price-val">17,500 THB</span></div>
+ <div class="price-row"><span class="price-dur">5 Days</span><span class="price-val">29,100 THB</span></div>
+ <div class="price-row"><span class="price-dur">7 Days</span><span class="price-val">40,700 THB</span></div>
+ <div class="price-row"><span class="price-dur">10 Days</span><span class="price-val">58,100 THB</span></div>
+ <div class="price-row"><span class="price-dur">14 Days</span><span class="price-val">81,300 THB</span></div>
+ <div class="price-row"><span class="price-dur">21 Days</span><span class="price-val">121,900 THB</span></div>
+ <div class="price-row"><span class="price-dur">Additional Day</span><span class="price-val">5,800 THB</span></div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Active Fit Program')"> Enquire</button></div>
+ </div>
 
-    <p style="font-size:12px;color:var(--text-soft);text-align:center;padding:8px 0 16px;">* Prices exclude accommodation costs</p>
-  </div>
+ <p style="font-size:12px;color:var(--text-soft);text-align:center;padding:8px 0 16px;">* Prices exclude accommodation costs</p>
+ </div>
 
-  <!-- ══ CLASSES ══ -->
-  <div class="section" id="section-classes">
-    <div class="class-schedule">
-      <div class="class-schedule-head">
-        <div class="class-schedule-title">Weekly Schedule</div>
-        <div class="class-schedule-sub">Reservation required for all classes</div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Monday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Walk</span></div>
-        <div class="class-item"><span class="class-time">16:00–17:00</span><span class="class-name">Breath Work</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Tuesday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Slow Flow Yoga</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Wednesday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Yoga for the Back</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Thursday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Walk</span></div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Yin Yoga</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Friday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Hatha Yoga</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Saturday</div>
-        <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Aerial Yoga</span></div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">YogaNidra</span></div>
-      </div>
-      <div class="day-row">
-        <div class="day-head">Sunday</div>
-        <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Boxing</span></div>
-      </div>
-      <div class="class-price-row">
-        <div class="class-price-item"><div class="class-price-label">Single Class</div><div class="class-price-val">350 THB</div></div>
-        <div class="class-price-item"><div class="class-price-label">10 Class Pass</div><div class="class-price-val">3,000 THB</div></div>
-      </div>
-      <div class="class-book">
-        <p style="font-size:12px;color:var(--text-soft);margin-bottom:12px;">Please wear trainers for: Zumba, Circuit Training, TRX, Fit Ball. Private sessions available on request.</p>
-        <button class="wa-btn" onclick="bookClass()">💬 Book a Class</button>
-      </div>
-    </div>
-  </div>
+ <!-- ══ CLASSES ══ -->
+ <div class="section" id="section-classes">
+ <div class="class-schedule">
+ <div class="class-schedule-head">
+ <div class="class-schedule-title">Weekly Schedule</div>
+ <div class="class-schedule-sub">Reservation required for all classes</div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Monday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Walk</span></div>
+ <div class="class-item"><span class="class-time">16:00–17:00</span><span class="class-name">Breath Work</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Tuesday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Slow Flow Yoga</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Wednesday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Yoga for the Back</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Thursday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Walk</span></div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Yin Yoga</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Friday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Morning Yoga</span></div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Hatha Yoga</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Saturday</div>
+ <div class="class-item"><span class="class-time">07:30–08:15</span><span class="class-name">Aerial Yoga</span></div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">YogaNidra</span></div>
+ </div>
+ <div class="day-row">
+ <div class="day-head">Sunday</div>
+ <div class="class-item"><span class="class-time">10:00–11:00</span><span class="class-name">Boxing</span></div>
+ </div>
+ <div class="class-price-row">
+ <div class="class-price-item"><div class="class-price-label">Single Class</div><div class="class-price-val">350 THB</div></div>
+ <div class="class-price-item"><div class="class-price-label">10 Class Pass</div><div class="class-price-val">3,000 THB</div></div>
+ </div>
+ <div class="class-book">
+ <p style="font-size:12px;color:var(--text-soft);margin-bottom:12px;">Please wear trainers for: Zumba, Circuit Training, TRX, Fit Ball. Private sessions available on request.</p>
+ <button class="wa-btn" onclick="bookClass()"> Book a Class</button>
+ </div>
+ </div>
+ </div>
 
-  <!-- ══ ONE DAY ══ -->
-  <div class="section" id="section-oneday">
+ <!-- ══ ONE DAY ══ -->
+ <div class="section" id="section-oneday">
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🌿</div>
-        <div>
-          <div class="program-name">One Day Detox</div>
-          <div class="program-desc">An insider snapshot into the magical world of detoxification.</div>
-          <div class="program-price">4,200 THB</div>
-        </div>
-      </div>
-      <div style="padding:0 18px 16px;">
-        <div class="price-table">
-          <div class="price-row"><span class="price-dur">09:00</span><span class="price-val">Orientation / Colema</span></div>
-          <div class="price-row"><span class="price-dur">10:00</span><span class="price-val">Activity</span></div>
-          <div class="price-row"><span class="price-dur">11:00</span><span class="price-val">Morning Colema</span></div>
-          <div class="price-row"><span class="price-dur">11:30</span><span class="price-val">Coconut Water & Probiotic</span></div>
-          <div class="price-row"><span class="price-dur">12:30</span><span class="price-val">Raw Lunch</span></div>
-          <div class="price-row"><span class="price-dur">14:00</span><span class="price-val">Massage</span></div>
-          <div class="price-row"><span class="price-dur">15:00</span><span class="price-dur">Afternoon Colema</span></div>
-          <div class="price-row"><span class="price-dur">16:00</span><span class="price-val">Activity / Sauna & Ice Bath</span></div>
-        </div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('One Day Detox — 4,200 THB')">💬 Book Now</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">One Day Detox</div>
+ <div class="program-desc">An insider snapshot into the magical world of detoxification.</div>
+ <div class="program-price">4,200 THB</div>
+ </div>
+ </div>
+ <div style="padding:0 18px 16px;">
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">09:00</span><span class="price-val">Orientation / Colema</span></div>
+ <div class="price-row"><span class="price-dur">10:00</span><span class="price-val">Activity</span></div>
+ <div class="price-row"><span class="price-dur">11:00</span><span class="price-val">Morning Colema</span></div>
+ <div class="price-row"><span class="price-dur">11:30</span><span class="price-val">Coconut Water & Probiotic</span></div>
+ <div class="price-row"><span class="price-dur">12:30</span><span class="price-val">Raw Lunch</span></div>
+ <div class="price-row"><span class="price-dur">14:00</span><span class="price-val">Massage</span></div>
+ <div class="price-row"><span class="price-dur">15:00</span><span class="price-dur">Afternoon Colema</span></div>
+ <div class="price-row"><span class="price-dur">16:00</span><span class="price-val">Activity / Sauna & Ice Bath</span></div>
+ </div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('One Day Detox — 4,200 THB')"> Book Now</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">😌</div>
-        <div>
-          <div class="program-name">One Day Relax</div>
-          <div class="program-desc">A full day of relaxation in the magic ambiance of Santosa.</div>
-          <div class="program-price">1,800 THB</div>
-        </div>
-      </div>
-      <div style="padding:0 18px 16px;">
-        <div class="price-table">
-          <div class="price-row"><span class="price-dur">09:30</span><span class="price-val">Arrive & Orientation</span></div>
-          <div class="price-row"><span class="price-dur">10:00–11:00</span><span class="price-val">Center Class</span></div>
-          <div class="price-row"><span class="price-dur">11:00–12:00</span><span class="price-val">Break with Juice</span></div>
-          <div class="price-row"><span class="price-dur">12:00–13:30</span><span class="price-val">Vegan Lunch</span></div>
-          <div class="price-row"><span class="price-dur">14:00–15:00</span><span class="price-val">Massage</span></div>
-          <div class="price-row"><span class="price-dur">16:00–17:00</span><span class="price-val">Sauna with Ice Bath</span></div>
-        </div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('One Day Relax — 1,800 THB')">💬 Book Now</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">One Day Relax</div>
+ <div class="program-desc">A full day of relaxation in the magic ambiance of Santosa.</div>
+ <div class="program-price">1,800 THB</div>
+ </div>
+ </div>
+ <div style="padding:0 18px 16px;">
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">09:30</span><span class="price-val">Arrive & Orientation</span></div>
+ <div class="price-row"><span class="price-dur">10:00–11:00</span><span class="price-val">Center Class</span></div>
+ <div class="price-row"><span class="price-dur">11:00–12:00</span><span class="price-val">Break with Juice</span></div>
+ <div class="price-row"><span class="price-dur">12:00–13:30</span><span class="price-val">Vegan Lunch</span></div>
+ <div class="price-row"><span class="price-dur">14:00–15:00</span><span class="price-val">Massage</span></div>
+ <div class="price-row"><span class="price-dur">16:00–17:00</span><span class="price-val">Sauna with Ice Bath</span></div>
+ </div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('One Day Relax — 1,800 THB')"> Book Now</button></div>
+ </div>
 
-    <div class="program-card">
-      <div class="program-head">
-        <div class="program-icon">🌊</div>
-        <div>
-          <div class="program-name">Spring Clean</div>
-          <div class="program-desc">Try our state-of-the-art colon cleaning treatment.</div>
-          <div class="program-price">1,200 THB</div>
-        </div>
-      </div>
-      <div style="padding:0 18px 16px;">
-        <div class="price-table">
-          <div class="price-row"><span class="price-dur">Includes</span><span class="price-val">1x Time Colon Cleansing</span></div>
-          <div class="price-row"><span class="price-dur">+</span><span class="price-val">1x Coconut Water</span></div>
-          <div class="price-row"><span class="price-dur">+</span><span class="price-val">1x Probiotic Pill</span></div>
-        </div>
-      </div>
-      <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Spring Clean — 1,200 THB')">💬 Book Now</button></div>
-    </div>
+ <div class="program-card">
+ <div class="program-head">
+ <div class="program-icon"></div>
+ <div>
+ <div class="program-name">Spring Clean</div>
+ <div class="program-desc">Try our state-of-the-art colon cleaning treatment.</div>
+ <div class="program-price">1,200 THB</div>
+ </div>
+ </div>
+ <div style="padding:0 18px 16px;">
+ <div class="price-table">
+ <div class="price-row"><span class="price-dur">Includes</span><span class="price-val">1x Time Colon Cleansing</span></div>
+ <div class="price-row"><span class="price-dur">+</span><span class="price-val">1x Coconut Water</span></div>
+ <div class="price-row"><span class="price-dur">+</span><span class="price-val">1x Probiotic Pill</span></div>
+ </div>
+ </div>
+ <div class="program-action"><button class="wa-btn" onclick="inquireProgram('Spring Clean — 1,200 THB')"> Book Now</button></div>
+ </div>
 
-  </div>
+ </div>
 
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  const SUPABASE_URL = 'https://zycptgrxnvbqsbngfuqi.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
-  const WHATSAPP_NUM = '393465309386';
+ const SUPABASE_URL = 'https://zycptgrxnvbqsbngfuqi.supabase.co';
+ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
+ const WHATSAPP_NUM = '393465309386';
 
-  let roomNumber = '—';
-  const selectedTreatments = {};
+ let roomNumber = '—';
+ const selectedTreatments = {};
 
-  (function(){
-    const KEY = 'sg_room';
-    function sanitize(v){ return (v||'').toString().trim().replace(/[^a-zA-Z0-9]/g,'').slice(0,8); }
-    let room = sanitize(new URLSearchParams(window.location.search).get('room'));
-    if(!room){ try{ room = sanitize(localStorage.getItem(KEY)); }catch(e){} }
-    if(room){ try{ localStorage.setItem(KEY,room); }catch(e){} }
-    roomNumber = room || '—';
-    document.getElementById('roomLabel').textContent = room ? 'ROOM ' + room : 'Guest';
-  })();
+ (function(){
+ const KEY = 'sg_room';
+ function sanitize(v){ return (v||'').toString().trim().replace(/[^a-zA-Z0-9]/g,'').slice(0,8); }
+ let room = sanitize(new URLSearchParams(window.location.search).get('room'));
+ if(!room){ try{ room = sanitize(localStorage.getItem(KEY)); }catch(e){} }
+ if(room){ try{ localStorage.setItem(KEY,room); }catch(e){} }
+ roomNumber = room || '—';
+ document.getElementById('roomLabel').textContent = room ? 'ROOM ' + room : 'Guest';
+ })();
 
-  async function sb(path, options={}) {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-      headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${SUPABASE_KEY}`, 'Content-Type':'application/json', 'Prefer':'return=representation', ...options.headers },
-      ...options
-    });
-    const txt = await res.text();
-    return txt ? JSON.parse(txt) : null;
-  }
+ async function sb(path, options={}) {
+ const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+ headers:{ 'apikey':SUPABASE_KEY, 'Authorization':`Bearer ${SUPABASE_KEY}`, 'Content-Type':'application/json', 'Prefer':'return=representation', ...options.headers },
+ ...options
+ });
+ const txt = await res.text();
+ return txt ? JSON.parse(txt) : null;
+ }
 
-  function showSection(name, el) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.getElementById('section-' + name).classList.add('active');
-    el.classList.add('active');
-  }
+ function showSection(name, el) {
+ document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+ document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+ document.getElementById('section-' + name).classList.add('active');
+ el.classList.add('active');
+ }
 
-  function toggleTreatment(el, name, dur, price) {
-    if(selectedTreatments[name]) {
-      delete selectedTreatments[name];
-      el.classList.remove('selected');
-    } else {
-      selectedTreatments[name] = { dur, price: parseInt(price) };
-      el.classList.add('selected');
-    }
-    updateSelectedList();
-  }
+ function toggleTreatment(el, name, dur, price) {
+ if(selectedTreatments[name]) {
+ delete selectedTreatments[name];
+ el.classList.remove('selected');
+ } else {
+ selectedTreatments[name] = { dur, price: parseInt(price) };
+ el.classList.add('selected');
+ }
+ updateSelectedList();
+ }
 
-  function updateSelectedList() {
-    const list = document.getElementById('selectedList');
-    const emptyMsg = document.getElementById('emptySelMsg');
-    const keys = Object.keys(selectedTreatments);
-    if(!keys.length) {
-      list.innerHTML = '<div class="empty-sel" id="emptySelMsg">Select treatments above to book</div>';
-      return;
-    }
-    let total = 0;
-    let html = keys.map(k => {
-      total += selectedTreatments[k].price;
-      return `<div class="selected-item"><span>${k} (${selectedTreatments[k].dur})</span><span>${selectedTreatments[k].price.toLocaleString()} THB</span></div>`;
-    }).join('');
-    html += `<div class="selected-total"><span>Total</span><span>${total.toLocaleString()} THB</span></div>`;
-    list.innerHTML = html;
-  }
+ function updateSelectedList() {
+ const list = document.getElementById('selectedList');
+ const emptyMsg = document.getElementById('emptySelMsg');
+ const keys = Object.keys(selectedTreatments);
+ if(!keys.length) {
+ list.innerHTML = '<div class="empty-sel" id="emptySelMsg">Select treatments above to book</div>';
+ return;
+ }
+ let total = 0;
+ let html = keys.map(k => {
+ total += selectedTreatments[k].price;
+ return `<div class="selected-item"><span>${k} (${selectedTreatments[k].dur})</span><span>${selectedTreatments[k].price.toLocaleString()} THB</span></div>`;
+ }).join('');
+ html += `<div class="selected-total"><span>Total</span><span>${total.toLocaleString()} THB</span></div>`;
+ list.innerHTML = html;
+ }
 
-  async function bookSpa() {
-    const keys = Object.keys(selectedTreatments);
-    if(!keys.length){ showToast('⚠️ Please select at least one treatment'); return; }
-    const date = document.getElementById('spa-date').value;
-    const time = document.getElementById('spa-time').value;
-    const notes = document.getElementById('spa-notes').value;
-    if(!date||!time){ showToast('⚠️ Please select date and time'); return; }
+ async function bookSpa() {
+ const keys = Object.keys(selectedTreatments);
+ if(!keys.length){ showToast('️ Please select at least one treatment'); return; }
+ const date = document.getElementById('spa-date').value;
+ const time = document.getElementById('spa-time').value;
+ const notes = document.getElementById('spa-notes').value;
+ if(!date||!time){ showToast('️ Please select date and time'); return; }
 
-    const total = Object.values(selectedTreatments).reduce((s,t) => s+t.price, 0);
-    const treatmentList = keys.map(k => `${k} (${selectedTreatments[k].dur}) — ${selectedTreatments[k].price} THB`).join('\n');
+ const total = Object.values(selectedTreatments).reduce((s,t) => s+t.price, 0);
+ const treatmentList = keys.map(k => `${k} (${selectedTreatments[k].dur}) — ${selectedTreatments[k].price} THB`).join('\n');
 
-    try {
-      await sb('requests', {
-        method:'POST',
-        body: JSON.stringify({
-          room_number: roomNumber,
-          service_type: 'spa',
-          service_subtype: 'treatment',
-          details: { treatments: selectedTreatments, date, time, notes },
-          total,
-          requested_date: date,
-          requested_time: time,
-          notes,
-          status: 'new'
-        })
-      });
-    } catch(e) { console.error(e); }
+ try {
+ await sb('requests', {
+ method:'POST',
+ body: JSON.stringify({
+ room_number: roomNumber,
+ service_type: 'spa',
+ service_subtype: 'treatment',
+ details: { treatments: selectedTreatments, date, time, notes },
+ total,
+ requested_date: date,
+ requested_time: time,
+ notes,
+ status: 'new'
+ })
+ });
+ } catch(e) { console.error(e); }
 
-    const msg = `💆 *Santosa Spa Booking*\n📍 Room ${roomNumber}\n\n${treatmentList}\n\n📅 ${date} at ${time}\n💰 Total: ${total.toLocaleString()} THB${notes?'\n📝 '+notes:''}`;
-    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
-    showToast('✅ Booking request sent!');
-  }
+ const msg = ` *Santosa Spa Booking*\n Room ${roomNumber}\n\n${treatmentList}\n\n ${date} at ${time}\n Total: ${total.toLocaleString()} THB${notes?'\n '+notes:''}`;
+ window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+ showToast(' Booking request sent!');
+ }
 
-  function inquireProgram(name) {
-    const msg = `🌿 *Santosa Wellness Program Enquiry*\n📍 Room ${roomNumber}\n\nI'm interested in: ${name}\n\nPlease send me more information.`;
-    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
-  }
+ function inquireProgram(name) {
+ const msg = ` *Santosa Wellness Program Enquiry*\n Room ${roomNumber}\n\nI'm interested in: ${name}\n\nPlease send me more information.`;
+ window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+ }
 
-  function bookClass() {
-    const msg = `🧘 *Santosa Class Booking*\n📍 Room ${roomNumber}\n\nI'd like to book a class. Please let me know availability.`;
-    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
-  }
+ function bookClass() {
+ const msg = ` *Santosa Class Booking*\n Room ${roomNumber}\n\nI'd like to book a class. Please let me know availability.`;
+ window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`;
+ }
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
+ function showToast(msg) {
+ const t = document.getElementById('toast');
+ t.textContent = msg; t.classList.add('show');
+ setTimeout(() => t.classList.remove('show'), 2500);
+ }
 </script>
 </body>
 </html>
