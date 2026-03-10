@@ -92,6 +92,10 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:white;min
 .wa-btn{background:#25D366;color:white;border:none;padding:8px 14px;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(26,46,59,0.95);color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:500;opacity:0;pointer-events:none;transition:all 0.3s;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.cat-filters{display:flex;gap:8px;padding:0 16px 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.cat-filters::-webkit-scrollbar{display:none;}
+.cat-btn{flex-shrink:0;padding:8px 18px;border-radius:20px;border:1.5px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.cat-btn.active{background:white;color:#2a6e7a;border-color:white;}
 .pay-method-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
 .pay-method-btn{padding:16px 10px;border-radius:14px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.2s;}
 .pay-method-btn:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4);}
@@ -115,6 +119,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:white;min
   <div class="hero-title">Discover Paradise</div>
   <div class="hero-sub">Hand-picked day trips and excursions from Santosa</div>
 </div>
+
+<div id="catFilters" style="display:none;" class="cat-filters"></div>
 
 <div id="mainContent">
   <div class="loading-wrap">
@@ -163,6 +169,7 @@ async function sb(path,opts={}){
 let tours=[];
 let paxState={};
 let currentBooking=null;
+let activeCategory='All';
 
 async function loadTours(){
   try{
@@ -173,11 +180,27 @@ async function loadTours(){
     try{images=await sb(`tour_images?tour_id=in.(${ids})&order=sort_order`)||[];}catch(e){}
     tours=toursData.map(t=>({...t,images:images.filter(i=>i.tour_id===t.id),includes:parseIncludes(t.includes)}));
     tours.forEach(t=>{paxState[t.id]=1;});
+    renderCategoryFilters();
     renderTours();
   }catch(e){
     console.error(e);
     document.getElementById('mainContent').innerHTML=`<div class="empty-state"><div class="ei">⚠️</div><div style="font-size:16px;font-weight:700;margin-bottom:6px">Unable to load tours</div><div style="font-size:14px">Please contact the front desk</div></div>`;
   }
+}
+
+function renderCategoryFilters(){
+  const cats=['All',...new Set(tours.map(t=>t.category||'General').filter(Boolean))];
+  if(cats.length<=2){return;} // no filter if only 1 category
+  const bar=document.getElementById('catFilters');
+  bar.style.display='flex';
+  bar.innerHTML=cats.map(c=>`<button class="cat-btn${c==='All'?' active':''}" onclick="filterByCategory('${c}',this)">${c}</button>`).join('');
+}
+
+function filterByCategory(cat,el){
+  activeCategory=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderTours();
 }
 
 function parseIncludes(val){
@@ -195,7 +218,13 @@ function renderTours(){
   tomorrow.setDate(tomorrow.getDate()+1);
   const minDate=tomorrow.toISOString().split('T')[0];
 
-  const html=tours.map(t=>{
+  const filtered = activeCategory==='All' ? tours : tours.filter(t=>(t.category||'General')===activeCategory);
+  if(!filtered.length){
+    document.getElementById('mainContent').innerHTML=`<div class="empty-state"><div class="ei">🗺️</div><div style="font-size:16px;font-weight:700;margin-bottom:6px">No tours in this category</div></div>`;
+    return;
+  }
+
+  const html=filtered.map(t=>{
     const hero=t.images.find(i=>i.is_hero)||t.images[0];
     const gallery=t.images.slice(0,8);
     const hasGallery=gallery.length>1;
