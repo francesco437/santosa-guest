@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santosa — Tours Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Source Sans 3',sans-serif;background:#f0f4f8;color:#1a2e3b;min-height:100vh;}
+
+/* LOGIN */
+.login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#3B6E87,#1a4a5e);}
+.login-box{background:white;border-radius:24px;padding:40px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.login-logo{font-size:28px;font-weight:800;color:#3B6E87;margin-bottom:4px;}
+.login-sub{font-size:13px;color:#888;margin-bottom:32px;}
+.login-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#666;margin-bottom:6px;display:block;}
+.login-input{width:100%;padding:13px 16px;border:1.5px solid #e0e0e0;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;outline:none;transition:border-color 0.15s;margin-bottom:16px;}
+.login-input:focus{border-color:#3B6E87;}
+.login-btn{width:100%;padding:15px;background:#3B6E87;color:white;border:none;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:16px;font-weight:700;cursor:pointer;}
+.login-err{color:#e53e3e;font-size:13px;margin-top:8px;display:none;}
+
+/* LAYOUT */
+.app{display:none;}
+.sidebar{width:240px;background:#1a2e3b;min-height:100vh;position:fixed;top:0;left:0;padding:24px 0;}
+.sidebar-logo{font-size:20px;font-weight:800;color:white;padding:0 24px 24px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar-logo span{font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);display:block;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;color:rgba(255,255,255,0.65);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+.nav-item.active{background:rgba(255,255,255,0.12);color:white;border-left-color:#3DBFB7;}
+.nav-icon{font-size:18px;width:22px;text-align:center;}
+.main{margin-left:240px;padding:32px;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.page-title{font-size:26px;font-weight:800;color:#1a2e3b;}
+.page-sub{font-size:13px;color:#888;margin-top:2px;}
+.btn{padding:10px 20px;border:none;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.btn-primary{background:#3B6E87;color:white;}
+.btn-primary:hover{background:#2d5570;}
+.btn-success{background:#38a169;color:white;}
+.btn-danger{background:#e53e3e;color:white;}
+.btn-ghost{background:transparent;color:#3B6E87;border:1.5px solid #3B6E87;}
+.btn-sm{padding:7px 14px;font-size:13px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.stat-val{font-size:30px;font-weight:800;color:#1a2e3b;line-height:1;}
+.stat-label{font-size:13px;color:#888;margin-top:6px;}
+.stat-badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;margin-top:8px;}
+.badge-green{background:#e6fffa;color:#38a169;}
+.badge-yellow{background:#fffbeb;color:#d97706;}
+.badge-blue{background:#ebf8ff;color:#3B6E87;}
+.badge-red{background:#fff5f5;color:#e53e3e;}
+.badge-gray{background:#f7fafc;color:#718096;}
+
+/* SECTIONS */
+.section{display:none;}
+.section.active{display:block;}
+
+/* CARDS GRID */
+.tours-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;}
+.tour-admin-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:box-shadow 0.2s;}
+.tour-admin-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);}
+.tac-hero{width:100%;height:160px;object-fit:cover;background:#e2e8f0;display:block;}
+.tac-hero-placeholder{width:100%;height:160px;background:linear-gradient(135deg,#3B6E87,#1a4a5e);display:flex;align-items:center;justify-content:center;font-size:40px;color:rgba(255,255,255,0.5);}
+.tac-gallery{display:flex;gap:4px;padding:8px;background:#f7fafc;overflow-x:auto;}
+.tac-gallery img{width:56px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;}
+.tac-gallery-empty{font-size:12px;color:#aaa;padding:4px;}
+.tac-body{padding:16px;}
+.tac-name{font-size:17px;font-weight:800;margin-bottom:4px;}
+.tac-meta{font-size:13px;color:#666;margin-bottom:10px;}
+.tac-price{font-size:20px;font-weight:800;color:#3B6E87;margin-bottom:12px;}
+.tac-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.tac-status{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#cbd5e0;border-radius:12px;transition:0.3s;}
+.toggle-slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:white;border-radius:50%;transition:0.3s;}
+.toggle input:checked+.toggle-slider{background:#38a169;}
+.toggle input:checked+.toggle-slider:before{transform:translateX(20px);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:24px 24px 0;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:white;z-index:1;padding-bottom:16px;border-bottom:1px solid #f0f0f0;}
+.modal-title{font-size:20px;font-weight:800;}
+.modal-close{background:#f0f4f8;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:24px;}
+.form-group{margin-bottom:18px;}
+.form-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#666;margin-bottom:6px;display:block;}
+.form-input,.form-textarea,.form-select{width:100%;padding:12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:14px;outline:none;transition:border-color 0.15s;}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:#3B6E87;}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.modal-footer{padding:16px 24px;border-top:1px solid #f0f0f0;display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:white;}
+
+/* INCLUDES TAGS */
+.tags-input{display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1.5px solid #e0e0e0;border-radius:10px;min-height:44px;align-items:center;cursor:text;}
+.tag{background:#ebf8ff;color:#3B6E87;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;}
+.tag-remove{cursor:pointer;color:#3B6E87;font-size:12px;font-weight:800;}
+.tags-input input{border:none;outline:none;font-family:'Source Sans 3',sans-serif;font-size:14px;flex:1;min-width:120px;}
+
+/* PHOTO UPLOAD */
+.photo-upload-area{border:2px dashed #cbd5e0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:#f7fafc;}
+.photo-upload-area:hover{border-color:#3B6E87;background:#ebf8ff;}
+.photo-upload-area input{display:none;}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:12px;}
+.photo-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;}
+.photo-thumb img{width:100%;height:100%;object-fit:cover;}
+.photo-thumb-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.photo-thumb-hero{position:absolute;bottom:4px;left:4px;background:rgba(59,110,135,0.9);color:white;border:none;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700;cursor:pointer;}
+.hero-badge{background:#f6ad55!important;}
+
+/* BOOKINGS TABLE */
+.table-wrap{background:white;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+.table-header{padding:20px 24px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;}
+.table-title{font-size:16px;font-weight:800;}
+table{width:100%;border-collapse:collapse;}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;background:#f7fafc;border-bottom:1px solid #f0f0f0;}
+td{padding:14px 16px;font-size:14px;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafafa;}
+.status-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;}
+.status-pending{background:#fffbeb;color:#d97706;}
+.status-confirmed{background:#ebf8ff;color:#3B6E87;}
+.status-paid{background:#e6fffa;color:#38a169;}
+.status-cancelled{background:#fff5f5;color:#e53e3e;}
+
+/* FILTERS */
+.filters{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.filter-btn{padding:8px 16px;border-radius:8px;border:1.5px solid #e0e0e0;background:white;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:#666;transition:all 0.15s;}
+.filter-btn.active{background:#3B6E87;color:white;border-color:#3B6E87;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:#1a2e3b;color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:500;opacity:0;pointer-events:none;transition:all 0.25s;transform:translateY(10px);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:#888;font-size:14px;}
+.empty{text-align:center;padding:60px 20px;color:#aaa;}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Santosa</div>
+    <div class="login-sub">Tours Dashboard</div>
+    <label class="login-label">Password</label>
+    <input class="login-input" type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Access Dashboard</button>
+    <div class="login-err" id="loginErr">Incorrect password</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">Santosa <span>Tours Admin</span></div>
+    <div class="nav-item active" onclick="showSection('tours',this)"><span class="nav-icon">🗺️</span> Tours</div>
+    <div class="nav-item" onclick="showSection('bookings',this)"><span class="nav-icon">📋</span> Bookings</div>
+    <div class="nav-item" onclick="showSection('calendar',this)"><span class="nav-icon">📅</span> Calendar</div>
+    <div class="nav-item" onclick="showSection('stats',this)"><span class="nav-icon">📊</span> Revenue</div>
+    <div style="margin-top:auto;padding:24px 24px 0;border-top:1px solid rgba(255,255,255,0.1);margin-top:40px;">
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);">Logged in as Tours</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:600;margin-top:2px;">tours@santosa</div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- STATS ROW -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="stat-val" id="st-tours">—</div><div class="stat-label">Active Tours</div><span class="stat-badge badge-blue">live</span></div>
+      <div class="stat-card"><div class="stat-val" id="st-bookings">—</div><div class="stat-label">Total Bookings</div><span class="stat-badge badge-blue">all time</span></div>
+      <div class="stat-card"><div class="stat-val" id="st-pending">—</div><div class="stat-label">Pending</div><span class="stat-badge badge-yellow">action needed</span></div>
+      <div class="stat-card"><div class="stat-val" id="st-revenue">—</div><div class="stat-label">Revenue (THB)</div><span class="stat-badge badge-green">paid</span></div>
+    </div>
+
+    <!-- TOURS SECTION -->
+    <div class="section active" id="sec-tours">
+      <div class="topbar">
+        <div><div class="page-title">Tours</div><div class="page-sub">Manage your tour offerings</div></div>
+        <button class="btn btn-primary" onclick="openTourModal()">+ Add Tour</button>
+      </div>
+      <div class="tours-grid" id="toursGrid"><div class="loading">Loading tours…</div></div>
+    </div>
+
+    <!-- BOOKINGS SECTION -->
+    <div class="section" id="sec-bookings">
+      <div class="topbar">
+        <div><div class="page-title">Bookings</div><div class="page-sub">All tour reservations</div></div>
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterBookings('all',this)">All</button>
+        <button class="filter-btn" onclick="filterBookings('pending',this)">Pending</button>
+        <button class="filter-btn" onclick="filterBookings('confirmed',this)">Confirmed</button>
+        <button class="filter-btn" onclick="filterBookings('paid',this)">Paid</button>
+        <button class="filter-btn" onclick="filterBookings('cancelled',this)">Cancelled</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Reservations</div>
+        </div>
+        <div id="bookingsTable"><div class="loading">Loading bookings…</div></div>
+      </div>
+    </div>
+
+    <!-- CALENDAR SECTION -->
+    <div class="section" id="sec-calendar">
+      <div class="topbar">
+        <div><div class="page-title">Calendar</div><div class="page-sub">Bookings by date</div></div>
+      </div>
+      <div class="table-wrap" style="padding:24px;">
+        <div id="calendarView"><div class="loading">Loading calendar…</div></div>
+      </div>
+    </div>
+
+    <!-- REVENUE SECTION -->
+    <div class="section" id="sec-stats">
+      <div class="topbar">
+        <div><div class="page-title">Revenue</div><div class="page-sub">Financial overview</div></div>
+      </div>
+      <div id="revenueView"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOUR MODAL (Add/Edit) -->
+<div class="modal-overlay" id="tourModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="tourModalTitle">Add Tour</div>
+      <button class="modal-close" onclick="closeTourModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Tour Name</label>
+        <input class="form-input" id="t-name" placeholder="e.g. Phi Phi Islands Full Day">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="t-desc" placeholder="Describe the experience…"></textarea>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <input class="form-input" id="t-duration" placeholder="Full Day · 8h">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Guests</label>
+          <input class="form-input" type="number" id="t-maxpax" placeholder="12">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price / Person (THB)</label>
+          <input class="form-input" type="number" id="t-price" placeholder="1800">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">What's Included (press Enter to add)</label>
+        <div class="tags-input" id="includesTags" onclick="document.getElementById('includesInput').focus()">
+          <input id="includesInput" placeholder="e.g. Lunch, Snorkeling gear…" onkeydown="handleTagInput(event)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle"><input type="checkbox" id="t-pickup" checked><span class="toggle-slider"></span></label>
+          Hotel Pickup Included
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Photos</label>
+        <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
+          <input type="file" id="photoInput" multiple accept="image/*" onchange="handlePhotoUpload(event)">
+          <div style="font-size:32px;margin-bottom:8px">📷</div>
+          <div style="font-size:14px;font-weight:600;color:#3B6E87">Click to upload photos</div>
+          <div style="font-size:12px;color:#aaa;margin-top:4px">Upload multiple — first one will be hero</div>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeTourModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTour()">Save Tour</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING DETAIL MODAL -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Booking Detail</div>
+      <button class="modal-close" onclick="document.getElementById('bookingModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="bookingModalBody"></div>
+    <div class="modal-footer" id="bookingModalFooter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB = 'https://zycptgrxnvbqsbngfuqi.supabase.co';
+const SK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
+
+const PASS = 'tours2024';
+
+// ── AUTH ──────────────────────────────────────────
+function doLogin(){
+  if(document.getElementById('loginPass').value === PASS){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    init();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+  }
+}
+
+// ── SUPABASE ──────────────────────────────────────
+async function sb(path, opts={}){
+  const r = await fetch(`${SB}/rest/v1/${path}`, {
+    headers:{ 'apikey':SK, 'Authorization':`Bearer ${SK}`, 'Content-Type':'application/json', 'Prefer':'return=representation', ...opts.headers },
+    ...opts
+  });
+  if(!r.ok) throw new Error(await r.text());
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+
+// ── INIT ──────────────────────────────────────────
+let allTours = [], allBookings = [], currentFilter = 'all';
+let editingTourId = null, pendingPhotos = [], existingPhotos = [];
+let includeTags = [];
+
+async function init(){
+  await Promise.all([loadTours(), loadBookings()]);
+  updateStats();
+}
+
+// ── TOURS ──────────────────────────────────────────
+async function loadTours(){
+  allTours = await sb('tours?order=sort_order,created_at');
+  renderTours();
+}
+
+function renderTours(){
+  const grid = document.getElementById('toursGrid');
+  if(!allTours.length){
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🗺️</div><div>No tours yet</div><div style="margin-top:12px"><button class="btn btn-primary" onclick="openTourModal()">Add your first tour</button></div></div>`;
+    return;
+  }
+  grid.innerHTML = allTours.map(t => {
+    const imgs = t._images || [];
+    const hero = imgs.find(i=>i.is_hero) || imgs[0];
+    const thumbs = imgs.filter(i=>!i.is_hero).slice(0,4);
+    const bookCount = allBookings.filter(b=>b.tour_id===t.id).length;
+    return `
+    <div class="tour-admin-card">
+      ${hero ? `<img class="tac-hero" src="${hero.url}" onerror="this.style.display='none'">` : `<div class="tac-hero-placeholder">🏝️</div>`}
+      ${imgs.length > 1 ? `<div class="tac-gallery">${thumbs.map(i=>`<img src="${i.url}" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+      <div class="tac-body">
+        <div class="tac-status">
+          <label class="toggle"><input type="checkbox" ${t.active?'checked':''} onchange="toggleTourActive('${t.id}',this.checked)"><span class="toggle-slider"></span></label>
+          <span style="font-size:13px;color:${t.active?'#38a169':'#aaa'};font-weight:600">${t.active?'Active':'Inactive'}</span>
+          <span class="stat-badge badge-blue" style="margin-left:auto">${bookCount} booking${bookCount!==1?'s':''}</span>
+        </div>
+        <div class="tac-name">${t.name}</div>
+        <div class="tac-meta">${t.duration||'—'} · Max ${t.max_pax||'—'} pax${t.pickup?' · Pickup ✓':''}</div>
+        <div class="tac-price">${(t.price_per_person||0).toLocaleString()} THB <span style="font-size:13px;font-weight:500;color:#888">/ person</span></div>
+        <div class="tac-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openTourModal('${t.id}')">Edit</button>
+          <button class="btn btn-sm" style="background:#ebf8ff;color:#3B6E87" onclick="managePhotos('${t.id}')">Photos (${imgs.length})</button>
+          <button class="btn btn-sm" style="background:#fff5f5;color:#e53e3e" onclick="deleteTour('${t.id}','${t.name.replace(/'/g,"\\'")}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function loadTourImages(){
+  if(!allTours.length) return;
+  const ids = allTours.map(t=>`tour_id=in.(${allTours.map(t=>t.id).join(',')})`);
+  try {
+    const imgs = await sb(`tour_images?tour_id=in.(${allTours.map(t=>t.id).join(',')})&order=sort_order`);
+    allTours.forEach(t => { t._images = (imgs||[]).filter(i=>i.tour_id===t.id); });
+    renderTours();
+  } catch(e){}
+}
+
+async function toggleTourActive(id, active){
+  await sb(`tours?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({active}) });
+  showToast(active ? 'Tour activated' : 'Tour deactivated');
+  allTours = allTours.map(t => t.id===id ? {...t, active} : t);
+}
+
+async function deleteTour(id, name){
+  if(!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  await sb(`tours?id=eq.${id}`, { method:'DELETE', headers:{'Prefer':'return=minimal'} });
+  allTours = allTours.filter(t=>t.id!==id);
+  renderTours();
+  updateStats();
+  showToast('Tour deleted');
+}
+
+// ── TOUR MODAL ─────────────────────────────────────
+function openTourModal(tourId=null){
+  editingTourId = tourId;
+  pendingPhotos = [];
+  includeTags = [];
+  document.getElementById('photoGrid').innerHTML = '';
+  document.getElementById('includesTags').innerHTML = '<input id="includesInput" placeholder="e.g. Lunch, Snorkeling gear…" onkeydown="handleTagInput(event)">';
+
+  if(tourId){
+    const t = allTours.find(x=>x.id===tourId);
+    document.getElementById('tourModalTitle').textContent = 'Edit Tour';
+    document.getElementById('t-name').value = t.name||'';
+    document.getElementById('t-desc').value = t.description||'';
+    document.getElementById('t-duration').value = t.duration||'';
+    document.getElementById('t-maxpax').value = t.max_pax||'';
+    document.getElementById('t-price').value = t.price_per_person||'';
+    document.getElementById('t-pickup').checked = t.pickup!==false;
+    // Load includes
+    const inc = Array.isArray(t.includes) ? t.includes : (typeof t.includes==='string' ? JSON.parse(t.includes||'[]') : []);
+    inc.forEach(tag => addTagToUI(tag));
+    // Load existing photos
+    existingPhotos = t._images || [];
+    existingPhotos.forEach(img => addPhotoToGrid(img.url, img.id, img.is_hero));
+  } else {
+    document.getElementById('tourModalTitle').textContent = 'Add Tour';
+    ['t-name','t-desc','t-duration','t-maxpax','t-price'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('t-pickup').checked = true;
+    existingPhotos = [];
+  }
+  document.getElementById('tourModal').classList.add('open');
+}
+
+function closeTourModal(){
+  document.getElementById('tourModal').classList.remove('open');
+  editingTourId = null;
+  pendingPhotos = [];
+}
+
+async function saveTour(){
+  const name = document.getElementById('t-name').value.trim();
+  const price = parseInt(document.getElementById('t-price').value);
+  if(!name || !price){ showToast('Name and price are required'); return; }
+
+  const data = {
+    name,
+    description: document.getElementById('t-desc').value.trim(),
+    duration: document.getElementById('t-duration').value.trim(),
+    max_pax: parseInt(document.getElementById('t-maxpax').value)||12,
+    price_per_person: price,
+    pickup: document.getElementById('t-pickup').checked,
+    includes: JSON.stringify(includeTags),
+    active: true
+  };
+
+  const btn = document.querySelector('#tourModal .btn-primary');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+
+  try {
+    let tourId = editingTourId;
+    if(editingTourId){
+      await sb(`tours?id=eq.${editingTourId}`, { method:'PATCH', body: JSON.stringify(data) });
+    } else {
+      const res = await sb('tours', { method:'POST', body: JSON.stringify(data) });
+      tourId = res[0].id;
+    }
+
+    // Upload pending photos
+    for(let i=0; i<pendingPhotos.length; i++){
+      const photo = pendingPhotos[i];
+      const ext = photo.file.name.split('.').pop();
+      const filename = `${tourId}/${Date.now()}_${i}.${ext}`;
+      const uploadRes = await fetch(`${SB}/storage/v1/object/tour-images/${filename}`, {
+        method:'POST',
+        headers:{ 'apikey':SK, 'Authorization':`Bearer ${SK}`, 'Content-Type':photo.file.type },
+        body: photo.file
+      });
+      if(uploadRes.ok){
+        const url = `${SB}/storage/v1/object/public/tour-images/${filename}`;
+        await sb('tour_images', { method:'POST', body: JSON.stringify({ tour_id:tourId, url, is_hero: i===0 && existingPhotos.length===0, sort_order:i }) });
+      }
+    }
+
+    showToast(editingTourId ? 'Tour updated!' : 'Tour created!');
+    closeTourModal();
+    await loadTours();
+    await loadTourImages();
+    updateStats();
+  } catch(e){
+    showToast('Error saving tour');
+    console.error(e);
+  }
+  btn.textContent = 'Save Tour'; btn.disabled = false;
+}
+
+// ── PHOTO MANAGEMENT ──────────────────────────────
+function handlePhotoUpload(e){
+  const files = Array.from(e.target.files);
+  files.forEach((file, i) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingPhotos.push({ file, preview: ev.target.result });
+      const isHero = pendingPhotos.length===1 && existingPhotos.length===0;
+      addPhotoToGrid(ev.target.result, 'pending_'+(pendingPhotos.length-1), isHero, true);
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
+function addPhotoToGrid(url, id, isHero, isPending=false){
+  const grid = document.getElementById('photoGrid');
+  const div = document.createElement('div');
+  div.className = 'photo-thumb';
+  div.id = 'pt_'+id;
+  div.innerHTML = `
+    <img src="${url}">
+    <button class="photo-thumb-del" onclick="removePhoto('${id}','${isPending}')">✕</button>
+    <button class="photo-thumb-hero ${isHero?'hero-badge':''}" onclick="setHero('${id}','${isPending}')">${isHero?'★ Hero':'Set Hero'}</button>
+  `;
+  grid.appendChild(div);
+}
+
+function removePhoto(id, isPending){
+  document.getElementById('pt_'+id)?.remove();
+  if(isPending==='true'){
+    const idx = parseInt(id.replace('pending_',''));
+    pendingPhotos.splice(idx,1);
+  } else {
+    existingPhotos = existingPhotos.filter(p=>p.id!==id);
+    sb(`tour_images?id=eq.${id}`, { method:'DELETE', headers:{'Prefer':'return=minimal'} }).catch(()=>{});
+  }
+}
+
+async function managePhotos(tourId){
+  openTourModal(tourId);
+  // Scroll to photos
+  setTimeout(()=>{ document.getElementById('photoGrid').scrollIntoView({behavior:'smooth'}); }, 300);
+}
+
+// ── INCLUDES TAGS ─────────────────────────────────
+function handleTagInput(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,$/,'');
+    if(val){ addTagToUI(val); e.target.value=''; }
+  }
+}
+
+function addTagToUI(val){
+  includeTags.push(val);
+  const input = document.getElementById('includesInput');
+  const tag = document.createElement('span');
+  tag.className='tag';
+  tag.innerHTML=`${val} <span class="tag-remove" onclick="removeTag(this,'${val}')">✕</span>`;
+  document.getElementById('includesTags').insertBefore(tag, input);
+}
+
+function removeTag(el, val){
+  el.parentElement.remove();
+  includeTags = includeTags.filter(t=>t!==val);
+}
+
+// ── BOOKINGS ──────────────────────────────────────
+async function loadBookings(){
+  allBookings = await sb('tour_bookings?order=created_at.desc') || [];
+  renderBookings(allBookings);
+}
+
+function filterBookings(status, btn){
+  currentFilter = status;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = status==='all' ? allBookings : allBookings.filter(b=>b.status===status);
+  renderBookings(filtered);
+}
+
+function renderBookings(bookings){
+  const wrap = document.getElementById('bookingsTable');
+  if(!bookings.length){
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div>No bookings found</div></div>';
+    return;
+  }
+  wrap.innerHTML = `<table>
+    <thead><tr>
+      <th>Date</th><th>Tour</th><th>Room</th><th>Guest</th><th>Pax</th><th>Total</th><th>Status</th><th>Action</th>
+    </tr></thead>
+    <tbody>${bookings.map(b => {
+      const tour = allTours.find(t=>t.id===b.tour_id);
+      const d = new Date(b.created_at);
+      return `<tr>
+        <td><div style="font-weight:600">${b.date||'—'}</div><div style="font-size:11px;color:#aaa">${d.toLocaleDateString('en-GB')}</div></td>
+        <td style="font-weight:600">${tour?.name||'Unknown'}</td>
+        <td><span class="stat-badge badge-blue">Room ${b.room_number||'—'}</span></td>
+        <td>${b.guest_name||'—'}</td>
+        <td>${b.pax||1}</td>
+        <td style="font-weight:700">${(b.total||0).toLocaleString()} THB</td>
+        <td><span class="status-pill status-${b.status||'pending'}">${b.status||'pending'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openBooking('${b.id}')">View</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function openBooking(id){
+  const b = allBookings.find(x=>x.id===id);
+  const tour = allTours.find(t=>t.id===b.tour_id);
+  const statuses = ['pending','confirmed','paid','cancelled'];
+  document.getElementById('bookingModalBody').innerHTML = `
+    <div style="display:grid;gap:16px">
+      <div style="background:#f7fafc;border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px;">
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Tour</div><div style="font-weight:700;margin-top:3px">${tour?.name||'—'}</div></div>
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Date</div><div style="font-weight:700;margin-top:3px">${b.date||'—'}</div></div>
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Room</div><div style="font-weight:700;margin-top:3px">${b.room_number||'—'}</div></div>
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Guests</div><div style="font-weight:700;margin-top:3px">${b.pax} person${b.pax>1?'s':''}</div></div>
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Total</div><div style="font-weight:800;font-size:20px;color:#3B6E87;margin-top:3px">${(b.total||0).toLocaleString()} THB</div></div>
+        <div><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Payment</div><div style="font-weight:600;margin-top:3px">${b.payment_method||'—'}</div></div>
+        ${b.notes?`<div style="grid-column:1/-1"><div style="color:#888;font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:1px">Notes</div><div style="margin-top:3px">${b.notes}</div></div>`:''}
+      </div>
+      <div>
+        <label class="form-label">Update Status</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${statuses.map(s=>`<button class="btn btn-sm ${b.status===s?'btn-primary':'btn-ghost'}" onclick="updateBookingStatus('${b.id}','${s}',this)">${s}</button>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('bookingModalFooter').innerHTML = `
+    <button class="btn btn-ghost" onclick="document.getElementById('bookingModal').classList.remove('open')">Close</button>
+    <a href="https://wa.me/393465309386?text=${encodeURIComponent(`*Tour Booking Confirmed*\nRoom ${b.room_number}\nTour: ${tour?.name}\nDate: ${b.date}\nGuests: ${b.pax}`)}" target="_blank" class="btn btn-success">WhatsApp Guest</a>
+  `;
+  document.getElementById('bookingModal').classList.add('open');
+}
+
+async function updateBookingStatus(id, status, btn){
+  await sb(`tour_bookings?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({status}) });
+  allBookings = allBookings.map(b => b.id===id ? {...b,status} : b);
+  showToast('Status updated to '+status);
+  // Update buttons
+  btn.closest('div').querySelectorAll('.btn').forEach(b=>b.className='btn btn-sm btn-ghost');
+  btn.className='btn btn-sm btn-primary';
+  renderBookings(currentFilter==='all'?allBookings:allBookings.filter(b=>b.status===currentFilter));
+  updateStats();
+}
+
+// ── CALENDAR ──────────────────────────────────────
+function renderCalendar(){
+  const today = new Date();
+  const byDate = {};
+  allBookings.filter(b=>b.status!=='cancelled').forEach(b=>{
+    if(!b.date) return;
+    if(!byDate[b.date]) byDate[b.date]=[];
+    byDate[b.date].push(b);
+  });
+  const upcoming = Object.keys(byDate).filter(d=>d>=today.toISOString().split('T')[0]).sort().slice(0,20);
+  const html = upcoming.length ? upcoming.map(date=>{
+    const items = byDate[date];
+    return `<div style="margin-bottom:20px">
+      <div style="font-weight:800;font-size:15px;margin-bottom:8px;color:#3B6E87">${new Date(date+'T00:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
+      ${items.map(b=>{
+        const tour = allTours.find(t=>t.id===b.tour_id);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#f7fafc;border-radius:10px;margin-bottom:6px;font-size:14px">
+          <div><span style="font-weight:700">${tour?.name||'—'}</span> <span style="color:#888">· Room ${b.room_number} · ${b.pax} pax</span></div>
+          <span class="status-pill status-${b.status}">${b.status}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-icon">📅</div><div>No upcoming bookings</div></div>';
+  document.getElementById('calendarView').innerHTML = html;
+}
+
+// ── REVENUE ───────────────────────────────────────
+function renderRevenue(){
+  const paid = allBookings.filter(b=>b.status==='paid');
+  const total = paid.reduce((s,b)=>s+(b.total||0),0);
+  const byTour = {};
+  paid.forEach(b=>{
+    const t = allTours.find(x=>x.id===b.tour_id);
+    const name = t?.name||'Unknown';
+    if(!byTour[name]) byTour[name]={count:0,revenue:0};
+    byTour[name].count++;
+    byTour[name].revenue += b.total||0;
+  });
+  const rows = Object.entries(byTour).sort((a,b)=>b[1].revenue-a[1].revenue);
+  document.getElementById('revenueView').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+      <div class="stat-card"><div class="stat-val">${total.toLocaleString()}</div><div class="stat-label">Total Revenue (THB)</div></div>
+      <div class="stat-card"><div class="stat-val">${paid.length}</div><div class="stat-label">Paid Bookings</div></div>
+      <div class="stat-card"><div class="stat-val">${paid.length?Math.round(total/paid.length).toLocaleString():'—'}</div><div class="stat-label">Avg per Booking (THB)</div></div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-header"><div class="table-title">Revenue by Tour</div></div>
+      ${rows.length ? `<table><thead><tr><th>Tour</th><th>Bookings</th><th>Revenue (THB)</th></tr></thead><tbody>
+        ${rows.map(([name,d])=>`<tr><td style="font-weight:600">${name}</td><td>${d.count}</td><td style="font-weight:700;color:#3B6E87">${d.revenue.toLocaleString()}</td></tr>`).join('')}
+      </tbody></table>` : '<div class="empty" style="padding:32px"><div>No paid bookings yet</div></div>'}
+    </div>`;
+}
+
+// ── STATS ─────────────────────────────────────────
+function updateStats(){
+  document.getElementById('st-tours').textContent = allTours.filter(t=>t.active).length;
+  document.getElementById('st-bookings').textContent = allBookings.length;
+  document.getElementById('st-pending').textContent = allBookings.filter(b=>b.status==='pending').length;
+  const rev = allBookings.filter(b=>b.status==='paid').reduce((s,b)=>s+(b.total||0),0);
+  document.getElementById('st-revenue').textContent = rev.toLocaleString();
+}
+
+// ── NAV ───────────────────────────────────────────
+function showSection(name, el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='calendar') renderCalendar();
+  if(name==='stats') renderRevenue();
+}
+
+// ── TOAST ─────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// Load images after tours
+async function loadTours(){
+  allTours = await sb('tours?order=sort_order,created_at') || [];
+  if(allTours.length){
+    try {
+      const imgs = await sb(`tour_images?tour_id=in.(${allTours.map(t=>t.id).join(',')})&order=sort_order`) || [];
+      allTours.forEach(t => { t._images = imgs.filter(i=>i.tour_id===t.id); });
+    } catch(e){}
+  }
+  renderTours();
+}
+</script>
+</body>
+</html>
