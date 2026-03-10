@@ -247,6 +247,19 @@ tr:hover td{background:#fafafa;}
         <label class="form-label">Description</label>
         <textarea class="form-textarea" id="t-desc" placeholder="Describe the experience…"></textarea>
       </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="t-category">
+          <option value="General">General</option>
+          <option value="Beach & Islands">Beach & Islands</option>
+          <option value="Snorkeling & Diving">Snorkeling & Diving</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Adventure">Adventure</option>
+          <option value="City & Shopping">City & Shopping</option>
+          <option value="Sunset & Cruises">Sunset & Cruises</option>
+          <option value="Day Trips">Day Trips</option>
+        </select>
+      </div>
       <div class="form-row-3">
         <div class="form-group">
           <label class="form-label">Duration</label>
@@ -424,6 +437,7 @@ function openTourModal(tourId=null){
     document.getElementById('t-duration').value = t.duration||'';
     document.getElementById('t-maxpax').value = t.max_pax||'';
     document.getElementById('t-price').value = t.price_per_person||'';
+    document.getElementById('t-category').value = t.category||'General';
     document.getElementById('t-pickup').checked = t.pickup!==false;
     // Load includes
     const inc = Array.isArray(t.includes) ? t.includes : (typeof t.includes==='string' ? JSON.parse(t.includes||'[]') : []);
@@ -434,6 +448,7 @@ function openTourModal(tourId=null){
   } else {
     document.getElementById('tourModalTitle').textContent = 'Add Tour';
     ['t-name','t-desc','t-duration','t-maxpax','t-price'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('t-category').value = 'General';
     document.getElementById('t-pickup').checked = true;
     existingPhotos = [];
   }
@@ -458,6 +473,7 @@ async function saveTour(){
     max_pax: parseInt(document.getElementById('t-maxpax').value)||12,
     price_per_person: price,
     pickup: document.getElementById('t-pickup').checked,
+    category: document.getElementById('t-category').value,
     includes: JSON.stringify(includeTags),
     active: true
   };
