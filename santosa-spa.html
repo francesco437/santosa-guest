@@ -15,7 +15,7 @@
  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
  body{font-family:'Source Sans 3',sans-serif;background:#3B6E87;color:white;min-height:100vh;}
 
- .header{background:var(--teal-deep);padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+ .header{background:#3B6E87;padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,0.15);}
  .header-brand{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:22px;color:white;}
  .header-room{font-size:13px;color:white;letter-spacing:2px;text-transform:uppercase;font-weight:700;}
 
@@ -48,7 +48,7 @@
  .treatment-price{font-size:15px;font-weight:700;color:white;min-width:80px;text-align:right;}
 
  /* BOOKING FORM */
- .booking-panel{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border-radius:16px;border:1px solid rgba(255,255,255,0.2);padding:20px;margin-top:20px;}
+ .booking-panel{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);border-radius:16px;border:1px solid rgba(255,255,255,0.2);padding:20px;margin-top:20px;overflow:hidden;}
  .booking-title{font-family:'Source Sans 3',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:16px;}
  .selected-list{background:rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;margin-bottom:16px;min-height:50px;}
  .selected-item{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;color:rgba(255,255,255,0.85);}
@@ -56,9 +56,9 @@
  .empty-sel{font-size:13px;color:var(--text-soft);text-align:center;padding:8px 0;}
 
  .form-label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:6px;display:block;margin-top:14px;}
- .form-input,.form-select{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:white;background:rgba(255,255,255,0.12);outline:none;transition:border-color 0.15s;}
+ .form-input,.form-select{width:100%;max-width:100%;box-sizing:border-box;padding:13px 16px;border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:white;background:rgba(255,255,255,0.12);outline:none;transition:border-color 0.15s;}
  .form-input:focus,.form-select:focus{border-color:var(--teal);}
- .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+ .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;overflow:hidden;}
  .notes-input{width:100%;padding:13px 16px;border:1.5px solid rgba(255,255,255,0.25);border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:white;background:rgba(255,255,255,0.12);outline:none;resize:none;min-height:80px;transition:border-color 0.15s;}
  .notes-input:focus{border-color:var(--teal);}
 
