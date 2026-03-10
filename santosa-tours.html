@@ -92,6 +92,14 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:white;min
 .wa-btn{background:#25D366;color:white;border:none;padding:8px 14px;border-radius:10px;font-family:'Source Sans 3',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(26,46,59,0.95);color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:500;opacity:0;pointer-events:none;transition:all 0.3s;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.pay-method-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.pay-method-btn{padding:16px 10px;border-radius:14px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.2s;}
+.pay-method-btn:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4);}
+.pay-method-btn.selected{background:rgba(61,191,183,0.25);border-color:#3DBFB7;color:#7ee8e4;}
+.pay-method-icon{font-size:26px;display:block;margin-bottom:6px;}
+.cash-note{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:14px;font-size:13px;color:rgba(255,255,255,0.8);line-height:1.5;margin-bottom:16px;}
+.card-section{display:none;}
+.card-section.visible{display:block;}
 </style>
 </head>
 <body>
@@ -288,19 +296,45 @@ function showPaymentModal(){
       <label class="form-label">Your Name</label>
       <input type="text" class="form-input" id="guestName" placeholder="Full name" autocomplete="name">
     </div>
-    <label class="form-label">Card Details</label>
-    <div class="stripe-field">
-      <input class="card-input" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" oninput="formatCard(this)">
+    <label class="form-label">Payment Method</label>
+    <div class="pay-method-row">
+      <button class="pay-method-btn" id="btn-card" onclick="selectMethod('card')">
+        <span class="pay-method-icon">💳</span>Pay by Card
+      </button>
+      <button class="pay-method-btn" id="btn-cash" onclick="selectMethod('cash')">
+        <span class="pay-method-icon">🏨</span>Pay at Hotel
+      </button>
     </div>
-    <div class="stripe-row">
-      <div class="stripe-field"><input class="card-input" id="cardExp" placeholder="MM / YY" maxlength="7" inputmode="numeric" oninput="formatExp(this)"></div>
-      <div class="stripe-field"><input class="card-input" id="cardCvc" placeholder="CVC" maxlength="3" inputmode="numeric"></div>
+
+    <!-- CARD SECTION -->
+    <div class="card-section" id="cardSection">
+      <label class="form-label">Card Details</label>
+      <div class="stripe-field">
+        <input class="card-input" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric" oninput="formatCard(this)">
+      </div>
+      <div class="stripe-row">
+        <div class="stripe-field"><input class="card-input" id="cardExp" placeholder="MM / YY" maxlength="7" inputmode="numeric" oninput="formatExp(this)"></div>
+        <div class="stripe-field"><input class="card-input" id="cardCvc" placeholder="CVC" maxlength="3" inputmode="numeric"></div>
+      </div>
+      <div class="secure-note">🔒 Secured by Stripe</div>
+      <button class="pay-btn" id="payBtn" onclick="processPayment('card')">Pay ${b.total.toLocaleString()} THB</button>
+      <div style="margin-top:12px;text-align:center;font-size:12px;color:rgba(255,255,255,0.4)">Test card: 4242 4242 4242 4242</div>
     </div>
-    <div class="secure-note">🔒 Secured by Stripe</div>
-    <button class="pay-btn" id="payBtn" onclick="processPayment()">Pay ${b.total.toLocaleString()} THB</button>
-    <div style="margin-top:12px;text-align:center;font-size:12px;color:rgba(255,255,255,0.4)">Test card: 4242 4242 4242 4242</div>
+
+    <!-- CASH SECTION -->
+    <div class="card-section" id="cashSection">
+      <div class="cash-note">💡 Your booking will be reserved and our team will contact you to confirm payment at the hotel. No payment required now.</div>
+      <button class="pay-btn" id="cashBtn" onclick="processPayment('cash')">Confirm Booking</button>
+    </div>
   `;
   document.getElementById('payModal').classList.add('open');
+}
+
+function selectMethod(method){
+  document.getElementById('btn-card').classList.toggle('selected', method==='card');
+  document.getElementById('btn-cash').classList.toggle('selected', method==='cash');
+  document.getElementById('cardSection').classList.toggle('visible', method==='card');
+  document.getElementById('cashSection').classList.toggle('visible', method==='cash');
 }
 
 function formatCard(el){
@@ -313,52 +347,88 @@ function formatExp(el){
   el.value=v;
 }
 
-async function processPayment(){
+async function processPayment(method){
   const name=document.getElementById('guestName')?.value?.trim();
-  const card=document.getElementById('cardNum')?.value?.replace(/\s/g,'');
   if(!name){showToast('Please enter your name');return;}
-  if(!card||card.length<16){showToast('Please enter card number');return;}
-  const btn=document.getElementById('payBtn');
-  btn.disabled=true;btn.textContent='Processing…';
-  await new Promise(r=>setTimeout(r,1800));
-  try{
-    await sb('tour_bookings',{
-      method:'POST',
-      body:JSON.stringify({
-        tour_id:currentBooking.tour.id,
-        room_number:roomNum,
-        guest_name:name,
-        date:currentBooking.date,
-        pax:currentBooking.pax,
-        total:currentBooking.total,
-        status:'confirmed',
-        payment_method:'card'
-      })
-    });
-    const msg=`🌴 *New Tour Booking*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB`;
-    const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
-    showSuccessScreen(name,waLink);
-  }catch(e){
-    console.error(e);
-    btn.disabled=false;
-    btn.textContent=`Pay ${currentBooking.total.toLocaleString()} THB`;
-    showToast('Payment error — please try again');
+
+  if(method==='card'){
+    const card=document.getElementById('cardNum')?.value?.replace(/\s/g,'');
+    if(!card||card.length<16){showToast('Please enter card number');return;}
+    const btn=document.getElementById('payBtn');
+    btn.disabled=true;btn.textContent='Processing…';
+    await new Promise(r=>setTimeout(r,1800));
+    try{
+      await sb('tour_bookings',{
+        method:'POST',
+        body:JSON.stringify({
+          tour_id:currentBooking.tour.id,
+          room_number:roomNum,
+          guest_name:name,
+          date:currentBooking.date,
+          pax:currentBooking.pax,
+          total:currentBooking.total,
+          status:'confirmed',
+          payment_method:'card'
+        })
+      });
+      const msg=`💳 *New Tour Booking — Card*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ✅ Confirmed`;
+      const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+      showSuccessScreen(name,waLink,'card');
+    }catch(e){
+      console.error(e);
+      btn.disabled=false;
+      btn.textContent=`Pay ${currentBooking.total.toLocaleString()} THB`;
+      showToast('Payment error — please try again');
+    }
+  } else {
+    // CASH
+    const btn=document.getElementById('cashBtn');
+    btn.disabled=true;btn.textContent='Confirming…';
+    await new Promise(r=>setTimeout(r,800));
+    try{
+      await sb('tour_bookings',{
+        method:'POST',
+        body:JSON.stringify({
+          tour_id:currentBooking.tour.id,
+          room_number:roomNum,
+          guest_name:name,
+          date:currentBooking.date,
+          pax:currentBooking.pax,
+          total:currentBooking.total,
+          status:'pending',
+          payment_method:'cash'
+        })
+      });
+      const msg=`🏨 *New Tour Booking — Pay at Hotel*\nRoom ${roomNum} · ${name}\n*${currentBooking.tour.name}*\nDate: ${formatDate(currentBooking.date)}\nGuests: ${currentBooking.pax}\nTotal: ${currentBooking.total.toLocaleString()} THB\nStatus: ⏳ Pending payment`;
+      const waLink=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+      showSuccessScreen(name,waLink,'cash');
+    }catch(e){
+      console.error(e);
+      btn.disabled=false;
+      btn.textContent='Confirm Booking';
+      showToast('Error — please try again');
+    }
   }
 }
 
-function showSuccessScreen(name,waLink){
+function showSuccessScreen(name,waLink,method){
   const b=currentBooking;
+  const isCard=method==='card';
   document.getElementById('modalContent').innerHTML=`
     <div class="success-screen">
-      <div class="success-icon">🎉</div>
-      <div class="success-title">Booking Confirmed!</div>
-      <div class="success-msg">Your adventure is booked, ${name}. Our team will contact you with pickup details.</div>
+      <div class="success-icon">${isCard?'🎉':'✅'}</div>
+      <div class="success-title">${isCard?'Booking Confirmed!':'Booking Reserved!'}</div>
+      <div class="success-msg">${isCard
+        ?`Your adventure is booked, ${name}. Our team will contact you with pickup details.`
+        :`Your tour is reserved, ${name}. Our team will contact you to confirm and arrange payment at the hotel.`
+      }</div>
       <div class="detail-box">
         <div class="row"><span>Tour</span><span>${b.tour.name}</span></div>
         <div class="row"><span>Date</span><span>${formatDate(b.date)}</span></div>
         <div class="row"><span>Guests</span><span>${b.pax}</span></div>
         <div class="row"><span>Room</span><span>${roomNum}</span></div>
-        <div class="row"><span>Total Paid</span><span>${b.total.toLocaleString()} THB</span></div>
+        <div class="row"><span>${isCard?'Total Paid':'Total Due'}</span><span style="${isCard?'':'color:#f6ad55'}">${b.total.toLocaleString()} THB${isCard?'':' (at hotel)'}</span></div>
+        <div class="row"><span>Payment</span><span>${isCard?'💳 Card':'🏨 At Hotel'}</span></div>
       </div>
       <a href="${waLink}" target="_blank" style="display:block;width:100%;padding:14px;background:#25D366;color:white;border-radius:12px;font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:700;text-align:center;text-decoration:none;margin-bottom:10px">💬 Contact Us on WhatsApp</a>
       <button class="done-btn" onclick="closeModal()">Done</button>
