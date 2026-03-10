@@ -105,10 +105,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:white;min
 <body>
 
 <div class="header">
-  <a href="santosa-menu.html" class="back-btn" id="backLink">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Menu
-  </a>
+  <div></div>
   <div class="header-title">Tours & Excursions</div>
   <div class="room-badge" id="roomBadge">Room —</div>
 </div>
@@ -151,7 +148,6 @@ const params=new URLSearchParams(location.search);
 const roomNum=params.get('room')||'';
 if(roomNum){
   document.getElementById('roomBadge').textContent='Room '+roomNum;
-  document.getElementById('backLink').href='santosa-menu.html?room='+roomNum;
 }
 
 async function sb(path,opts={}){
