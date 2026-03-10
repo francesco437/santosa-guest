@@ -8,7 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{min-height:100vh;}
-body{font-family:'Source Sans 3',sans-serif;background:#3DBFB7;color:white;min-height:100vh;}
+body{font-family:'Source Sans 3',sans-serif;background:#1A8A85;color:white;min-height:100vh;}
 .header{padding:20px 20px 0;display:flex;justify-content:space-between;align-items:center;}
 .room-label{font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.9);text-align:center;flex:1;}
 .header-spacer{width:70px;flex-shrink:0;}
@@ -68,130 +68,130 @@ body{font-family:'Source Sans 3',sans-serif;background:#3DBFB7;color:white;min-h
 <body>
 
 <div class="header">
-  <div class="header-spacer"></div>
-  <div class="room-label" id="roomLabel">Room —</div>
-  <div class="header-spacer"></div>
+ <div class="header-spacer"></div>
+ <div class="room-label" id="roomLabel">Room —</div>
+ <div class="header-spacer"></div>
 </div>
 
 <div class="hero" id="homeHero">
-  <div class="hero-sub">Stay Services</div>
-  <div class="hero-title">How can we<br>help you?</div>
+ <div class="hero-sub">Stay Services</div>
+ <div class="hero-title">How can we<br>help you?</div>
 </div>
 
 <div class="service-hero" id="serviceHero">
-  <div class="service-hero-icon" id="sHeroIcon"></div>
-  <div class="service-hero-title" id="sHeroTitle"></div>
-  <div class="service-hero-sub" id="sHeroSub"></div>
+ <div class="service-hero-icon" id="sHeroIcon"></div>
+ <div class="service-hero-title" id="sHeroTitle"></div>
+ <div class="service-hero-sub" id="sHeroSub"></div>
 </div>
 
 <div class="content">
 
-  <div class="service-view active" id="view-home">
-    <div class="home-grid">
-      <a class="home-card" href="#concierge"><div class="home-card-icon">🛎️</div><div class="home-card-name">Concierge</div><div class="home-card-sub">09:00 – 20:00</div></a>
-      <a class="home-card" href="#emergency"><div class="home-card-icon">🚨</div><div class="home-card-name">After Hours</div><div class="home-card-sub">Emergency only</div></a>
-      <a class="home-card" href="#checkout"><div class="home-card-icon">🕐</div><div class="home-card-name">Late Check-Out</div><div class="home-card-sub">From 300 THB</div></a>
-      <a class="home-card" href="#transport"><div class="home-card-icon">🚐</div><div class="home-card-name">Airport Transfer</div><div class="home-card-sub">From 1,000 THB</div></a>
-      <a class="home-card" href="#laundry"><div class="home-card-icon">👕</div><div class="home-card-name">Laundry</div><div class="home-card-sub">From 100 THB/kg</div></a>
-      <a class="home-card" href="#housekeeping"><div class="home-card-icon">🧹</div><div class="home-card-name">Housekeeping</div><div class="home-card-sub">Extra cleaning</div></a>
-      <a class="home-card" href="#shuttle"><div class="home-card-icon">🚌</div><div class="home-card-name">Shuttle Bus</div><div class="home-card-sub">Hotel ↔ Kata</div></a>
-      <a class="home-card" href="#sauna"><div class="home-card-icon">🧖</div><div class="home-card-name">Sauna & Ice Bath</div><div class="home-card-sub">Free · Book required</div></a>
-    </div>
-  </div>
+ <div class="service-view active" id="view-home">
+ <div class="home-grid">
+ <a class="home-card" href="#concierge"><div class="home-card-icon">️</div><div class="home-card-name">Concierge</div><div class="home-card-sub">09:00 – 20:00</div></a>
+ <a class="home-card" href="#emergency"><div class="home-card-icon"></div><div class="home-card-name">After Hours</div><div class="home-card-sub">Emergency only</div></a>
+ <a class="home-card" href="#checkout"><div class="home-card-icon"></div><div class="home-card-name">Late Check-Out</div><div class="home-card-sub">From 300 THB</div></a>
+ <a class="home-card" href="#transport"><div class="home-card-icon"></div><div class="home-card-name">Airport Transfer</div><div class="home-card-sub">From 1,000 THB</div></a>
+ <a class="home-card" href="#laundry"><div class="home-card-icon"></div><div class="home-card-name">Laundry</div><div class="home-card-sub">From 100 THB/kg</div></a>
+ <a class="home-card" href="#housekeeping"><div class="home-card-icon"></div><div class="home-card-name">Housekeeping</div><div class="home-card-sub">Extra cleaning</div></a>
+ <a class="home-card" href="#shuttle"><div class="home-card-icon"></div><div class="home-card-name">Shuttle Bus</div><div class="home-card-sub">Hotel ↔ Kata</div></a>
+ <a class="home-card" href="#sauna"><div class="home-card-icon"></div><div class="home-card-name">Sauna & Ice Bath</div><div class="home-card-sub">Free · Book required</div></a>
+</div>
+</div>
 
-  <div class="service-view" id="view-concierge">
-    <div class="card"><div class="card-body">
-      <div class="hours-badge">🕐 Available 09:00 – 20:00</div>
-      <div class="service-desc">Our team is here to help with any request during your stay. Restaurant reservations, local tips, activities — just ask!</div>
-      <button class="action-btn btn-white" onclick="openWA('concierge')">💬 Chat with Concierge</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-concierge">
+ <div class="card"><div class="card-body">
+ <div class="hours-badge">Available 09:00 – 20:00</div>
+ <div class="service-desc">Our team is here to help with any request during your stay. Restaurant reservations, local tips, activities — just ask!</div>
+ <button class="action-btn btn-white" onclick="openWA('concierge')">Chat with Concierge</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-emergency">
-    <div class="card"><div class="card-body">
-      <div class="hours-badge">🌙 20:00 – 09:00</div>
-      <div class="emergency-warn">
-        <strong>⚠️ Emergency Use Only</strong>
-        Reserved for genuine emergencies: medical issues, safety concerns, urgent maintenance. Please use the regular concierge line during business hours.
-      </div>
-      <button class="action-btn btn-emergency" onclick="openWA('emergency')">🚨 Emergency Contact</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-emergency">
+ <div class="card"><div class="card-body">
+ <div class="hours-badge">20:00 – 09:00</div>
+ <div class="emergency-warn">
+ <strong>️ Emergency Use Only</strong>
+ Reserved for genuine emergencies: medical issues, safety concerns, urgent maintenance. Please use the regular concierge line during business hours.
+</div>
+ <button class="action-btn btn-emergency" onclick="openWA('emergency')">Emergency Contact</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-checkout">
-    <div class="card"><div class="card-body">
-      <div class="service-desc">Subject to availability. Standard check-out is 12:00.</div>
-      <div class="option-row" onclick="selectOpt(this,'checkout','Until 14:00','300')"><div><div class="option-label">Until 14:00</div><div class="option-note">2 extra hours</div></div><div class="option-price">300 THB</div></div>
-      <div class="option-row" onclick="selectOpt(this,'checkout','Until 16:00','600')"><div><div class="option-label">Until 16:00</div><div class="option-note">4 extra hours</div></div><div class="option-price">600 THB</div></div>
-      <div class="option-row" onclick="selectOpt(this,'checkout','After 16:00','0')"><div><div class="option-label">After 16:00</div><div class="option-note">Extra night quotation required</div></div><div class="option-price">On request</div></div>
-      <textarea class="notes-input" id="checkout-notes" placeholder="Any additional notes…"></textarea>
-      <button class="action-btn btn-white" onclick="send('checkout')">📤 Request Late Check-Out</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-checkout">
+ <div class="card"><div class="card-body">
+ <div class="service-desc">Subject to availability. Standard check-out is 12:00.</div>
+ <div class="option-row" onclick="selectOpt(this,'checkout','Until 14:00','300')"><div><div class="option-label">Until 14:00</div><div class="option-note">2 extra hours</div></div><div class="option-price">300 THB</div></div>
+ <div class="option-row" onclick="selectOpt(this,'checkout','Until 16:00','600')"><div><div class="option-label">Until 16:00</div><div class="option-note">4 extra hours</div></div><div class="option-price">600 THB</div></div>
+ <div class="option-row" onclick="selectOpt(this,'checkout','After 16:00','0')"><div><div class="option-label">After 16:00</div><div class="option-note">Extra night quotation required</div></div><div class="option-price">On request</div></div>
+ <textarea class="notes-input" id="checkout-notes" placeholder="Any additional notes…"></textarea>
+ <button class="action-btn btn-white" onclick="send('checkout')">Request Late Check-Out</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-transport">
-    <div class="card"><div class="card-body">
-      <div class="service-desc">Hotel to Phuket International Airport. Please book at least 3 hours in advance.</div>
-      <div class="option-row" onclick="selectOpt(this,'transport','1–2 Passengers','1000')"><div><div class="option-label">1–2 Passengers</div><div class="option-note">Standard vehicle</div></div><div class="option-price">1,000 THB</div></div>
-      <div class="option-row" onclick="selectOpt(this,'transport','3–6 Passengers','1400')"><div><div class="option-label">3–6 Passengers</div><div class="option-note">Minivan</div></div><div class="option-price">1,400 THB</div></div>
-      <label class="form-label">Pickup Date & Time</label>
-      <div class="form-row-2">
-        <input class="form-input" type="date" id="transport-date">
-        <input class="form-input" type="time" id="transport-time">
-      </div>
-      <textarea class="notes-input" id="transport-notes" placeholder="Flight number or special requests…"></textarea>
-      <button class="action-btn btn-white" onclick="send('transport')">📤 Book Transfer</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-transport">
+ <div class="card"><div class="card-body">
+ <div class="service-desc">Hotel to Phuket International Airport. Please book at least 3 hours in advance.</div>
+ <div class="option-row" onclick="selectOpt(this,'transport','1–2 Passengers','1000')"><div><div class="option-label">1–2 Passengers</div><div class="option-note">Standard vehicle</div></div><div class="option-price">1,000 THB</div></div>
+ <div class="option-row" onclick="selectOpt(this,'transport','3–6 Passengers','1400')"><div><div class="option-label">3–6 Passengers</div><div class="option-note">Minivan</div></div><div class="option-price">1,400 THB</div></div>
+ <label class="form-label">Pickup Date & Time</label>
+ <div class="form-row-2">
+ <input class="form-input" type="date" id="transport-date">
+ <input class="form-input" type="time" id="transport-time">
+</div>
+ <textarea class="notes-input" id="transport-notes" placeholder="Flight number or special requests…"></textarea>
+ <button class="action-btn btn-white" onclick="send('transport')">Book Transfer</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-laundry">
-    <div class="card"><div class="card-body">
-      <div class="service-desc">We'll pick up from your room. Price is per kg.</div>
-      <div class="option-row" onclick="selectOpt(this,'laundry','Wash Only','100')"><div><div class="option-label">Wash Only</div><div class="option-note">100 THB per kg</div></div><div class="option-price">100/kg</div></div>
-      <div class="option-row" onclick="selectOpt(this,'laundry','Wash & Iron','140')"><div><div class="option-label">Wash & Iron</div><div class="option-note">140 THB per kg</div></div><div class="option-price">140/kg</div></div>
-      <textarea class="notes-input" id="laundry-notes" placeholder="Any special instructions…"></textarea>
-      <button class="action-btn btn-white" onclick="send('laundry')">📤 Request Pick-Up</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-laundry">
+ <div class="card"><div class="card-body">
+ <div class="service-desc">We'll pick up from your room. Price is per kg.</div>
+ <div class="option-row" onclick="selectOpt(this,'laundry','Wash Only','100')"><div><div class="option-label">Wash Only</div><div class="option-note">100 THB per kg</div></div><div class="option-price">100/kg</div></div>
+ <div class="option-row" onclick="selectOpt(this,'laundry','Wash & Iron','140')"><div><div class="option-label">Wash & Iron</div><div class="option-note">140 THB per kg</div></div><div class="option-price">140/kg</div></div>
+ <textarea class="notes-input" id="laundry-notes" placeholder="Any special instructions…"></textarea>
+ <button class="action-btn btn-white" onclick="send('laundry')">Request Pick-Up</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-housekeeping">
-    <div class="card"><div class="card-body">
-      <div class="service-desc">Extra services for your room comfort.</div>
-      <div class="option-row" onclick="selectOpt(this,'housekeeping','Extra Cleaning','300')"><div><div class="option-label">Extra Cleaning</div><div class="option-note">Full room clean — 300 THB</div></div><div class="option-price">300 THB</div></div>
-      <div class="option-row" onclick="selectOpt(this,'housekeeping','Extra Towel Set','0')"><div><div class="option-label">Extra Towel Set</div><div class="option-note">Fresh set of towels</div></div><div class="free-badge" style="margin:0">FREE</div></div>
-      <textarea class="notes-input" id="housekeeping-notes" placeholder="Preferred time or any requests…"></textarea>
-      <button class="action-btn btn-white" onclick="send('housekeeping')">📤 Send Request</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-housekeeping">
+ <div class="card"><div class="card-body">
+ <div class="service-desc">Extra services for your room comfort.</div>
+ <div class="option-row" onclick="selectOpt(this,'housekeeping','Extra Cleaning','300')"><div><div class="option-label">Extra Cleaning</div><div class="option-note">Full room clean — 300 THB</div></div><div class="option-price">300 THB</div></div>
+ <div class="option-row" onclick="selectOpt(this,'housekeeping','Extra Towel Set','0')"><div><div class="option-label">Extra Towel Set</div><div class="option-note">Fresh set of towels</div></div><div class="free-badge" style="margin:0">FREE</div></div>
+ <textarea class="notes-input" id="housekeeping-notes" placeholder="Preferred time or any requests…"></textarea>
+ <button class="action-btn btn-white" onclick="send('housekeeping')">Send Request</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-shuttle">
-    <div class="card"><div class="card-body">
-      <div class="service-desc">Free shuttle between hotel, Kata area and beach. Max 8–10 people per trip.</div>
-      <div class="schedule-table">
-        <div class="schedule-row"><span class="schedule-time">08:30</span><span class="schedule-route">Hotel → Kata</span></div>
-        <div class="schedule-row"><span class="schedule-time">10:00</span><span class="schedule-route">Hotel → Kata</span></div>
-        <div class="schedule-row"><span class="schedule-time">12:00</span><span class="schedule-route">Kata → Hotel</span></div>
-        <div class="schedule-row"><span class="schedule-time">14:00</span><span class="schedule-route">Hotel → Kata</span></div>
-        <div class="schedule-row"><span class="schedule-time">16:00</span><span class="schedule-route">Beach → Hotel</span></div>
-        <div class="schedule-row"><span class="schedule-time">18:00</span><span class="schedule-route">Beach → Hotel</span></div>
-      </div>
-      <label class="form-label">Reserve Your Seat</label>
-      <div class="form-row-2">
-        <select class="form-select" id="shuttle-time"><option value="">Select time…</option><option>08:30 Hotel → Kata</option><option>10:00 Hotel → Kata</option><option>12:00 Kata → Hotel</option><option>14:00 Hotel → Kata</option><option>16:00 Beach → Hotel</option><option>18:00 Beach → Hotel</option></select>
-        <select class="form-select" id="shuttle-pax"><option value="">Passengers…</option><option>1 person</option><option>2 people</option><option>3 people</option><option>4 people</option><option>5+ people</option></select>
-      </div>
-      <button class="action-btn btn-white" onclick="send('shuttle')">💬 Book Shuttle</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-shuttle">
+ <div class="card"><div class="card-body">
+ <div class="service-desc">Free shuttle between hotel, Kata area and beach. Max 8–10 people per trip.</div>
+ <div class="schedule-table">
+ <div class="schedule-row"><span class="schedule-time">08:30</span><span class="schedule-route">Hotel → Kata</span></div>
+ <div class="schedule-row"><span class="schedule-time">10:00</span><span class="schedule-route">Hotel → Kata</span></div>
+ <div class="schedule-row"><span class="schedule-time">12:00</span><span class="schedule-route">Kata → Hotel</span></div>
+ <div class="schedule-row"><span class="schedule-time">14:00</span><span class="schedule-route">Hotel → Kata</span></div>
+ <div class="schedule-row"><span class="schedule-time">16:00</span><span class="schedule-route">Beach → Hotel</span></div>
+ <div class="schedule-row"><span class="schedule-time">18:00</span><span class="schedule-route">Beach → Hotel</span></div>
+</div>
+ <label class="form-label">Reserve Your Seat</label>
+ <div class="form-row-2">
+ <select class="form-select" id="shuttle-time"><option value="">Select time…</option><option>08:30 Hotel → Kata</option><option>10:00 Hotel → Kata</option><option>12:00 Kata → Hotel</option><option>14:00 Hotel → Kata</option><option>16:00 Beach → Hotel</option><option>18:00 Beach → Hotel</option></select>
+ <select class="form-select" id="shuttle-pax"><option value="">Passengers…</option><option>1 person</option><option>2 people</option><option>3 people</option><option>4 people</option><option>5+ people</option></select>
+</div>
+ <button class="action-btn btn-white" onclick="send('shuttle')">Book Shuttle</button>
+</div></div>
+</div>
 
-  <div class="service-view" id="view-sauna">
-    <div class="card"><div class="card-body">
-      <div class="free-badge">🎁 FREE for guests</div>
-      <div class="service-desc">Reservation required. Subject to availability. Please indicate your preferred date, time and number of people.</div>
-      <textarea class="notes-input" style="margin-top:0" id="sauna-notes" placeholder="e.g. Tomorrow at 16:00 for 2 people…"></textarea>
-      <button class="action-btn btn-white" onclick="send('sauna')">💬 Book Sauna & Ice Bath</button>
-    </div></div>
-  </div>
+ <div class="service-view" id="view-sauna">
+ <div class="card"><div class="card-body">
+ <div class="free-badge">FREE for guests</div>
+ <div class="service-desc">Reservation required. Subject to availability. Please indicate your preferred date, time and number of people.</div>
+ <textarea class="notes-input" style="margin-top:0" id="sauna-notes" placeholder="e.g. Tomorrow at 16:00 for 2 people…"></textarea>
+ <button class="action-btn btn-white" onclick="send('sauna')">Book Sauna & Ice Bath</button>
+</div></div>
+</div>
 
 </div>
 <div class="toast" id="toast"></div>
@@ -203,100 +203,100 @@ const WA='393465309386';
 let room='—';
 const opts={};
 const META={
-  concierge:    {icon:'🛎️',title:'Concierge',sub:'We\'re here to help · 09:00–20:00'},
-  emergency:    {icon:'🚨',title:'After Hours',sub:'Emergency use only · 20:00–09:00'},
-  checkout:     {icon:'🕐',title:'Late Check-Out',sub:'Subject to availability'},
-  transport:    {icon:'🚐',title:'Airport Transfer',sub:'Hotel → Phuket Airport'},
-  laundry:      {icon:'👕',title:'Laundry Service',sub:'Pick-up from your room'},
-  housekeeping: {icon:'🧹',title:'Housekeeping',sub:'Extra services for your room'},
-  shuttle:      {icon:'🚌',title:'Shuttle Bus',sub:'Hotel ↔ Kata Beach · Free'},
-  sauna:        {icon:'🧖',title:'Sauna & Ice Bath',sub:'Free for guests · Reservation required'},
+ concierge: {icon:'',title:'Concierge',sub:'We\'re here to help · 09:00–20:00'},
+ emergency: {icon:'',title:'After Hours',sub:'Emergency use only · 20:00–09:00'},
+ checkout: {icon:'',title:'Late Check-Out',sub:'Subject to availability'},
+ transport: {icon:'',title:'Airport Transfer',sub:'Hotel → Phuket Airport'},
+ laundry: {icon:'',title:'Laundry Service',sub:'Pick-up from your room'},
+ housekeeping: {icon:'',title:'Housekeeping',sub:'Extra services for your room'},
+ shuttle: {icon:'',title:'Shuttle Bus',sub:'Hotel ↔ Kata Beach · Free'},
+ sauna: {icon:'',title:'Sauna & Ice Bath',sub:'Free for guests · Reservation required'},
 };
 (function(){
-  const KEY='sg_room';
-  const s=v=>(v||'').toString().trim().replace(/[^a-zA-Z0-9]/g,'').slice(0,8);
-  let r=s(new URLSearchParams(window.location.search).get('room'));
-  if(!r){try{r=s(localStorage.getItem(KEY));}catch(e){}}
-  if(r){try{localStorage.setItem(KEY,r);}catch(e){}}
-  room=r||'—';
-  document.getElementById('roomLabel').textContent=r?'ROOM '+r:'Guest';
+ const KEY='sg_room';
+ const s=v=>(v||'').toString().trim().replace(/[^a-zA-Z0-9]/g,'').slice(0,8);
+ let r=s(new URLSearchParams(window.location.search).get('room'));
+ if(!r){try{r=s(localStorage.getItem(KEY));}catch(e){}}
+ if(r){try{localStorage.setItem(KEY,r);}catch(e){}}
+ room=r||'—';
+ document.getElementById('roomLabel').textContent=r?'ROOM '+r:'Guest';
 })();
 function route(){
-  const hash=window.location.hash.replace('#','');
-  document.querySelectorAll('.service-view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('homeHero').style.display='none';
-  document.getElementById('serviceHero').classList.remove('active');
-  if(hash&&META[hash]){
-    document.getElementById('view-'+hash).classList.add('active');
-    const m=META[hash];
-    document.getElementById('sHeroIcon').textContent=m.icon;
-    document.getElementById('sHeroTitle').textContent=m.title;
-    document.getElementById('sHeroSub').textContent=m.sub;
-    document.getElementById('serviceHero').classList.add('active');
-    window.scrollTo(0,0);
-  } else {
-    document.getElementById('view-home').classList.add('active');
-    document.getElementById('homeHero').style.display='block';
-  }
+ const hash=window.location.hash.replace('#','');
+ document.querySelectorAll('.service-view').forEach(v=>v.classList.remove('active'));
+ document.getElementById('homeHero').style.display='none';
+ document.getElementById('serviceHero').classList.remove('active');
+ if(hash&&META[hash]){
+ document.getElementById('view-'+hash).classList.add('active');
+ const m=META[hash];
+ document.getElementById('sHeroIcon').textContent=m.icon;
+ document.getElementById('sHeroTitle').textContent=m.title;
+ document.getElementById('sHeroSub').textContent=m.sub;
+ document.getElementById('serviceHero').classList.add('active');
+ window.scrollTo(0,0);
+ } else {
+ document.getElementById('view-home').classList.add('active');
+ document.getElementById('homeHero').style.display='block';
+ }
 }
 window.addEventListener('hashchange',route);
 window.addEventListener('DOMContentLoaded',route);
 async function sb(path,options={}){
-  const r=await fetch(`${SB_URL}/rest/v1/${path}`,{headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(options.headers||{})},...options});
-  const t=await r.text();return t?JSON.parse(t):null;
+ const r=await fetch(`${SB_URL}/rest/v1/${path}`,{headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(options.headers||{})},...options});
+ const t=await r.text();return t?JSON.parse(t):null;
 }
 function selectOpt(el,service,label,price){
-  el.parentElement.querySelectorAll('.option-row').forEach(r=>r.classList.remove('selected'));
-  el.classList.add('selected');
-  opts[service]={label,price:parseInt(price)||0};
+ el.parentElement.querySelectorAll('.option-row').forEach(r=>r.classList.remove('selected'));
+ el.classList.add('selected');
+ opts[service]={label,price:parseInt(price)||0};
 }
 async function send(service){
-  let details={},total=0,msg=`🏨 *Santosa Hotel Services*\n📍 Room ${room}\n\n`;
-  if(service==='checkout'){
-    const o=opts['checkout'];if(!o){toast('⚠️ Please select a time');return;}
-    const n=document.getElementById('checkout-notes').value;
-    details={option:o.label,notes:n};total=o.price;
-    msg+=`*Late Check-Out*\n✅ ${o.label}${n?'\n📝 '+n:''}`;
-  } else if(service==='transport'){
-    const o=opts['transport'];if(!o){toast('⚠️ Please select vehicle type');return;}
-    const d=document.getElementById('transport-date').value;
-    const t=document.getElementById('transport-time').value;
-    const n=document.getElementById('transport-notes').value;
-    if(!d||!t){toast('⚠️ Please select date and time');return;}
-    details={option:o.label,date:d,time:t,notes:n};total=o.price;
-    msg+=`*Airport Transfer*\n🚐 ${o.label}\n📅 ${d} at ${t}${n?'\n✈️ '+n:''}`;
-  } else if(service==='laundry'){
-    const o=opts['laundry'];if(!o){toast('⚠️ Please select laundry type');return;}
-    const n=document.getElementById('laundry-notes').value;
-    details={option:o.label,notes:n};
-    msg+=`*Laundry Pick-Up*\n👕 ${o.label}${n?'\n📝 '+n:''}`;
-  } else if(service==='housekeeping'){
-    const o=opts['housekeeping'];if(!o){toast('⚠️ Please select a service');return;}
-    const n=document.getElementById('housekeeping-notes').value;
-    details={option:o.label,notes:n};total=o.price;
-    msg+=`*Housekeeping*\n🧹 ${o.label}${n?'\n📝 '+n:''}`;
-  } else if(service==='shuttle'){
-    const t=document.getElementById('shuttle-time').value;
-    const p=document.getElementById('shuttle-pax').value;
-    if(!t||!p){toast('⚠️ Please select time and passengers');return;}
-    details={time:t,pax:p};
-    msg+=`*Shuttle Bus*\n🚌 ${t}\n👥 ${p}`;
-  } else if(service==='sauna'){
-    const n=document.getElementById('sauna-notes').value;
-    if(!n){toast('⚠️ Please add preferred date and time');return;}
-    details={notes:n};
-    msg+=`*Sauna & Ice Bath*\n🧖 ${n}`;
-  }
-  try{await sb('requests',{method:'POST',body:JSON.stringify({room_number:room,service_type:'hotel',service_subtype:service,details,total,status:'new'})});}catch(e){console.error(e);}
-  setTimeout(()=>{window.location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;},400);
-  toast('✅ Request sent!');
+ let details={},total=0,msg=` *Santosa Hotel Services*\n Room ${room}\n\n`;
+ if(service==='checkout'){
+ const o=opts['checkout'];if(!o){toast('️ Please select a time');return;}
+ const n=document.getElementById('checkout-notes').value;
+ details={option:o.label,notes:n};total=o.price;
+ msg+=`*Late Check-Out*\n ${o.label}${n?'\n '+n:''}`;
+ } else if(service==='transport'){
+ const o=opts['transport'];if(!o){toast('️ Please select vehicle type');return;}
+ const d=document.getElementById('transport-date').value;
+ const t=document.getElementById('transport-time').value;
+ const n=document.getElementById('transport-notes').value;
+ if(!d||!t){toast('️ Please select date and time');return;}
+ details={option:o.label,date:d,time:t,notes:n};total=o.price;
+ msg+=`*Airport Transfer*\n ${o.label}\n ${d} at ${t}${n?'\n️ '+n:''}`;
+ } else if(service==='laundry'){
+ const o=opts['laundry'];if(!o){toast('️ Please select laundry type');return;}
+ const n=document.getElementById('laundry-notes').value;
+ details={option:o.label,notes:n};
+ msg+=`*Laundry Pick-Up*\n ${o.label}${n?'\n '+n:''}`;
+ } else if(service==='housekeeping'){
+ const o=opts['housekeeping'];if(!o){toast('️ Please select a service');return;}
+ const n=document.getElementById('housekeeping-notes').value;
+ details={option:o.label,notes:n};total=o.price;
+ msg+=`*Housekeeping*\n ${o.label}${n?'\n '+n:''}`;
+ } else if(service==='shuttle'){
+ const t=document.getElementById('shuttle-time').value;
+ const p=document.getElementById('shuttle-pax').value;
+ if(!t||!p){toast('️ Please select time and passengers');return;}
+ details={time:t,pax:p};
+ msg+=`*Shuttle Bus*\n ${t}\n ${p}`;
+ } else if(service==='sauna'){
+ const n=document.getElementById('sauna-notes').value;
+ if(!n){toast('️ Please add preferred date and time');return;}
+ details={notes:n};
+ msg+=`*Sauna & Ice Bath*\n ${n}`;
+ }
+ try{await sb('requests',{method:'POST',body:JSON.stringify({room_number:room,service_type:'hotel',service_subtype:service,details,total,status:'new'})});}catch(e){console.error(e);}
+ setTimeout(()=>{window.location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;},400);
+ toast(' Request sent!');
 }
 function openWA(type){
-  const msgs={
-    concierge:`🛎️ *Santosa Concierge*\n📍 Room ${room}\n\nHello, I need assistance with…`,
-    emergency:`🚨 *EMERGENCY — Room ${room}*\n\nI need urgent assistance:`
-  };
-  setTimeout(()=>{window.location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msgs[type])}`;},400);
+ const msgs={
+ concierge:`️ *Santosa Concierge*\n Room ${room}\n\nHello, I need assistance with…`,
+ emergency:` *EMERGENCY — Room ${room}*\n\nI need urgent assistance:`
+ };
+ setTimeout(()=>{window.location.href=`https://wa.me/${WA}?text=${encodeURIComponent(msgs[type])}`;},400);
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 </script>
