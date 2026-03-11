@@ -204,6 +204,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .day-slot{padding:6px 10px;min-height:48px;cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:8px;}
 .day-slot:hover{background:var(--teal-foam);}
 .day-slot.drag-over{background:rgba(61,191,183,0.2);border:2px dashed var(--teal);border-radius:6px;}
+.week-slot.drag-over{background:rgba(61,191,183,0.25);outline:2px dashed var(--teal);}
 .day-slot.occupied{cursor:default;background:#FAFAFA;}
 .day-appt-block{flex:1;background:var(--teal-foam);border:1px solid var(--teal-light);border-radius:8px;padding:8px 10px;}
 .day-appt-block.manual{background:#F5F3FF;border-color:#C4B5FD;}
@@ -760,15 +761,18 @@ function renderDayView(){
   html+=`</div>`;
   html+=`<div style="margin-top:12px;text-align:right"><button class="cal-nav-btn" onclick="openModal('${dk}','09:00')" style="background:var(--teal);color:white;border-color:var(--teal)">+ New Appointment</button></div>`;
   document.getElementById('calBody').innerHTML=html;
+  attachDragEvents();
+}
 
-  // Attach drag events
+// ── DRAG & DROP (shared) ──────────────────────────
+function attachDragEvents(){
   document.querySelectorAll('[draggable=true][data-appt-id]').forEach(el=>{
     el.addEventListener('dragstart',e=>{
       dragApptId=el.dataset.apptId;
       el.style.opacity='0.4';
       e.dataTransfer.effectAllowed='move';
     });
-    el.addEventListener('dragend',e=>{
+    el.addEventListener('dragend',()=>{
       el.style.opacity='1';
       document.querySelectorAll('.drag-target').forEach(t=>t.classList.remove('drag-over'));
     });
@@ -789,13 +793,12 @@ function renderDayView(){
       if(!newSlot||!newDate) return;
       try{
         await sbq(`spa_appointments?id=eq.${dragApptId}`,{method:'PATCH',body:JSON.stringify({time:newSlot,date:newDate})});
-        // update linked request details if exists
         const appt=manualAppts.find(a=>a.id===dragApptId);
         if(appt?.request_id){
-          const det=JSON.parse(appt.details||'{}');
+          const det=typeof appt.details==='string'?JSON.parse(appt.details||'{}'):appt.details||{};
           await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({details:JSON.stringify({...det,time:newSlot,date:newDate})})}).catch(()=>{});
         }
-        toast(`Moved to ${newSlot}`);
+        toast(`Moved to ${newDate} ${newSlot}`);
         await loadManualAppts();
         renderCalBody();
       }catch(err){console.error(err);toast('Error moving appointment');}
@@ -803,8 +806,6 @@ function renderDayView(){
     });
   });
 }
-
-// WEEK VIEW
 function renderWeekView(){
   const isMobile=window.innerWidth<=768;
   const dow=calDate.getDay();
@@ -841,25 +842,28 @@ function renderWeekView(){
       </div>`;
     SLOTS.forEach((slot,si)=>{
       const occ=occupied[slot];
-      if(occ&&!occ.isFirst){html+=`<div class="week-slot${isT?' today-col':''}"></div>`;return;}
+      if(occ&&!occ.isFirst){html+=`<div class="week-slot${isT?' today-col':''} drag-target" data-slot="${slot}" data-date="${dk}"></div>`;return;}
       if(occ&&occ.isFirst){
         const ev=occ.ev;
         const blocks=Math.ceil((ev.duration||60)/30);
         const h=blocks*48-4;
         const isManual=ev.type==='manual';
         html+=`<div class="week-slot${isT?' today-col':''}" style="position:relative">
-          <div class="week-event ${isManual?'ev-manual':'ev-system'}" style="height:${h}px;top:2px">
+          <div class="week-event ${isManual?'ev-manual':'ev-system'}"
+            style="height:${h}px;top:2px;${isManual?'cursor:grab':''}"
+            ${isManual?`draggable="true" data-appt-id="${ev.id}" onclick="editAppt('${ev.id}')"`:''}>
             ${ev.name||ev.client_name}<br><span style="opacity:.7">${ev.treatment}</span>${ev.type==='manual'&&ev.price>0?`<br><span style="font-size:9px;font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'Unpaid'} · ${ev.price.toLocaleString()} THB</span>`:''}
           </div>
         </div>`;
         return;
       }
-      html+=`<div class="week-slot${isT?' today-col':''}" onclick="openModal('${dk}','${slot}')"></div>`;
+      html+=`<div class="week-slot${isT?' today-col':''} drag-target" data-slot="${slot}" data-date="${dk}" onclick="openModal('${dk}','${slot}')"></div>`;
     });
     html+=`</div>`;
   });
   html+=`</div>`;
   document.getElementById('calBody').innerHTML=html;
+  attachDragEvents();
 }
 
 // MONTH VIEW
