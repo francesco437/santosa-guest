@@ -203,6 +203,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .day-time{padding:12px 14px;font-size:11px;font-weight:600;color:var(--text-soft);border-right:1px solid var(--border);background:var(--bg);display:flex;align-items:center;}
 .day-slot{padding:6px 10px;min-height:48px;cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:8px;}
 .day-slot:hover{background:var(--teal-foam);}
+.day-slot.drag-over{background:rgba(61,191,183,0.2);border:2px dashed var(--teal);border-radius:6px;}
 .day-slot.occupied{cursor:default;background:#FAFAFA;}
 .day-appt-block{flex:1;background:var(--teal-foam);border:1px solid var(--teal-light);border-radius:8px;padding:8px 10px;}
 .day-appt-block.manual{background:#F5F3FF;border-color:#C4B5FD;}
@@ -704,6 +705,8 @@ function getEventsForDate(dk){
 }
 
 // DAY VIEW
+let dragApptId = null;
+
 function renderDayView(){
   const dk=dateStr(calDate);
   const isToday=dk===todayStr();
@@ -720,7 +723,7 @@ function renderDayView(){
   let html=`<div class="day-grid">`;
   SLOTS.forEach(slot=>{
     const occ=occupied[slot];
-    if(occ&&!occ.isFirst){html+=`<div class="day-slot-row"><div class="day-time"></div><div class="day-slot occupied"></div></div>`;return;}
+    if(occ&&!occ.isFirst){html+=`<div class="day-slot-row"><div class="day-time"></div><div class="day-slot occupied drag-target" data-slot="${slot}" data-date="${dk}"></div></div>`;return;}
     if(occ&&occ.isFirst){
       const ev=occ.ev;
       const blocks=Math.ceil((ev.duration||60)/30);
@@ -728,7 +731,8 @@ function renderDayView(){
       html+=`<div class="day-slot-row">
         <div class="day-time">${slot}</div>
         <div class="day-slot occupied">
-          <div class="day-appt-block${isManual?' manual':''}">
+          <div class="day-appt-block${isManual?' manual':''}"
+            ${isManual?`draggable="true" data-appt-id="${ev.id}" onclick="editAppt('${ev.id}')" style="cursor:grab"`:''}">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
               <div>
                 <div class="day-appt-name">${ev.name||ev.client_name}</div>
@@ -736,7 +740,10 @@ function renderDayView(){
                 ${ev.type==='manual'&&ev.price>0?`<div class="day-appt-detail" style="font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'⚠ Unpaid'} · ${ev.price.toLocaleString()} THB</div>`:''}
                 ${ev.notes?`<div class="day-appt-detail" style="color:var(--teal-dark)">${ev.notes}</div>`:''}
               </div>
-              ${isManual?`<button class="day-appt-delete" onclick="deleteAppt('${ev.id}',event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
+              <div style="display:flex;gap:4px;flex-shrink:0">
+                ${isManual?`<button class="day-appt-delete" title="Edit" onclick="event.stopPropagation();editAppt('${ev.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`:''}
+                ${isManual?`<button class="day-appt-delete" onclick="deleteAppt('${ev.id}',event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
+              </div>
             </div>
           </div>
         </div>
@@ -745,7 +752,7 @@ function renderDayView(){
     }
     html+=`<div class="day-slot-row">
       <div class="day-time">${slot}</div>
-      <div class="day-slot" onclick="openModal('${dk}','${slot}')">
+      <div class="day-slot drag-target" data-slot="${slot}" data-date="${dk}" onclick="openModal('${dk}','${slot}')">
         <span class="day-add-hint">+ Add appointment</span>
       </div>
     </div>`;
@@ -753,6 +760,48 @@ function renderDayView(){
   html+=`</div>`;
   html+=`<div style="margin-top:12px;text-align:right"><button class="cal-nav-btn" onclick="openModal('${dk}','09:00')" style="background:var(--teal);color:white;border-color:var(--teal)">+ New Appointment</button></div>`;
   document.getElementById('calBody').innerHTML=html;
+
+  // Attach drag events
+  document.querySelectorAll('[draggable=true][data-appt-id]').forEach(el=>{
+    el.addEventListener('dragstart',e=>{
+      dragApptId=el.dataset.apptId;
+      el.style.opacity='0.4';
+      e.dataTransfer.effectAllowed='move';
+    });
+    el.addEventListener('dragend',e=>{
+      el.style.opacity='1';
+      document.querySelectorAll('.drag-target').forEach(t=>t.classList.remove('drag-over'));
+    });
+  });
+  document.querySelectorAll('.drag-target').forEach(target=>{
+    target.addEventListener('dragover',e=>{
+      e.preventDefault();
+      e.dataTransfer.dropEffect='move';
+      target.classList.add('drag-over');
+    });
+    target.addEventListener('dragleave',()=>target.classList.remove('drag-over'));
+    target.addEventListener('drop',async e=>{
+      e.preventDefault();
+      target.classList.remove('drag-over');
+      if(!dragApptId) return;
+      const newSlot=target.dataset.slot;
+      const newDate=target.dataset.date;
+      if(!newSlot||!newDate) return;
+      try{
+        await sbq(`spa_appointments?id=eq.${dragApptId}`,{method:'PATCH',body:JSON.stringify({time:newSlot,date:newDate})});
+        // update linked request details if exists
+        const appt=manualAppts.find(a=>a.id===dragApptId);
+        if(appt?.request_id){
+          const det=JSON.parse(appt.details||'{}');
+          await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({details:JSON.stringify({...det,time:newSlot,date:newDate})})}).catch(()=>{});
+        }
+        toast(`Moved to ${newSlot}`);
+        await loadManualAppts();
+        renderCalBody();
+      }catch(err){console.error(err);toast('Error moving appointment');}
+      dragApptId=null;
+    });
+  });
 }
 
 // WEEK VIEW
@@ -841,6 +890,25 @@ function calDayClick(dk){
 }
 
 // MODAL
+function editAppt(id){
+  const a = manualAppts.find(x=>x.id===id);
+  if(!a) return;
+  editingApptId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Appointment';
+  document.getElementById('apptClient').value = a.client_name||'';
+  document.getElementById('apptTreatment').value = a.treatment||'';
+  document.getElementById('apptDate').value = a.date||'';
+  document.getElementById('apptNotes').value = a.notes||'';
+  document.getElementById('apptPrice').value = a.price||'';
+  document.getElementById('apptPaid').value = a.paid?'true':'false';
+  document.getElementById('apptDuration').value = a.duration||60;
+  document.getElementById('apptRoom').value = a.room||1;
+  const sel = document.getElementById('apptTime');
+  sel.innerHTML = SLOTS.map(s=>`<option value="${s}"${s===a.time?' selected':''}>${s}</option>`).join('');
+  document.getElementById('modalSaveBtn').textContent = 'Update Appointment';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('apptModal').classList.add('open');
+}
 function openModal(date, time){
   editingApptId=null;
   document.getElementById('modalTitle').textContent='New Appointment';
@@ -878,28 +946,42 @@ async function saveAppt(){
   const btn=document.getElementById('modalSaveBtn');
   btn.textContent='Saving...';btn.disabled=true;
   try{
-    // 1. Save to requests first to get its id
-    const reqRes=await sbq('requests',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({
-      room_number:'EXT',
-      service_type:'spa',
-      service_subtype:'treatment',
-      status:paid?'paid':'confirmed',
-      total:price||0,
-      details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
-      notes:notes||null
-    })});
-    const requestId=reqRes&&reqRes[0]?reqRes[0].id:null;
-
-    // 2. Save to spa_appointments with request_id reference
-    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual',request_id:requestId})});
-
+    if(editingApptId){
+      // EDIT — PATCH existing appointment
+      await sbq(`spa_appointments?id=eq.${editingApptId}`,{method:'PATCH',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid})});
+      // Also update the linked request if exists
+      const appt=manualAppts.find(a=>a.id===editingApptId);
+      if(appt?.request_id){
+        await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({
+          status:paid?'paid':'confirmed',
+          total:price||0,
+          details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
+          notes:notes||null
+        })}).catch(()=>{});
+      }
+      toast('Appointment updated!');
+    } else {
+      // NEW — POST
+      const reqRes=await sbq('requests',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({
+        room_number:'EXT',
+        service_type:'spa',
+        service_subtype:'treatment',
+        status:paid?'paid':'confirmed',
+        total:price||0,
+        details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
+        notes:notes||null
+      })});
+      const requestId=reqRes&&reqRes[0]?reqRes[0].id:null;
+      await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual',request_id:requestId})});
+      toast('Appointment saved!');
+    }
     await loadManualAppts();
     await load();
     closeModal();
     renderCalBody();
-    toast('Appointment saved!');
   }catch(e){console.error(e);toast('Error saving');}
-  btn.textContent='Save Appointment';btn.disabled=false;
+  btn.textContent = editingApptId ? 'Update Appointment' : 'Save Appointment';
+  btn.disabled=false;
 }
 async function deleteAppt(id,ev){
   ev.stopPropagation();
