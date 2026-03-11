@@ -696,9 +696,11 @@ function dateStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart
 function getEventsForDate(dk){
   // IDs of requests already linked to a manual appointment
   const linkedRequestIds = new Set(manualAppts.filter(a=>a.request_id).map(a=>a.request_id));
-  // system bookings — skip those already represented by a manual appointment
+  // system bookings — skip those already represented by a manual appointment and skip EXT walk-ins
   const sys=(all||[]).filter(r=>{
-    if(linkedRequestIds.has(r.id)) return false; // already shown as manual
+    if(linkedRequestIds.has(r.id)) return false;
+    if(r.room_number==='EXT') return false;
+    try{const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};if(det.source==='manual_walkin')return false;}catch(e){}
     const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};
     const appt=det.date||det.appointment_date||r.created_at.slice(0,10);
     return appt===dk;
