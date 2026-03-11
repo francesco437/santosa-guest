@@ -195,6 +195,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .week-event{position:absolute;left:2px;right:2px;border-radius:6px;padding:3px 6px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;z-index:2;}
 .week-event.ev-system{background:var(--teal-foam);border:1px solid var(--teal-light);color:var(--teal-dark);}
 .week-event.ev-manual{background:#F5F3FF;border:1px solid #C4B5FD;color:#5B21B6;}
+.week-event.ev-pending{background:#FEF9C3;border:1px solid #FDE047;color:#854D0E;}
+.day-appt-block.pending{background:#FEF9C3;border:1px solid #FDE047;}
+.cal-event.ev-pending{background:#FEF9C3;border-left:2px solid #EAB308;color:#854D0E;}
+/* 3-column day grid */
+.day-3col-grid{display:grid;grid-template-columns:60px 1fr 1fr 1fr;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:white;}
+.day-3col-header{display:grid;grid-template-columns:60px 1fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border);}
+.day-3col-room-label{padding:10px 8px;text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-soft);border-left:1px solid var(--border);}
+.day-3col-time{font-size:10px;font-weight:600;color:var(--text-soft);padding:0 6px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--border);height:48px;}
+.day-3col-cell{border-left:1px solid var(--border);border-bottom:1px solid var(--border);height:48px;cursor:pointer;transition:background .1s;position:relative;}
+.day-3col-cell:hover{background:var(--teal-foam);}
+.day-3col-cell.occupied{cursor:default;background:#fafafa;}
+.day-3col-cell.drag-target.drag-over{background:rgba(61,191,183,0.2);outline:2px dashed var(--teal);}
+.day-3col-block{position:absolute;inset:2px;border-radius:6px;padding:4px 6px;font-size:11px;font-weight:600;overflow:hidden;cursor:pointer;}
+.day-3col-block.manual{background:#F5F3FF;border:1px solid #C4B5FD;color:#5B21B6;}
+.day-3col-block.pending{background:#FEF9C3;border:1px solid #FDE047;color:#854D0E;cursor:pointer;}
+.day-3col-block.system{background:var(--teal-foam);border:1px solid var(--teal-light);color:var(--teal-dark);}
+/* Therapist panel */
+.therapist-panel{background:white;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);}
+.therapist-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.therapist-row:last-child{border-bottom:none;}
 
 /* Day view */
 .day-grid{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
@@ -324,6 +344,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div class="nav-item" id="nav-revenue" onclick="showTab('revenue',this)">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
         Revenue
+      </div>
+      <div class="nav-item" id="nav-therapists" onclick="showTab('therapists',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Therapists
       </div>
     </div>
     <div class="sb-footer">
@@ -482,10 +506,70 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <label class="form-label">Notes</label>
           <input class="form-input" id="apptNotes" placeholder="Optional notes">
         </div>
+        <div class="form-field">
+          <label class="form-label">Therapist</label>
+          <select class="form-input" id="apptTherapist">
+            <option value="">— Not assigned —</option>
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
         <button class="modal-btn-save" id="modalSaveBtn" onclick="saveAppt()">Save Appointment</button>
+      </div>
+    </div>
+
+    <!-- THERAPISTS PAGE -->
+    <div class="content" id="pageTherapists" style="display:none">
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2>Today's Therapists</h2>
+        <button class="btn btn-primary btn-sm" onclick="openAddTherapist()">+ Add Therapist</button>
+      </div>
+      <div class="therapist-panel" id="therapistList">
+        <div style="color:var(--text-soft);font-size:14px;text-align:center;padding:20px">No therapists added yet for today</div>
+      </div>
+      <p style="font-size:12px;color:var(--text-soft);margin-top:8px">⚠️ This list resets when you reload the page — it's session only.</p>
+    </div>
+
+    <!-- CONFIRM BOOKING MODAL (for pending guest requests) -->
+    <div class="modal-overlay" id="confirmOverlay" onclick="closeConfirmModal()"></div>
+    <div class="modal" id="confirmModal">
+      <div class="modal-header">
+        <div class="modal-title">Confirm Booking</div>
+        <button class="modal-close" onclick="closeConfirmModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmModalBody"></div>
+      <div class="modal-footer" style="flex-wrap:wrap;gap:8px">
+        <button class="modal-btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+        <button class="modal-btn-save" id="confirmWaBtn" onclick="openWhatsAppForPending()" style="background:linear-gradient(135deg,#1a7a4a,#25a360)">💬 WhatsApp</button>
+        <button class="modal-btn-save" id="confirmSaveBtn" onclick="confirmPendingBooking()">✓ Confirm</button>
+      </div>
+    </div>
+
+    <!-- ADD THERAPIST MODAL -->
+    <div class="modal-overlay" id="therapistOverlay" onclick="closeAddTherapist()"></div>
+    <div class="modal" id="therapistModal">
+      <div class="modal-header">
+        <div class="modal-title">Add Therapist</div>
+        <button class="modal-close" onclick="closeAddTherapist()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-field">
+          <label class="form-label">Name</label>
+          <input class="form-input" id="therapistName" placeholder="e.g. Noi">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Phone (WhatsApp)</label>
+          <input class="form-input" id="therapistPhone" placeholder="e.g. +66812345678">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn-cancel" onclick="closeAddTherapist()">Cancel</button>
+        <button class="modal-btn-save" onclick="saveTherapist()">Add</button>
       </div>
     </div>
 
@@ -513,6 +597,7 @@ const SB='https://zycptgrxnvbqsbngfuqi.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5Y3B0Z3J4bnZicXNibmdmdXFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5MTQxNjcsImV4cCI6MjA4ODQ5MDE2N30.PneFp7cqNFkyODdOY8o3JW7C8OgjzhQIQVR0Uyxyp8k';
 const PASS='spa2024';
 let all=[],cf='all',pt=null,calDate=new Date();
+let therapists=[]; // session-only: [{name, phone}]
 
 function doLogin(){
   const v=document.getElementById('loginPass').value;
@@ -710,61 +795,92 @@ function getEventsForDate(dk){
   return [...sys,...man].sort((a,b)=>a.time.localeCompare(b.time));
 }
 
-// DAY VIEW
+// DAY VIEW — 3 columns (Room 1, 2, 3)
 let dragApptId = null;
+
+function getEventsForBox(dk, box){
+  const all3 = getEventsForDate(dk);
+  // pending system bookings go to unassigned (box 0) — shown in all columns as pending
+  return all3.filter(ev=>{
+    if(ev.type==='system') return true; // show in all, handled separately
+    return (ev.box||1) === box;
+  });
+}
 
 function renderDayView(){
   const dk=dateStr(calDate);
-  const isToday=dk===todayStr();
   document.getElementById('calTitle').textContent=`${calDate.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Bangkok'})}`;
-  const events=getEventsForDate(dk);
-  
-  // figure out which slots are occupied
-  const occupied={};
-  events.forEach(ev=>{
-    const si=SLOTS.indexOf(ev.time);
-    if(si>=0){const blocks=Math.ceil((ev.duration||60)/30);for(let i=0;i<blocks;i++)if(si+i<SLOTS.length)occupied[SLOTS[si+i]]={ev,isFirst:i===0};}
-  });
+  const allEvs=getEventsForDate(dk);
+  const pending=allEvs.filter(ev=>ev.type==='system'); // guest bookings = pending
+  const BOXES=[1,2,3];
+  const BOXNAMES=['Room 1','Room 2','Room 3'];
 
-  let html=`<div class="day-grid">`;
+  // Build occupied map per box
+  const occ={1:{},2:{},3:{}};
+  allEvs.filter(ev=>ev.type==='manual').forEach(ev=>{
+    const box=ev.box||1;
+    const si=SLOTS.indexOf(ev.time);
+    if(si>=0){const blocks=Math.ceil((ev.duration||60)/30);for(let i=0;i<blocks;i++)if(si+i<SLOTS.length)occ[box][SLOTS[si+i]]={ev,isFirst:i===0};}
+  });
+  // Pending system bookings — mark in their time slot (box 0 = show as overlay in first free box)
+  const pendingBySlot={};
+  pending.forEach(ev=>{pendingBySlot[ev.time]=pendingBySlot[ev.time]||[];pendingBySlot[ev.time].push(ev);});
+
+  let html=`<div class="day-3col-header">
+    <div style="padding:10px 6px;font-size:11px;font-weight:700;color:var(--text-soft);text-align:center">Time</div>
+    ${BOXNAMES.map((n,i)=>`<div class="day-3col-room-label">${n}</div>`).join('')}
+  </div>
+  <div class="day-3col-grid">`;
+
   SLOTS.forEach(slot=>{
-    const occ=occupied[slot];
-    if(occ&&!occ.isFirst){html+=`<div class="day-slot-row"><div class="day-time"></div><div class="day-slot occupied drag-target" data-slot="${slot}" data-date="${dk}"></div></div>`;return;}
-    if(occ&&occ.isFirst){
-      const ev=occ.ev;
-      const blocks=Math.ceil((ev.duration||60)/30);
-      const isManual=ev.type==='manual';
-      html+=`<div class="day-slot-row">
-        <div class="day-time">${slot}</div>
-        <div class="day-slot occupied">
-          <div class="day-appt-block${isManual?' manual':''}"
-            ${isManual?`draggable="true" data-appt-id="${ev.id}" onclick="editAppt('${ev.id}')" style="cursor:grab"`:''}">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-              <div>
-                <div class="day-appt-name">${ev.name||ev.client_name}</div>
-                <div class="day-appt-detail">${ev.treatment} · ${ev.duration||60} min · Room ${ev.room||1}</div>
-                ${ev.type==='manual'&&ev.price>0?`<div class="day-appt-detail" style="font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'⚠ Unpaid'} · ${ev.price.toLocaleString()} THB</div>`:''}
-                ${ev.notes?`<div class="day-appt-detail" style="color:var(--teal-dark)">${ev.notes}</div>`:''}
-              </div>
-              <div style="display:flex;gap:4px;flex-shrink:0">
-                ${isManual?`<button class="day-appt-delete" title="Edit" onclick="event.stopPropagation();editAppt('${ev.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`:''}
-                ${isManual?`<button class="day-appt-delete" onclick="deleteAppt('${ev.id}',event)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>`:''}
-              </div>
-            </div>
+    html+=`<div class="day-3col-time">${slot}</div>`;
+    BOXES.forEach(box=>{
+      const o=occ[box][slot];
+      if(o&&!o.isFirst){html+=`<div class="day-3col-cell occupied drag-target" data-slot="${slot}" data-date="${dk}" data-box="${box}"></div>`;return;}
+      if(o&&o.isFirst){
+        const ev=o.ev;
+        const blocks=Math.ceil((ev.duration||60)/30);
+        const h=blocks*48-4;
+        html+=`<div class="day-3col-cell occupied" style="height:${blocks*48}px">
+          <div class="day-3col-block manual" style="height:${h}px"
+            draggable="true" data-appt-id="${ev.id}"
+            onclick="editAppt('${ev.id}')">
+            <div style="font-weight:700;font-size:11px">${ev.client_name}</div>
+            <div style="opacity:.75;font-size:10px">${ev.treatment}</div>
+            ${ev.therapist?`<div style="font-size:10px;opacity:.8">👤 ${ev.therapist}</div>`:''}
+            <button style="position:absolute;top:2px;right:2px;background:none;border:none;cursor:pointer;color:#B91C1C;font-size:10px;padding:1px 3px" onclick="event.stopPropagation();deleteAppt('${ev.id}',event)">✕</button>
           </div>
-        </div>
-      </div>`;
-      return;
-    }
-    html+=`<div class="day-slot-row">
-      <div class="day-time">${slot}</div>
-      <div class="day-slot drag-target" data-slot="${slot}" data-date="${dk}" onclick="openModal('${dk}','${slot}')">
-        <span class="day-add-hint">+ Add appointment</span>
-      </div>
-    </div>`;
+        </div>`;
+        return;
+      }
+      // Check for pending guest booking in this slot
+      const pend=pendingBySlot[slot];
+      if(pend&&pend.length>0&&box===1){
+        // Show first pending in box 1 slot
+        const p=pend[0];
+        html+=`<div class="day-3col-cell">
+          <div class="day-3col-block pending" onclick="openConfirmModal('${p.id}')">
+            <div style="font-weight:700;font-size:10px">⏳ ${p.name}</div>
+            <div style="font-size:10px;opacity:.8">${p.treatment}</div>
+            <div style="font-size:9px;margin-top:2px">Tap to assign</div>
+          </div>
+        </div>`;
+        return;
+      }
+      html+=`<div class="day-3col-cell drag-target" data-slot="${slot}" data-date="${dk}" data-box="${box}" onclick="openModal('${dk}','${slot}',${box})"></div>`;
+    });
   });
   html+=`</div>`;
-  html+=`<div style="margin-top:12px;text-align:right"><button class="cal-nav-btn" onclick="openModal('${dk}','09:00')" style="background:var(--teal);color:white;border-color:var(--teal)">+ New Appointment</button></div>`;
+  html+=`<div style="margin-top:12px;text-align:right"><button class="cal-nav-btn" onclick="openModal('${dk}','09:00',1)" style="background:var(--teal);color:white;border-color:var(--teal)">+ New Appointment</button></div>`;
+  if(pending.length>0){
+    html+=`<div style="margin-top:12px;background:#FEF9C3;border:1px solid #FDE047;border-radius:10px;padding:12px 16px">
+      <div style="font-weight:700;font-size:13px;color:#854D0E;margin-bottom:6px">⏳ Pending Guest Requests (${pending.length})</div>
+      ${pending.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #FDE04755">
+        <div><span style="font-weight:600">${p.name}</span> · ${p.treatment} · ${p.time}</div>
+        <button class="btn btn-sm btn-primary" onclick="openConfirmModal('${p.id}')">Assign</button>
+      </div>`).join('')}
+    </div>`;
+  }
   document.getElementById('calBody').innerHTML=html;
   attachDragEvents();
 }
@@ -796,23 +912,15 @@ function attachDragEvents(){
       const newSlot=target.dataset.slot;
       const newDate=target.dataset.date;
       if(!newSlot||!newDate) return;
+      const newBox=parseInt(target.dataset.box)||1;
       try{
-        await sbq(`spa_appointments?id=eq.${dragApptId}`,{method:'PATCH',body:JSON.stringify({time:newSlot,date:newDate})});
+        await sbq(`spa_appointments?id=eq.${dragApptId}`,{method:'PATCH',body:JSON.stringify({time:newSlot,date:newDate,box:newBox})});
         const appt=manualAppts.find(a=>a.id===dragApptId);
         if(appt?.request_id){
-          // Build details from spa_appointment fields (not from request.details)
-          const newDet={
-            client_name:appt.client_name,
-            treatment:appt.treatment,
-            date:newDate,
-            time:newSlot,
-            duration:appt.duration,
-            room:appt.room,
-            source:'manual_walkin'
-          };
+          const newDet={client_name:appt.client_name,treatment:appt.treatment,date:newDate,time:newSlot,duration:appt.duration,room:newBox,source:'manual_walkin'};
           await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({details:JSON.stringify(newDet)})}).catch(()=>{});
         }
-        toast(`Moved to ${newDate} ${newSlot}`);
+        toast(`Moved to Room ${newBox} · ${newSlot}`);
         await loadManualAppts();
         await load();
         renderCalBody();
@@ -827,7 +935,7 @@ function renderWeekView(){
   const weekStart=new Date(calDate.getFullYear(),calDate.getMonth(),calDate.getDate()-dow);
   const today=todayStr();
   const allWeekDays=Array.from({length:7},(_,i)=>{const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);return d;});
-  // On mobile show 3 days starting from calDate
+  // Mobile: 3 days, Desktop: 7 days
   let weekDays=allWeekDays;
   if(isMobile){
     const startIdx=Math.max(0,allWeekDays.findIndex(d=>dateStr(d)===dateStr(calDate)));
@@ -835,48 +943,99 @@ function renderWeekView(){
     if(weekDays.length<3) weekDays=allWeekDays.slice(allWeekDays.length-3);
   }
   document.getElementById('calTitle').textContent=`${weekDays[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})} – ${weekDays[weekDays.length-1].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
-  
-  let html=`<div class="week-grid" style="${isMobile?`grid-template-columns:44px repeat(${weekDays.length},1fr)`:''}">`;
-  html+=`<div class="week-time-col"><div class="week-header" style="height:50px"></div>`;
-  SLOTS.forEach(s=>html+=`<div class="week-time-lbl">${s}</div>`);
-  html+=`</div>`;
-  
+
+  const BOXES=[1,2,3];
+  const BOX_COLORS={1:'var(--teal-dark)',2:'#5B21B6',3:'#92400E'};
+  const BOX_BG={1:'var(--teal-foam)',2:'#F5F3FF',3:'#FEF3C7'};
+  const BOX_BORDER={1:'var(--teal-light)',2:'#C4B5FD',3:'#FCD34D'};
+  const totalCols=weekDays.length*3;
+
+  // Header row: time col + for each day, 3 sub-columns
+  let html=`<div style="overflow-x:auto">
+  <table style="border-collapse:collapse;min-width:${weekDays.length*180}px;width:100%">
+  <thead>
+    <tr>
+      <th style="width:48px;min-width:48px;border:1px solid var(--border);background:var(--bg);"></th>
+      ${weekDays.map(day=>{
+        const dk=dateStr(day);
+        const isT=dk===today;
+        return `<th colspan="3" style="border:1px solid var(--border);padding:8px 4px;text-align:center;background:${isT?'rgba(61,191,183,0.08)':'var(--bg)'};color:${isT?'var(--teal-dark)':'var(--text)'}">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-soft)">${DAYS_SHORT[day.getDay()]}</div>
+          <div style="font-size:15px;font-weight:700">${day.getDate()}</div>
+        </th>`;
+      }).join('')}
+    </tr>
+    <tr>
+      <th style="border:1px solid var(--border);background:var(--bg)"></th>
+      ${weekDays.map(day=>{
+        const dk=dateStr(day);
+        return BOXES.map(b=>`<th style="border:1px solid var(--border);padding:3px 2px;text-align:center;font-size:9px;font-weight:700;color:${BOX_COLORS[b]};background:${BOX_BG[b]};width:60px">R${b}</th>`).join('');
+      }).join('')}
+    </tr>
+  </thead>
+  <tbody>`;
+
+  // Build occupied maps: occ[dk][box][slot]
+  const occ={};
   weekDays.forEach(day=>{
     const dk=dateStr(day);
-    const isT=dk===today;
-    const events=getEventsForDate(dk);
-    const occupied={};
-    events.forEach(ev=>{
+    occ[dk]={1:{},2:{},3:{}};
+    const evs=getEventsForDate(dk);
+    evs.filter(ev=>ev.type==='manual').forEach(ev=>{
+      const box=ev.box||1;
       const si=SLOTS.indexOf(ev.time);
-      if(si>=0){const blocks=Math.ceil((ev.duration||60)/30);for(let i=0;i<blocks;i++)if(si+i<SLOTS.length)occupied[SLOTS[si+i]]={ev,isFirst:i===0};}
+      if(si>=0){const blocks=Math.ceil((ev.duration||60)/30);for(let i=0;i<blocks;i++)if(si+i<SLOTS.length)occ[dk][box][SLOTS[si+i]]={ev,isFirst:i===0};}
     });
-    html+=`<div class="week-col${isT?' today-col':''}">
-      <div class="week-header${isT?' today-col':''}" style="height:50px">
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-soft)">${DAYS_SHORT[day.getDay()]}</div>
-        <div style="font-size:16px;font-weight:700;color:${isT?'var(--teal-dark)':'var(--text)'}">${day.getDate()}</div>
-      </div>`;
-    SLOTS.forEach((slot,si)=>{
-      const occ=occupied[slot];
-      if(occ&&!occ.isFirst){html+=`<div class="week-slot${isT?' today-col':''} drag-target" data-slot="${slot}" data-date="${dk}"></div>`;return;}
-      if(occ&&occ.isFirst){
-        const ev=occ.ev;
-        const blocks=Math.ceil((ev.duration||60)/30);
-        const h=blocks*48-4;
-        const isManual=ev.type==='manual';
-        html+=`<div class="week-slot${isT?' today-col':''}" style="position:relative">
-          <div class="week-event ${isManual?'ev-manual':'ev-system'}"
-            style="height:${h}px;top:2px;${isManual?'cursor:grab':''}"
-            ${isManual?`draggable="true" data-appt-id="${ev.id}" onclick="editAppt('${ev.id}')"`:''}>
-            ${ev.name||ev.client_name}<br><span style="opacity:.7">${ev.treatment}</span>${ev.type==='manual'&&ev.price>0?`<br><span style="font-size:9px;font-weight:700;color:${ev.paid?'#166534':'#B45309'}">${ev.paid?'✓ Paid':'Unpaid'} · ${ev.price.toLocaleString()} THB</span>`:''}
-          </div>
-        </div>`;
-        return;
-      }
-      html+=`<div class="week-slot${isT?' today-col':''} drag-target" data-slot="${slot}" data-date="${dk}" onclick="openModal('${dk}','${slot}')"></div>`;
-    });
-    html+=`</div>`;
   });
-  html+=`</div>`;
+  // Pending by dk+slot
+  const pendingMap={};
+  weekDays.forEach(day=>{
+    const dk=dateStr(day);
+    getEventsForDate(dk).filter(ev=>ev.type==='system').forEach(ev=>{
+      const key=dk+'_'+ev.time;
+      pendingMap[key]=pendingMap[key]||[];
+      pendingMap[key].push(ev);
+    });
+  });
+
+  SLOTS.forEach(slot=>{
+    html+=`<tr>
+      <td style="border:1px solid var(--border);font-size:9px;font-weight:600;color:var(--text-soft);text-align:center;padding:0 2px;height:40px;white-space:nowrap">${slot}</td>`;
+    weekDays.forEach(day=>{
+      const dk=dateStr(day);
+      BOXES.forEach(box=>{
+        const o=occ[dk][box][slot];
+        if(o&&!o.isFirst){html+=`<td style="border:1px solid var(--border);background:#fafafa" class="drag-target" data-slot="${slot}" data-date="${dk}" data-box="${box}"></td>`;return;}
+        if(o&&o.isFirst){
+          const ev=o.ev;
+          const blocks=Math.ceil((ev.duration||60)/30);
+          html+=`<td rowspan="${blocks}" style="border:1px solid var(--border);padding:2px;vertical-align:top;position:relative">
+            <div draggable="true" data-appt-id="${ev.id}"
+              style="height:100%;min-height:${blocks*40-4}px;border-radius:4px;padding:3px 4px;font-size:9px;font-weight:600;background:${BOX_BG[box]};border:1px solid ${BOX_BORDER[box]};color:${BOX_COLORS[box]};cursor:grab;overflow:hidden"
+              onclick="editAppt('${ev.id}')">
+              ${ev.client_name}<br><span style="opacity:.75">${ev.treatment.substring(0,12)}</span>
+              ${ev.therapist?`<br><span style="opacity:.7">👤${ev.therapist}</span>`:''}
+            </div>
+          </td>`;
+          return;
+        }
+        // Pending?
+        const pend=pendingMap[dk+'_'+slot];
+        if(pend&&pend.length>0&&box===1){
+          html+=`<td colspan="1" style="border:1px solid var(--border);padding:2px">
+            <div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:4px;padding:3px 4px;font-size:9px;font-weight:600;color:#854D0E;cursor:pointer" onclick="openConfirmModal('${pend[0].id}')">
+              ⏳ ${pend[0].name.replace('Room ','R')}
+            </div>
+          </td>`;
+          return;
+        }
+        html+=`<td style="border:1px solid var(--border);cursor:pointer" class="drag-target" data-slot="${slot}" data-date="${dk}" data-box="${box}" onclick="openModal('${dk}','${slot}',${box})"></td>`;
+      });
+    });
+    html+=`</tr>`;
+  });
+
+  html+=`</tbody></table></div>`;
   document.getElementById('calBody').innerHTML=html;
   attachDragEvents();
 }
@@ -909,6 +1068,10 @@ function calDayClick(dk){
 }
 
 // MODAL
+function populateTherapistSelect(selectedName=''){
+  const sel=document.getElementById('apptTherapist');
+  sel.innerHTML=`<option value="">— Not assigned —</option>`+therapists.map(t=>`<option value="${t.name}"${t.name===selectedName?' selected':''}>${t.name}</option>`).join('');
+}
 function editAppt(id){
   const a = manualAppts.find(x=>x.id===id);
   if(!a) return;
@@ -921,14 +1084,15 @@ function editAppt(id){
   document.getElementById('apptPrice').value = a.price||'';
   document.getElementById('apptPaid').value = a.paid?'true':'false';
   document.getElementById('apptDuration').value = a.duration||60;
-  document.getElementById('apptRoom').value = a.room||1;
+  document.getElementById('apptRoom').value = a.box||a.room||1;
+  populateTherapistSelect(a.therapist||'');
   const sel = document.getElementById('apptTime');
   sel.innerHTML = SLOTS.map(s=>`<option value="${s}"${s===a.time?' selected':''}>${s}</option>`).join('');
   document.getElementById('modalSaveBtn').textContent = 'Update Appointment';
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('apptModal').classList.add('open');
 }
-function openModal(date, time){
+function openModal(date, time, box=1){
   editingApptId=null;
   document.getElementById('modalTitle').textContent='New Appointment';
   document.getElementById('apptClient').value='';
@@ -938,10 +1102,11 @@ function openModal(date, time){
   document.getElementById('apptPrice').value='';
   document.getElementById('apptPaid').value='false';
   document.getElementById('apptDuration').value='60';
-  document.getElementById('apptRoom').value='1';
-  // populate time select
+  document.getElementById('apptRoom').value=box;
+  populateTherapistSelect('');
   const sel=document.getElementById('apptTime');
   sel.innerHTML=SLOTS.map(s=>`<option value="${s}"${s===time?' selected':''}>${s}</option>`).join('');
+  document.getElementById('modalSaveBtn').textContent='Save Appointment';
   document.getElementById('modalOverlay').classList.add('open');
   document.getElementById('apptModal').classList.add('open');
   setTimeout(()=>document.getElementById('apptClient').focus(),100);
@@ -964,43 +1129,31 @@ async function saveAppt(){
   if(!client||!treatment||!date||!time){toast('Fill in all required fields');return;}
   const btn=document.getElementById('modalSaveBtn');
   btn.textContent='Saving...';btn.disabled=true;
+  const therapist=document.getElementById('apptTherapist').value;
   try{
     if(editingApptId){
-      // EDIT — PATCH existing appointment
-      await sbq(`spa_appointments?id=eq.${editingApptId}`,{method:'PATCH',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid})});
-      // Also update the linked request if exists
+      await sbq(`spa_appointments?id=eq.${editingApptId}`,{method:'PATCH',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,box:room,notes,price,paid,therapist:therapist||null})});
       const appt=manualAppts.find(a=>a.id===editingApptId);
       if(appt?.request_id){
         await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({
-          status:paid?'paid':'confirmed',
-          total:price||0,
-          details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
-          notes:notes||null
+          status:paid?'paid':'confirmed',total:price||0,
+          details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),notes:notes||null
         })}).catch(()=>{});
       }
       toast('Appointment updated!');
     } else {
-      // NEW — POST
       const reqRes=await sbq('requests',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({
-        room_number:'EXT',
-        service_type:'spa',
-        service_subtype:'treatment',
-        status:paid?'paid':'confirmed',
-        total:price||0,
-        details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),
-        notes:notes||null
+        room_number:'EXT',service_type:'spa',service_subtype:'treatment',
+        status:paid?'paid':'confirmed',total:price||0,
+        details:JSON.stringify({client_name:client,treatment,date,time,duration,room,source:'manual_walkin'}),notes:notes||null
       })});
       const requestId=reqRes&&reqRes[0]?reqRes[0].id:null;
-      await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,notes,price,paid,source:'manual',request_id:requestId})});
+      await sbq('spa_appointments',{method:'POST',body:JSON.stringify({client_name:client,treatment,date,time,duration,room,box:room,notes,price,paid,therapist:therapist||null,source:'manual',request_id:requestId})});
       toast('Appointment saved!');
     }
-    await loadManualAppts();
-    await load();
-    closeModal();
-    renderCalBody();
+    await loadManualAppts();await load();closeModal();renderCalBody();
   }catch(e){console.error(e);toast('Error saving');}
-  btn.textContent = editingApptId ? 'Update Appointment' : 'Save Appointment';
-  btn.disabled=false;
+  btn.textContent=editingApptId?'Update Appointment':'Save Appointment';btn.disabled=false;
 }
 async function deleteAppt(id,ev){
   ev.stopPropagation();
@@ -1009,12 +1162,134 @@ async function deleteAppt(id,ev){
     const appt=manualAppts.find(a=>a.id===id);
     await sbq(`spa_appointments?id=eq.${id}`,{method:'DELETE',headers:{'Prefer':'count=none'}});
     if(appt&&appt.request_id) await sbq(`requests?id=eq.${appt.request_id}`,{method:'DELETE',headers:{'Prefer':'count=none'}}).catch(()=>{});
-    await loadManualAppts();
-    await load();
-    renderCalBody();
-    render();stats();
-    toast('Deleted');
+    await loadManualAppts();await load();renderCalBody();render();stats();toast('Deleted');
   }catch(e){console.error(e);toast('Error');}
+}
+
+// ── CONFIRM PENDING BOOKING ───────────────────────
+let pendingRequestId=null;
+function openConfirmModal(requestId){
+  const r=all.find(x=>x.id===requestId);
+  if(!r) return;
+  pendingRequestId=requestId;
+  const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};
+  document.getElementById('confirmModalBody').innerHTML=`
+    <div style="background:#FEF9C3;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px">
+      <div style="font-weight:700;color:#854D0E">Guest Request — Room ${r.room_number}</div>
+      <div style="margin-top:4px;color:#713F12">${det.treatment||r.service_subtype||'Treatment'} · ${det.time||'—'} · ${det.date||'—'}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-field">
+        <label class="form-label">Assign Box</label>
+        <select class="form-input" id="confirmBox">
+          <option value="1">Room 1</option>
+          <option value="2">Room 2</option>
+          <option value="3">Room 3</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Time</label>
+        <select class="form-input" id="confirmTime">
+          ${SLOTS.map(s=>`<option value="${s}"${s===(det.time||'09:00')?' selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Therapist</label>
+      <select class="form-input" id="confirmTherapist">
+        <option value="">— Not assigned —</option>
+        ${therapists.map(t=>`<option value="${t.name}">${t.name}</option>`).join('')}
+      </select>
+    </div>`;
+  // Store WhatsApp data for button
+  document.getElementById('confirmWaBtn').dataset.room=r.room_number;
+  document.getElementById('confirmWaBtn').dataset.treatment=det.treatment||r.service_subtype||'Treatment';
+  document.getElementById('confirmWaBtn').dataset.date=det.date||'';
+  document.getElementById('confirmWaBtn').dataset.time=det.time||'';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal(){
+  document.getElementById('confirmOverlay').classList.remove('open');
+  document.getElementById('confirmModal').classList.remove('open');
+  pendingRequestId=null;
+}
+function openWhatsAppForPending(){
+  const btn=document.getElementById('confirmWaBtn');
+  const room=btn.dataset.room;const treatment=btn.dataset.treatment;
+  const date=btn.dataset.date;const time=btn.dataset.time;
+  const msg=`Dear Guest in Room ${room},\n\nThank you for your spa booking request!\n*Treatment:* ${treatment}\n*Requested:* ${date} at ${time}\n\nWe'll confirm your appointment shortly. Please let us know if you'd like to change the time.`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+async function confirmPendingBooking(){
+  if(!pendingRequestId) return;
+  const r=all.find(x=>x.id===pendingRequestId);
+  if(!r) return;
+  const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};
+  const box=parseInt(document.getElementById('confirmBox').value)||1;
+  const time=document.getElementById('confirmTime').value;
+  const therapist=document.getElementById('confirmTherapist').value;
+  const btn=document.getElementById('confirmSaveBtn');
+  btn.disabled=true;btn.textContent='Confirming...';
+  try{
+    // Update request status to confirmed
+    await sbq(`requests?id=eq.${pendingRequestId}`,{method:'PATCH',body:JSON.stringify({
+      status:'confirmed',
+      details:JSON.stringify({...det,time,room:box,source:'confirmed_booking'})
+    })});
+    // Create spa_appointment entry
+    await sbq('spa_appointments',{method:'POST',body:JSON.stringify({
+      client_name:`Room ${r.room_number}`,
+      treatment:det.treatment||r.service_subtype||'Treatment',
+      date:det.date||todayStr(),time,duration:det.duration||60,
+      box,room:box,therapist:therapist||null,
+      notes:r.notes||null,price:r.total||0,paid:false,
+      source:'guest_booking',request_id:pendingRequestId
+    })});
+    toast('Booking confirmed!');
+    await loadManualAppts();await load();
+    closeConfirmModal();renderCalBody();
+  }catch(e){console.error(e);toast('Error confirming');}
+  btn.disabled=false;btn.textContent='✓ Confirm';
+}
+
+// ── THERAPISTS ────────────────────────────────────
+function renderTherapistList(){
+  const el=document.getElementById('therapistList');
+  if(!therapists.length){el.innerHTML='<div style="color:var(--text-soft);font-size:14px;text-align:center;padding:20px">No therapists added yet for today</div>';return;}
+  el.innerHTML=therapists.map((t,i)=>`
+    <div class="therapist-row">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--teal-foam);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--teal-dark);font-size:14px">${t.name[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px">${t.name}</div>
+        ${t.phone?`<div style="font-size:12px;color:var(--text-soft)">${t.phone}</div>`:''}
+      </div>
+      ${t.phone?`<a href="https://wa.me/${t.phone.replace(/\D/g,'')}" target="_blank" class="btn btn-sm" style="background:#25D366;color:white;border:none">💬</a>`:''}
+      <button class="btn btn-sm btn-ghost" onclick="removeTherapist(${i})">✕</button>
+    </div>`).join('');
+}
+function openAddTherapist(){
+  document.getElementById('therapistName').value='';
+  document.getElementById('therapistPhone').value='';
+  document.getElementById('therapistOverlay').classList.add('open');
+  document.getElementById('therapistModal').classList.add('open');
+}
+function closeAddTherapist(){
+  document.getElementById('therapistOverlay').classList.remove('open');
+  document.getElementById('therapistModal').classList.remove('open');
+}
+function saveTherapist(){
+  const name=document.getElementById('therapistName').value.trim();
+  const phone=document.getElementById('therapistPhone').value.trim();
+  if(!name){toast('Enter a name');return;}
+  therapists.push({name,phone});
+  closeAddTherapist();
+  renderTherapistList();
+  toast(`${name} added!`);
+}
+function removeTherapist(i){
+  therapists.splice(i,1);
+  renderTherapistList();
 }
 
 // REVENUE
@@ -1105,15 +1380,15 @@ async function loadRevenue(period,el){
 function showTab(tab,el){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
-  ['Bookings','Calendar','Revenue'].forEach(p=>{
-    const id='page'+p;
-    document.getElementById(id).style.display='none';
+  ['Bookings','Calendar','Revenue','Therapists'].forEach(p=>{
+    document.getElementById('page'+p).style.display='none';
   });
   document.getElementById('page'+tab.charAt(0).toUpperCase()+tab.slice(1)).style.display='';
-  const titles={bookings:'Spa <span>Bookings</span>',calendar:'Spa <span>Calendar</span>',revenue:'Spa <span>Revenue</span>'};
-  document.getElementById('topbarTitle').innerHTML=titles[tab];
+  const titles={bookings:'Spa <span>Bookings</span>',calendar:'Spa <span>Calendar</span>',revenue:'Spa <span>Revenue</span>',therapists:'Spa <span>Therapists</span>'};
+  document.getElementById('topbarTitle').innerHTML=titles[tab]||'Spa';
   if(tab==='calendar'){calDate=new Date();loadManualAppts().then(()=>renderCalBody());}
   if(tab==='revenue')loadRevenue('today',document.getElementById('rTab-today'));
+  if(tab==='therapists')renderTherapistList();
   closeSidebar();
 }
 
