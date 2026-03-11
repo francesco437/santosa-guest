@@ -694,8 +694,11 @@ function todayStr(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia
 function dateStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
 function getEventsForDate(dk){
-  // system bookings
+  // IDs of requests already linked to a manual appointment
+  const linkedRequestIds = new Set(manualAppts.filter(a=>a.request_id).map(a=>a.request_id));
+  // system bookings — skip those already represented by a manual appointment
   const sys=(all||[]).filter(r=>{
+    if(linkedRequestIds.has(r.id)) return false; // already shown as manual
     const det=typeof r.details==='string'?JSON.parse(r.details||'{}'):r.details||{};
     const appt=det.date||det.appointment_date||r.created_at.slice(0,10);
     return appt===dk;
@@ -795,11 +798,21 @@ function attachDragEvents(){
         await sbq(`spa_appointments?id=eq.${dragApptId}`,{method:'PATCH',body:JSON.stringify({time:newSlot,date:newDate})});
         const appt=manualAppts.find(a=>a.id===dragApptId);
         if(appt?.request_id){
-          const det=typeof appt.details==='string'?JSON.parse(appt.details||'{}'):appt.details||{};
-          await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({details:JSON.stringify({...det,time:newSlot,date:newDate})})}).catch(()=>{});
+          // Build details from spa_appointment fields (not from request.details)
+          const newDet={
+            client_name:appt.client_name,
+            treatment:appt.treatment,
+            date:newDate,
+            time:newSlot,
+            duration:appt.duration,
+            room:appt.room,
+            source:'manual_walkin'
+          };
+          await sbq(`requests?id=eq.${appt.request_id}`,{method:'PATCH',body:JSON.stringify({details:JSON.stringify(newDet)})}).catch(()=>{});
         }
         toast(`Moved to ${newDate} ${newSlot}`);
         await loadManualAppts();
+        await load();
         renderCalBody();
       }catch(err){console.error(err);toast('Error moving appointment');}
       dragApptId=null;
